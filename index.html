@@ -195,9 +195,15 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(52px,13vw,104px);le
 }
 
 /* modal sheet */
-#modal{position:fixed;inset:0;background:rgba(4,4,7,.62);display:grid;place-items:center;padding:16px;z-index:30}
+#modal{position:fixed;inset:0;background:rgba(4,4,7,.62);display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:30}
+/* 모바일 세로: 팝업 높이를 줄여 위쪽 닫기 버튼이 상태 표시줄·노치에 걸리지 않게 하고, 버튼을 크게 */
+@media (max-width:640px) and (orientation:portrait){
+  .sheet{max-height:calc(100vh - 200px)!important;max-height:calc(100dvh - 200px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important}
+  .sheet header{padding:10px 12px 10px 16px}
+  .x{min-width:64px;min-height:44px;font-size:15px;padding:8px 14px}
+}
 .sheet{width:min(780px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--sheet);border:1px solid var(--line);border-radius:2px;box-shadow:0 30px 80px rgba(0,0,0,.6);touch-action:pan-y}
-.sheet header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex:none}
 .sheet h3{font-family:var(--f-disp);font-weight:400;font-size:22px;margin:0;letter-spacing:.05em}
 .sheet h3 small{font-family:var(--f-body);font-size:12px;color:var(--mute);margin-left:8px;letter-spacing:0}
 .x{border:1px solid var(--line);padding:6px 12px;font-size:13px;border-radius:2px}
