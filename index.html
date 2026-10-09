@@ -433,7 +433,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
       <div class="seal">血月<br>夜行</div>
       <h1>혈월야행</h1>
       <p class="sub">핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥</p>
-      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V002</p>
+      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V003</p>
       <div class="row"><button class="btn pri" id="bNew">새로 깨어나기</button><button class="btn" id="bCont" hidden>이어하기</button></div>
       <button class="btn fsT" id="fsTitle" hidden>⛶ 전체화면으로</button>
       <p class="rot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
@@ -2240,6 +2240,7 @@ $('#modal').addEventListener('click',e=>{
   switch(a){
    case'close':closeModal();return;
    case'tab':G.bagTab=id;G.sel=null;break;
+   case'sndtest':sndUnlock();setTimeout(()=>{sfx('lvl');const e=$('#sndSt');if(e)e.textContent=sndState()},120);return;
    case'ctledit':ctlEditStart();return;
    case'ctlreset':CTL=JSON.parse(JSON.stringify(CTLDEF));saveCtl();applyCtl();toast('모바일 버튼 배치를 기본값으로 되돌렸다');break;
    case'keyset':G.keyWait=G.keyWait===id?null:id;break;
@@ -2419,8 +2420,22 @@ const SND={ctx:null,vol:{m:.8,b:.55,s:.75,mute:false},last:{},bgm:null};
 try{Object.assign(SND.vol,JSON.parse(localStorage.getItem(SNDK)||'{}'))}catch(_){}
 function sndSave(){try{localStorage.setItem(SNDK,JSON.stringify(SND.vol))}catch(_){}}
 function sndImpulse(c,sec,decay){const n=Math.floor(c.sampleRate*sec),b=c.createBuffer(2,n,c.sampleRate);for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay)}return b}
+/* 아이폰(iOS Safari) 대응
+   1) 오디오는 touchend/click 같은 '손을 뗀' 순간에만 켜질 수 있다 → 그 이벤트들에서 resume + 무음 1샘플 재생
+   2) 옆면 무음 스위치가 켜져 있으면 Web Audio가 꺼진다 → audioSession을 'playback'으로 바꾸고,
+      무음 <audio>를 반복 재생해 '미디어 재생' 상태로 만들어 무음 스위치와 상관없이 소리가 나게 한다 */
+function silentWavURL(){const sr=8000,n=sr/2,buf=new ArrayBuffer(44+n),v=new DataView(buf),w=(o,str)=>{for(let i=0;i<str.length;i++)v.setUint8(o+i,str.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);
+  for(let i=0;i<n;i++)v.setUint8(44+i,128);return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}))}
+function sndUnlock(){
+  try{if(navigator.audioSession&&navigator.audioSession.type!=='playback')navigator.audioSession.type='playback'}catch(_){}
+  sndInit();const c=SND.ctx;if(!c)return;
+  if(c.state!=='running')c.resume().catch(()=>{});
+  try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(_){}
+  if(!SND.tagOn){try{if(!SND.tag){const a=document.createElement('audio');a.setAttribute('playsinline','');a.setAttribute('webkit-playsinline','');a.loop=true;a.preload='auto';a.src=silentWavURL();SND.tag=a}
+    const pr=SND.tag.play();SND.tagOn=true;if(pr&&pr.catch)pr.catch(()=>{SND.tagOn=false})}catch(_){SND.tagOn=false}}}
 function sndInit(){
-  if(SND.ctx){if(SND.ctx.state==='suspended'&&!document.hidden)SND.ctx.resume().catch(()=>{});return}
+  if(SND.ctx){if(SND.ctx.state!=='running'&&!document.hidden)SND.ctx.resume().catch(()=>{});return}
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   try{const c=new AC();SND.ctx=c;
     SND.master=c.createGain();const comp=c.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=4;SND.master.connect(comp);comp.connect(c.destination);
@@ -2429,8 +2444,8 @@ function sndInit(){
     const n=c.sampleRate*2,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;SND.noise=b;
     sndVol();if(c.state==='suspended')c.resume().catch(()=>{})}catch(_){SND.ctx=null}}
 function sndVol(){if(!SND.ctx)return;const v=SND.vol,t=SND.ctx.currentTime;SND.master.gain.setTargetAtTime(v.mute?0:v.m,t,.05);SND.bgmG.gain.setTargetAtTime(v.b*.6,t,.05);SND.sfxG.gain.setTargetAtTime(v.s,t,.05)}
-['pointerdown','keydown','touchend'].forEach(ev=>addEventListener(ev,sndInit,{capture:true,passive:true}));
-document.addEventListener('visibilitychange',()=>{if(!SND.ctx)return;if(document.hidden)SND.ctx.suspend().catch(()=>{});else SND.ctx.resume().catch(()=>{})});
+['pointerdown','pointerup','touchstart','touchend','click','keydown'].forEach(ev=>addEventListener(ev,sndUnlock,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!SND.ctx)return;if(document.hidden){SND.ctx.suspend().catch(()=>{});if(SND.tag){try{SND.tag.pause()}catch(_){}}SND.tagOn=false}else SND.ctx.resume().catch(()=>{})});
 const mtof=n=>440*Math.pow(2,(n-69)/12);
 function sRev(g,amt){if(!amt)return;const s=SND.ctx.createGain();s.gain.value=amt;g.connect(s);s.connect(SND.rev)}
 /* 기본 음원: 오실레이터 하나 (o: to 주파수 미끄러짐, lp 저역통과, a 어택, rev 잔향, dest 출력, vib 비브라토) */
@@ -2533,14 +2548,16 @@ function bgmStep(B,t){const T=B.T,st=B.step++,pos=st%8,bar=Math.floor(st/8),dl=M
   else if(T.amb==='void'&&r<.03)sOsc('sine',mtof(T.root-24+pick([0,1,6])),t,4,.12,{dest:B.bus,a:1.5,rev:.5});
   return e8}
 /* 매 프레임: 지금 있어야 할 곡(맵·보스 여부)을 정하고, 다음 0.3초 분량의 음을 미리 예약한다 */
-function sndTick(){const c=SND.ctx;if(!c||c.state!=='running')return;
+function sndTick(){const c=SND.ctx;if(!c)return;if(c.state!=='running'){return}
   let key='title',boss=false;if(G.scene==='play'){key=G.raid?'raid':G.map;boss=!G.raid&&!!(G.boss&&!G.boss.dead)}
   const id=key+(boss?'!':'');if(!SND.bgm||SND.bgm.id!==id){bgmStop(SND.bgm);SND.bgm=bgmStart(id)}
   const B=SND.bgm;if(B.next<c.currentTime-.5)B.next=c.currentTime+.05;
   let n=0;while(B.next<c.currentTime+.3&&n++<8)B.next+=bgmStep(B,B.next)}
 function sndH(){const v=SND.vol,row=(k,n)=>`<label><span>${n}</span><span class="sndv"><input type="range" min="0" max="1" step="0.05" value="${v[k]}" data-snd="${k}"><b class="num">${Math.round(v[k]*100)}%</b></span></label>`;
   return `<p class="sec">사운드</p><div class="set">${row('m','전체 음량')}${row('b','배경음')}${row('s','효과음')}<label><span>음소거</span><input type="checkbox" data-snd="mute" ${v.mute?'checked':''}></label></div>
-  <p class="hint">효과음과 배경음은 악기·환경음만으로 실시간 합성된다. 아이폰은 무음 모드(옆 스위치)에서는 소리가 나지 않는다.</p>`}
+  <div class="acts"><button class="sb" data-act="sndtest">소리 테스트</button><span class="hint" id="sndSt" style="margin:0">${sndState()}</span></div>
+  <p class="hint">효과음과 배경음은 악기·환경음만으로 실시간 합성된다. 아이폰에서 소리가 안 나면 「소리 테스트」를 한 번 누르고, 볼륨 버튼으로 미디어 음량을 올려 보자.</p>`}
+function sndState(){const c=SND.ctx;return !c?'소리 꺼짐 (화면을 한 번 터치하면 켜진다)':c.state==='running'?'소리 켜짐':'소리 대기 중 · 화면을 터치하자'}
 document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.snd;if(!k)return;sndInit();
   if(k==='mute')SND.vol.mute=e.target.checked;else{SND.vol[k]=+e.target.value;const b=e.target.nextElementSibling;if(b)b.textContent=Math.round(SND.vol[k]*100)+'%';if(k==='s')sfx('orb')}
   sndVol();sndSave()});
