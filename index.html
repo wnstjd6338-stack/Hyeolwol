@@ -1308,6 +1308,12 @@ function tinted(im,col){const c=document.createElement('canvas');c.width=im.widt
   if(CLS[n])TINT['dash_'+n+'_'+sd]=silh(im,CLS[n].col);})));
 ['village','arena','shop'].forEach(b=>loadImg('bg_'+b,A(`img/bg_${b}.jpg`)));
 SLOTS.forEach(sl=>loadImg('ic_'+sl,A(`img/ic_${sl}.webp`)));
+/* 걷기 프레임 시트: 가로로 n컷. ax = 발 기준 가로 위치(비율), hs = 서 있는 그림 대비 높이 배율 */
+const WALKDEF={archer:{n:4,fps:9,L:{ax:.536,hs:1.007},R:{ax:.468,hs:1.007}}};
+const WALK={};
+Object.keys(WALKDEF).forEach(c=>['L','R'].forEach(sd=>loadImg(`${c}_walk${sd}`,A(`img/${c}_walk${sd}.webp`),im=>{WALK[c+'_'+sd]={im,fl:silh(im,'#ffffff'),...WALKDEF[c][sd],n:WALKDEF[c].n}})));
+function drawWalk(c,w,i,x,y,H,o){const fw=w.im.width/w.n,fh=w.im.height,h=H*w.hs,dw=h*fw/fh;c.save();c.translate(x+(o.ox||0),y+(o.oy||0));if(o.rot)c.rotate(o.rot);c.scale(o.sx||1,o.sy||1);if(o.alpha!=null)c.globalAlpha*=o.alpha;
+  c.drawImage(w.im,i*fw,0,fw,fh,-dw*w.ax,-h,dw,h);if(o.flash>0){c.globalAlpha=Math.min(1,o.flash)*.85*(o.alpha??1);c.drawImage(w.fl,i*fw,0,fw,fh,-dw*w.ax,-h,dw,h)}c.restore()}
 /* player/NPC/구미호 images: L faces left. monster images (ghost/goblin/reaper): L faces right */
 function sprKey(n,left){const inv=n==='ghost'||n==='goblin'||n==='reaper';return n+'_'+((left!==inv)?'L':'R')}
 /* draws a sprite with its feet at (x,y). o.leg splits the bottom 20% into two feet that lift alternately (walk cycle) */
@@ -1334,7 +1340,11 @@ function drawPlayer(c){
   else if(pl.moving){const ph=pl.walkT;o={leg:Math.sin(ph),bob:-Math.abs(Math.sin(ph))*H*.04,rot:sg*.05+Math.sin(ph)*.025}}
   else{const b=Math.sin(t*2.4);o={sy:1+b*.014,sx:1-b*.008}}
   o.flash=pl.flash>0?pl.flash*5:0;if(pl.dash>0||pl.iframe>.15)o.alpha=.78;
-  if(!drawSpr(c,key,pl.x,pl.y+4,H,o)){c.save();c.translate(pl.x,pl.y);figure(c,meP(),sg,pl.moving?Math.sin(t*14)*1.4:0,1.05);c.restore()}
+  const wk=WALK[pl.cls+'_'+(left?'L':'R')];
+  if(wk&&pl.moving&&pl.dash<=0){const fi=Math.floor((pl.walkT/TAU)*wk.n*1.5)%wk.n;const wo={flash:o.flash,alpha:o.alpha};
+    if(pl.atkT>0){const k=1-pl.atkT/.28,s2=Math.sin(k*Math.PI);wo.ox=Math.cos(a)*6*s2;wo.oy=Math.sin(a)*3*s2;wo.rot=sg*.06*s2}
+    drawWalk(c,wk,(fi+wk.n)%wk.n,pl.x,pl.y+4,H,wo)}
+  else if(!drawSpr(c,key,pl.x,pl.y+4,H,o)){c.save();c.translate(pl.x,pl.y);figure(c,meP(),sg,pl.moving?Math.sin(t*14)*1.4:0,1.05);c.restore()}
   c.save();c.translate(pl.x,pl.y);
   if(pl.shield>0){c.fillStyle='rgba(243,207,69,.07)';c.strokeStyle='rgba(243,207,69,.4)';c.lineWidth=1.5;c.beginPath();c.ellipse(0,-36,34,46,0,0,TAU);c.fill();c.stroke()}
   if(pl.chan){const a2=pl.chan.a;c.strokeStyle='rgba(230,255,192,.35)';c.lineWidth=18;c.lineCap='round';c.beginPath();c.moveTo(Math.cos(a2)*30,-20+Math.sin(a2)*30);c.lineTo(Math.cos(a2)*260,-20+Math.sin(a2)*260);c.stroke();c.lineCap='butt'}
