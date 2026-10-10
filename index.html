@@ -145,6 +145,12 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(52px,13vw,104px);le
 .tr{position:absolute;right:16px;top:calc(12px + env(safe-area-inset-top,0px));display:grid;gap:6px}
 .mb{width:50px;height:50px;border:1px solid var(--line);background:rgba(12,13,18,.8);display:grid;place-items:center;align-content:center;border-radius:2px;padding:0;position:relative}
 .mb span{font-family:var(--f-disp);font-size:20px;line-height:1.05}
+.mb .mi{width:72%;height:72%;object-fit:contain;display:block;margin-bottom:-1px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7));pointer-events:none}
+.mb small{white-space:nowrap}
+.sk.ski img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}.sk.ski.lock img{filter:grayscale(1) brightness(.35)}
+.sk.ski.setk{box-shadow:0 0 0 1px var(--cc),inset 0 0 10px -2px var(--cc)}
+.skrow .ic img{width:100%;height:100%;object-fit:cover;display:block}.skrow.lock .ic img{filter:grayscale(1) brightness(.4)}
+.dash .di{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:.85;pointer-events:none}.dash small{position:relative;z-index:1;margin-top:34px;text-shadow:0 1px 3px #000;color:#e8e0cc}
 .mb small{font-size:9.5px;color:var(--mute)}
 .mb .dot{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--blood);box-shadow:0 0 8px var(--blood)}
 #bossBar,#gauge{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(480px,calc(100vw - 32px));display:grid;gap:4px;text-align:center}
@@ -405,16 +411,16 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
     <div class="raidp" id="raidP" hidden></div>
     <div class="tr" id="menu">
       <button class="mb pe mtog" id="menuT" aria-label="메뉴 접기/펼치기" aria-expanded="true"><span id="menuG">☰</span><small id="menuS">접기</small><i class="dot" id="menuDot" hidden></i></button>
-      <button class="mb pe" data-open="quest" aria-label="임무 (J)"><span>任</span><small>임무</small><i class="dot" id="sqDot" hidden></i></button>
-      <button class="mb pe" data-open="bag" aria-label="가방 (I)"><span>囊</span><small>가방</small></button>
-      <button class="mb pe" data-open="stat" aria-label="능력치 (C)"><span>力</span><small>능력</small><i class="dot" id="ptDot" hidden></i></button>
-      <button class="mb pe" data-open="skill" aria-label="기술 (K)"><span>技</span><small>기술</small></button>
-      <button class="mb pe" data-open="pet" aria-label="동반자 (P)"><span>伴</span><small>동반</small></button>
-      <button class="mb pe" data-open="map" aria-label="지도 (M)"><span>圖</span><small>지도</small></button>
-      <button class="mb pe" data-open="ach" aria-label="업적 (U)"><span>榮</span><small>업적</small><i class="dot" id="achDot" hidden></i></button>
-      <button class="mb pe" data-open="party" aria-label="모험단 (O)"><span>團</span><small>모험단</small></button>
-      <button class="mb pe" data-open="relic" aria-label="유물 (Y)"><span>遺</span><small>유물</small></button>
-      <button class="mb pe" data-open="set" aria-label="설정 · 저장"><span>設</span><small>설정</small></button>
+      <button class="mb pe" data-open="quest" aria-label="임무 (J)"><img class="mi" src="img/mi_quest.webp" alt="" draggable="false"><small>임무</small><i class="dot" id="sqDot" hidden></i></button>
+      <button class="mb pe" data-open="bag" aria-label="가방 (I)"><img class="mi" src="img/mi_bag.webp" alt="" draggable="false"><small>가방</small></button>
+      <button class="mb pe" data-open="stat" aria-label="능력치 (C)"><img class="mi" src="img/mi_stat.webp" alt="" draggable="false"><small>능력</small><i class="dot" id="ptDot" hidden></i></button>
+      <button class="mb pe" data-open="skill" aria-label="기술 (K)"><img class="mi" src="img/mi_skill.webp" alt="" draggable="false"><small>기술</small></button>
+      <button class="mb pe" data-open="pet" aria-label="동반자 (P)"><img class="mi" src="img/mi_pet.webp" alt="" draggable="false"><small>동반자</small></button>
+      <button class="mb pe" data-open="map" aria-label="지도 (M)"><img class="mi" src="img/mi_map.webp" alt="" draggable="false"><small>지도</small></button>
+      <button class="mb pe" data-open="ach" aria-label="업적 (U)"><img class="mi" src="img/mi_ach.webp" alt="" draggable="false"><small>업적</small><i class="dot" id="achDot" hidden></i></button>
+      <button class="mb pe" data-open="party" aria-label="모험단 (O)"><img class="mi" src="img/mi_party.webp" alt="" draggable="false"><small>모험단</small></button>
+      <button class="mb pe" data-open="relic" aria-label="유물 (Y)"><img class="mi" src="img/mi_relic.webp" alt="" draggable="false"><small>유물</small></button>
+      <button class="mb pe" data-open="set" aria-label="설정 · 저장"><img class="mi" src="img/mi_set.webp" alt="" draggable="false"><small>설정</small></button>
       <button class="mb pe fsT" id="fsHud" aria-label="전체화면" hidden><span>⛶</span><small>전체</small></button>
     </div>
     <div id="bossBar" hidden><div class="bn" id="bossN"></div><div class="bar boss"><i id="bossF"></i></div></div>
@@ -422,7 +428,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
     <div id="toasts"></div>
     <div class="skb" id="skb"></div>
     <button id="talkB" class="talk pe" hidden></button>
-    <button id="dashB" class="dash pe" aria-label="대쉬 (Space)"><span>步</span><small>대쉬</small></button>
+    <button id="dashB" class="dash pe" aria-label="대쉬 (Space)"><img class="di" src="img/sk_dash.webp" alt="" draggable="false"><small>대쉬</small></button>
     <button id="potB" class="pot pe" aria-label="회복약 (Q)"><span id="potN">0</span><small>회복약</small></button>
     <button id="tgtB" class="tgt pe" aria-label="자동 공격 표적 바꾸기"></button>
     <button id="relB" class="relb pe" aria-label="유물 사용 (R)" hidden><span id="relG">遺</span><small id="relN">유물</small></button>
@@ -434,7 +440,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
       <div class="seal">血月<br>夜行</div>
       <h1>혈월야행</h1>
       <p class="sub">핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥</p>
-      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V007</p>
+      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V008</p>
       <div class="row"><button class="btn pri" id="bNew">새로 깨어나기</button><button class="btn" id="bCont" hidden>이어하기</button></div>
       <button class="btn fsT" id="fsTitle" hidden>⛶ 전체화면으로</button>
       <p class="rot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
@@ -902,6 +908,9 @@ const SETSK={
  mage:{n:'성운낙하',g:'隕',cd:22,range:620,set:1,desc:'하늘에서 거대한 운석을 떨어뜨린다. 매우 넓은 범위에 한 번에 막대한 피해를 주고 기절시킨다.',f(s){const t=densest(s.range,300);if(!t)return 0;aimAt(t);const x=t.x,y=t.y;G.fx.push({k:'meteor',x,y,l:.9,ml:.9});tele({k:'c',x,y,r:380,dur:.9,dmg:0,friendly:1});later(.9,()=>{hitCircle(x,y,380,s.dmg(24),{stun:1.5,kb:260});fxRing(x,y,40,420,'#ff7a2a',.8,16);fxRing(x,y,20,300,'#ffe0a0',.5,6);burst(x,y,'#ff9a3c',120,700,6);shake(24)});return 1}},
  healer:{n:'천벌의 성역',g:'聖',cd:20,range:420,set:1,desc:'6초간 넓은 성역을 펼친다. 안에 있는 적에게 짧은 간격으로 빛기둥을 계속 내리꽂는다.',f(s){const t=densest(s.range,200);if(!t)return 0;aimAt(t);addZone({x:t.x,y:t.y,r:270,l:6,tick:.18,dmg:s.dmg(1.1),c:'#fff3c4',kind:'holy',o:{stun:.15}});fxRing(t.x,t.y,270,20,'#fff3c4',.5,8);return 1}}};
 function setCount(cls){return SLOTS.filter(sl=>pl.gear[sl]&&pl.gear[sl].set===(cls||pl.cls)).length}
+/* V008: 기술 그림 아이콘 (그림이 있는 직업·기술만, 없으면 한자). 6세트 5번 기술은 세트 전용 그림 */
+const SKIMG={archer:[1,1,1,1,1],warrior:[1,1,1,1,1]},SKSETIMG={archer:1,warrior:1};
+function skIcon(i,s){const c=pl.cls;if(s&&s===SETSK[c])return SKSETIMG[c]?A(`img/sk_${c}_set.webp`):null;if(s&&s!==SK[c][i])return null;return SKIMG[c]&&SKIMG[c][i]?A(`img/sk_${c}_${i}.webp`):null}
 function skillDef(i){const rs=relicSkill(i);if(rs)return rs;return i===4&&setCount()>=6?SETSK[pl.cls]:SK[pl.cls][i]}
 function cdOf(i){const lv=pl.skl[i];return skillDef(i).cd*(1-pl.d.cdr)*(1-Math.min(.3,.015*(lv-1)))*(i===0&&pl.buffs.blade>0?.3:1)*relicCdMul()}
 const skCost=lv=>({soul:lv*2,gold:80*lv*lv});
@@ -2196,8 +2205,8 @@ function skillH(){const C=CLS[pl.cls],set6=setCount()>=6;
   [0,1,2,3,4].map(i=>{const s=skillDef(i),lock=pl.lv<UNL[i],lv=pl.skl[i],c=skCost(lv);
     const setNote=i===4?(set6?`<span class="tag" style="color:${C.col};border-color:${C.col}">${SETN[pl.cls]} 6세트</span>`:''):'';
     const hint=i===4&&!set6?`<p class="hint">${SETN[pl.cls]} 세트 6부위를 모두 착용하면 「${SETSK[pl.cls].n}」(으)로 바뀐다. 세트 장비는 에픽 이상에서만 나온다.</p>`:'';
-    return `<div class="skrow${lock?' lock':''}" style="--cc:${C.col}"><div class="ic">${s.g}</div><div><h5>${s.n}${setNote}<small>${lock?`Lv.${UNL[i]}에 해금`:`기술 Lv.${lv} · 재사용 ${f1(cdOf(i))}초`}</small></h5><p>${s.desc}</p>${hint}${lock?'':lv>=30?'<button class="sb" disabled>최대 강화</button>':`<button class="sb" data-act="skup" data-i="${i}" ${pl.soul>=c.soul&&pl.gold>=c.gold?'':'disabled'}>강화 Lv.${lv+1} · 혼석 ${c.soul} · 금화 ${fmt(c.gold)}</button>`}</div></div>`}).join('')+
-  `<div class="skrow" style="--cc:var(--jade)"><div class="ic">步</div><div><h5>축지 <small>이동기 · 대쉬</small></h5><p>짧은 거리를 순식간에 이동하며 그동안 피해를 받지 않는다. Space · Shift · 대쉬 버튼. 민첩이 높을수록 자주 쓸 수 있다.</p></div></div>`}
+    return `<div class="skrow${lock?' lock':''}" style="--cc:${C.col}"><div class="ic">${(im=>im?`<img src="${im}" alt="">`:s.g)(skIcon(i,s))}</div><div><h5>${s.n}${setNote}<small>${lock?`Lv.${UNL[i]}에 해금`:`기술 Lv.${lv} · 재사용 ${f1(cdOf(i))}초`}</small></h5><p>${s.desc}</p>${hint}${lock?'':lv>=30?'<button class="sb" disabled>최대 강화</button>':`<button class="sb" data-act="skup" data-i="${i}" ${pl.soul>=c.soul&&pl.gold>=c.gold?'':'disabled'}>강화 Lv.${lv+1} · 혼석 ${c.soul} · 금화 ${fmt(c.gold)}</button>`}</div></div>`}).join('')+
+  `<div class="skrow" style="--cc:var(--jade)"><div class="ic"><img src="${A('img/sk_dash.webp')}" alt=""></div><div><h5>축지 <small>이동기 · 대쉬</small></h5><p>짧은 거리를 순식간에 이동하며 그동안 피해를 받지 않는다. Space · Shift · 대쉬 버튼. 민첩이 높을수록 자주 쓸 수 있다.</p></div></div>`}
 function mapH(){const my=myCP();return `<div class="pw"><span>내 전투력</span><b class="num">${fmt(my)}</b><small>사냥터·던전은 몬스터 레벨이 고정 · 귀문관만 내 레벨을 따라온다</small></div><p class="hint">던전에서 적 ${GAUGE}마리를 쓰러뜨리면 보스가 나타난다(해당 보스 임무를 받은 뒤부터). 에픽·태초 장비는 보스만 떨어뜨린다.</p>`+
   Object.entries(MAPS).filter(([id,M])=>!M.hidden).map(([id,M])=>{const ml=mobLvOf(id),rc=recCP(id),q=qCur(),qm=qMap(q)===id,open=mapOpen(id),lt=mapLockTxt(id);
     const cpTxt=rc?` · 권장 전투력 <b class="num ${my>=rc?'pos':'neg'}">${fmt(rc)}</b>`:'';
@@ -2387,7 +2396,8 @@ $('#modal').addEventListener('change',e=>{const el=e.target;if(el.dataset.ally){
 const H={};['hCls','hName','hLv','hMap','hpF','shF','hpT','xpF','cGold','cStone','cSoul','trk','bossBar','bossN','bossF','gauge','gaugeT','gaugeF','talkB','dashB','skb','ptDot','hCP','hRec','achDot','cEss','potB','potN','tgtB','relB','relG','relN','menuDot','sqDot'].forEach(k=>H[k]=document.getElementById(k));
 let SKEL=[],hudAcc=0,lastTrk='',lastTalk='';
 let skSig='';
-function buildSkillBar(){const C=CLS[pl.cls];skSig=pl.cls+setCount();H.skb.innerHTML=[0,1,2,3,4].map(i=>{const s=skillDef(i);return `<button class="sk pe${s.set?' setk':''}" id="sk${i}" style="--cc:${C.col}" aria-label="${s.n}">${s.g}<b class="lv"></b></button>`}).join('');
+document.querySelectorAll('img.mi,img.di').forEach(im=>{const p=im.getAttribute('src');im.src=A(p)});
+function buildSkillBar(){const C=CLS[pl.cls];skSig=pl.cls+setCount();H.skb.innerHTML=[0,1,2,3,4].map(i=>{const s=skillDef(i);const im=skIcon(i,s);return `<button class="sk pe${s.set?' setk':''}${im?' ski':''}" id="sk${i}" style="--cc:${C.col}" aria-label="${s.n}">${im?`<img src="${im}" alt="" draggable="false">`:s.g}<b class="lv"></b></button>`}).join('');
   SKEL=[...H.skb.children];SKEL.forEach(b=>b.addEventListener('click',()=>openPanel('skill')));H.hCls.style.setProperty('--cc',C.col);hudPor()}
 /* 레이드 HUD (V002): 보스 체력바 바로 아래, 화면 상단에 작게. 왼쪽 = 파티 체력, 오른쪽 = DPS 그래프. 알림(토스트)은 그 아래로 민다 */
 let lastRaidP='';
