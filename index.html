@@ -30,7 +30,7 @@ html,body{overscroll-behavior:none}
   .mb{width:40px;height:40px}.mb span{font-size:16px}.mb small{font-size:8.5px}
   .tl{gap:4px;width:min(300px,calc(100vw - 360px))}
   .tl .cg{width:32px;height:32px;font-size:18px}
-  .tq{padding:4px 8px}.tq span:not(.go){display:none}
+  .tq{padding:4px 8px}.tq span:not(.go){display:block;font-size:10.5px;line-height:1.3}
   .sk{width:42px;height:42px;font-size:19px}
   .dash{width:64px;height:64px}
   .talk{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
@@ -119,6 +119,7 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(52px,13vw,104px);le
 #hud .pe{pointer-events:auto}
 .tl{position:absolute;left:16px;top:calc(12px + env(safe-area-inset-top,0px));width:min(320px,calc(100vw - 96px));display:grid;gap:6px}
 .who{display:flex;gap:10px;align-items:center}
+.cg.hpor{background:var(--cc) center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),0 0 0 1px var(--cc)}
 .cg{font-family:var(--f-disp);width:40px;height:40px;display:grid;place-items:center;background:var(--cc,var(--blood));color:#130e0f;font-size:22px;border-radius:2px;flex:none}
 .who b{font-family:var(--f-disp);font-weight:400;font-size:18px;letter-spacing:.04em}
 .who .lvl{font-size:12px;color:var(--gold);margin-left:6px}
@@ -351,7 +352,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   #toasts{top:calc(54px + env(safe-area-inset-top,0px));left:330px;right:150px;width:auto;min-width:0;transform:none}
   .toast{font-size:11px;padding:3px 9px}
   .trk{bottom:calc(10px + env(safe-area-inset-bottom,0px));width:min(270px,calc(50vw - 150px));min-width:0}
-  .tq span:not(.go){display:none}
+  .tq span:not(.go){display:block;font-size:10.5px;line-height:1.3}
   .pot{width:50px;height:50px;bottom:calc(86px + env(safe-area-inset-bottom,0px));right:23px}
   .tgt{bottom:calc(74px + env(safe-area-inset-bottom,0px));right:84px}
   .relb{right:88px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:46px;height:46px}
@@ -433,7 +434,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
       <div class="seal">血月<br>夜行</div>
       <h1>혈월야행</h1>
       <p class="sub">핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥</p>
-      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V006</p>
+      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V007</p>
       <div class="row"><button class="btn pri" id="bNew">새로 깨어나기</button><button class="btn" id="bCont" hidden>이어하기</button></div>
       <button class="btn fsT" id="fsTitle" hidden>⛶ 전체화면으로</button>
       <p class="rot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
@@ -1512,7 +1513,7 @@ function toast(html){const box=$('#toasts');const d=document.createElement('div'
 
 /* ================= pickup ================= */
 function collect(d){d.dead=1;
-  if(d.kind){sfx(d.kind==='gold'?'coin':'pick');pl[d.kind]+=d.amt;if(d.kind==='gold')pl.st.gold+=d.amt;if(d.kind!=='gold')addText(pl.x,pl.y-40,`+${d.amt} ${CUR[d.kind]}`,CURC[d.kind],12);if(d.kind==='ess')toast(`<b style="color:#7ff7e4">동반자 정수</b> ${d.amt}개 획득 · 동반자 강화에 쓴다`);return}
+  if(d.kind){sfx(d.kind==='gold'?'coin':'pick');pl[d.kind]+=d.amt;if(d.kind==='gold')pl.st.gold+=d.amt;if(d.kind!=='gold'&&pl.set.lootNum!==false)addText(pl.x,pl.y-40,`+${d.amt} ${CUR[d.kind]}`,CURC[d.kind],12);if(d.kind==='ess'&&pl.set.lootNum!==false)toast(`<b style="color:#7ff7e4">동반자 정수</b> ${d.amt}개 획득 · 동반자 강화에 쓴다`);return}
   pl.st.gotG=Math.max(pl.st.gotG,d.it.g);
   const it=d.it,g=GRADES[it.g],nm=`<b style="color:${g.c}">[${g.n}] ${esc(it.name)}</b>`;
   if(pl.set.autoEquip&&isUpgrade(it)){equipItem(it);toast(`${nm} 자동 착용 ▲`);addText(pl.x,pl.y-48,'장비 강화!','#7fd88f',14,true);return}
@@ -2242,7 +2243,8 @@ function setH(){const s=pl.set,ts=ROOT.ts?new Date(ROOT.ts).toLocaleString('ko-K
   <label><span>자동 착용<small>더 강한 장비를 주우면 즉시 갈아입는다</small></span><input type="checkbox" id="sAE" data-set="autoEquip" ${s.autoEquip?'checked':''}></label>
   <label><span>자동 해체<small>이 등급 이하는 줍는 즉시 강화석으로 바꾼다 (에픽까지 선택 가능) (더 강한 장비·세트 장비는 제외)</small></span><select id="sAD" data-set="autoDis"><option value="-1"${s.autoDis===-1?' selected':''}>끄기</option>${GRADES.slice(0,7).map((g,i)=>`<option value="${i}"${s.autoDis===i?' selected':''}>${g.n} 이하</option>`).join('')}</select></label>
   <label><span>넓은 범위 자동 줍기<small>장비를 멀리서도 끌어당긴다</small></span><input type="checkbox" id="sAL" data-set="autoLoot" ${s.autoLoot?'checked':''}></label>
-  <label><span>피해 숫자 표시</span><input type="checkbox" id="sDN" data-set="dmgNum" ${s.dmgNum?'checked':''}></label></div>
+  <label><span>피해 숫자 표시</span><input type="checkbox" id="sDN" data-set="dmgNum" ${s.dmgNum?'checked':''}></label>
+  <label><span>재화 획득량 표시<small>던전에서 금화·강화석·혼석·정수를 주울 때 얼마나 얻었는지 화면에 띄운다 · 끄면 화면이 깔끔하고 가벼워진다</small></span><input type="checkbox" id="sLN" data-set="lootNum" ${s.lootNum!==false?'checked':''}></label></div>
   <p class="sec">그래픽</p><div class="set"><label><span>그래픽 품질<small>휴대폰이 뜨거우면 「절전」 · 높음은 선명하고 효과가 화려하지만 발열이 크다</small></span><select data-gfx="1">${Object.entries(GFX_P).map(([k,v])=>`<option value="${k}"${GFX_Q===k?' selected':''}>${v.n} · 초당 ${v.fps}회</option>`).join('')}</select></label></div>
   ${sndH()}
   <p class="sec">조작 · 모바일</p>
@@ -2386,7 +2388,7 @@ const H={};['hCls','hName','hLv','hMap','hpF','shF','hpT','xpF','cGold','cStone'
 let SKEL=[],hudAcc=0,lastTrk='',lastTalk='';
 let skSig='';
 function buildSkillBar(){const C=CLS[pl.cls];skSig=pl.cls+setCount();H.skb.innerHTML=[0,1,2,3,4].map(i=>{const s=skillDef(i);return `<button class="sk pe${s.set?' setk':''}" id="sk${i}" style="--cc:${C.col}" aria-label="${s.n}">${s.g}<b class="lv"></b></button>`}).join('');
-  SKEL=[...H.skb.children];SKEL.forEach(b=>b.addEventListener('click',()=>openPanel('skill')));H.hCls.textContent=C.g;H.hCls.style.setProperty('--cc',C.col)}
+  SKEL=[...H.skb.children];SKEL.forEach(b=>b.addEventListener('click',()=>openPanel('skill')));H.hCls.style.setProperty('--cc',C.col);hudPor()}
 /* 레이드 HUD (V002): 보스 체력바 바로 아래, 화면 상단에 작게. 왼쪽 = 파티 체력, 오른쪽 = DPS 그래프. 알림(토스트)은 그 아래로 민다 */
 let lastRaidP='';
 function raidHud(){const el=$('#raidP'),R=G.raid,bb=$('#bossBar'),ts=$('#toasts');
@@ -2407,7 +2409,12 @@ function hW(el,v){if(typeof v==='number')v=v+'%';const r=String(v).replace(/(\.\
 function hH(el,v){v=!!v;if(el.hidden!==v)el.hidden=v}
 function hP(el,k,v){const r=typeof v==='number'?Math.round(v*100)/100:v;el._p=el._p||{};if(el._p[k]!==r){el._p[k]=r;el.style.setProperty(k,r)}}
 let cpC={t:-9,v:0};function cpCache(){if(G.t-cpC.t>.5||G.t<cpC.t){cpC={t:G.t,v:myCP()}}return cpC.v}
-function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAcc=0;const d=pl.d,M=MAPS[G.map];
+/* V007: 왼쪽 위 직업 한자 대신 캐릭터 상반신 (착용 중인 스킨 반영, 그림이 없으면 한자로 대체) */
+const HUDPOR={warrior:1,archer:1,mage:1,healer:1,warrior_myth:1,archer_myth:1,mage_myth:1,healer_myth:1};
+function hudPor(){const k=skinBase(pl.cls,pl.skin),el=H.hCls;if(el._por===k)return;el._por=k;
+  if(HUDPOR[k]){el.textContent='';el.classList.add('hpor');el.style.backgroundImage=`url("${A(`img/hud_${k}.webp`)}")`}
+  else{el.classList.remove('hpor');el.style.backgroundImage='';el.textContent=CLS[pl.cls].g}}
+function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAcc=0;const d=pl.d,M=MAPS[G.map];hudPor();
   hT(H.hName,pl.name);hT(H.hLv,'Lv.'+pl.lv);hT(H.hMap,M.n+(M.endless?` · ${pl.abyss+1}단계`:''));
   hW(H.hpF,clamp(pl.hp/d.mhp*100,0,100)+'%');hW(H.shF,clamp(pl.shield/d.mhp*100,0,100)+'%');hT(H.hpT,fmt(Math.max(0,pl.hp))+' / '+fmt(d.mhp));
   hW(H.xpF,clamp(pl.exp/need(pl.lv)*100,0,100)+'%');hT(H.cGold,fmt(pl.gold));hT(H.cStone,fmt(pl.stone));hT(H.cSoul,fmt(pl.soul));hT(H.cEss,fmt(pl.ess));
@@ -2423,7 +2430,7 @@ function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAc
     else{hT(lv,pl.skl[i]>1?pl.skl[i]:'');const cd=pl.cds[i]>.13?pl.cds[i]:0,p=clamp(cd/cdOf(i),0,1);hP(el,'--p',p);el.classList.toggle('ready',p===0&&!M.safe)}});
   hP(H.dashB,'--p',pl.dashCd>0?clamp(pl.dashCd/(pl.dashCdMax||2.4),0,1):0);
   if(G.boss){hH(H.bossBar,false);hH(H.gauge,true);hT(H.bossN,G.boss.n+(G.boss.fury?' · 광폭':G.boss.enr?' · 격노':''));hW(H.bossF,clamp(G.boss.hp/G.boss.mhp*100,0,100)+'%')}
-  else{hH(H.bossBar,true);if(M.dg){hH(H.gauge,false);hT(H.gaugeT,`보스 출현까지 ${G.gauge}/${GAUGE}`);hW(H.gaugeF,G.gauge/GAUGE*100+'%')}else hH(H.gauge,true)}
+  else{hH(H.bossBar,true);if(M.dg&&!M.raid&&bossAllowed(M)){hH(H.gauge,false);hT(H.gaugeT,`보스 출현까지 ${G.gauge}/${GAUGE}`);hW(H.gaugeF,G.gauge/GAUGE*100+'%')}else hH(H.gauge,true)}
   const q=qCur(),qm=qMap(q),need2=qm&&qm!==G.map&&!(MAPS[qm].req&&pl.lv<MAPS[qm].req)?qm:null;
   let s=`<div class="tq"${need2?` data-go="${need2}" role="button" tabindex="0"`:''}><em>임무</em><b>${q.t}</b><span>${qProg(q)}</span>${need2?`<span class="go">→ ${MAPS[need2].n}로 이동</span>`:''}</div>`;
   raidHud();
@@ -2447,7 +2454,7 @@ const hasChar=c=>!!(ROOT.chars&&ROOT.chars[c]);
 addEventListener('visibilitychange',()=>{if(document.hidden)save()});
 addEventListener('pagehide',()=>save());
 function startPlay(){G.scene='play';$('#title').hidden=true;$('#classSel').hidden=true;$('#hud').hidden=false;buildSkillBar();lastTrk='';lastTalk='__';pl.cds=[0,0,0,0,0];pl.buffs={};pl.shield=0;pl.chan=null;pl.potCd=0;G.dead=0;G.pet=null}
-const DEFSET={autoEquip:true,autoDis:0,autoLoot:true,dmgNum:true,target:'near',autoPot:false,menu:innerWidth>=700&&innerHeight>=520};
+const DEFSET={autoEquip:true,autoDis:0,autoLoot:true,dmgNum:true,lootNum:true,target:'near',autoPot:false,menu:innerWidth>=700&&innerHeight>=520};
 function loadFrom(o){Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});pl.ach=o.ach||{};pl.set=Object.assign({},DEFSET,o.set||{});
   pl.pots=Array.isArray(o.pots)?o.pots.slice(0,4):[3,0,0,0];while(pl.pots.length<4)pl.pots.push(0);
   pl.pets=Object.assign({tiger:1,fairy:1,coin:1},o.pets||{});pl.pet=o.pet||'tiger';pl.ess=o.ess||0;pl.god=false;
@@ -2611,9 +2618,11 @@ function sfxSkill(cls,i,v){
 /* ---- 배경음 (V004): 직접 제공된 음원 3곡 ----
    청등마을·잡화점(타이틀 포함) / 레이드를 뺀 모든 전투 던전 / 어둑시니 레이드.
    <audio>를 Web Audio 그래프에 연결해 볼륨을 조절하고(아이폰은 audio.volume을 무시한다), 바뀔 때 1.2초간 겹쳐 넘긴다 */
-const BGMF={village:'snd/bgm_village.mp3',dungeon:'snd/bgm_dungeon.mp3',raid:'snd/bgm_raid.mp3'};
+const BGMF={village:'snd/bgm_village.mp3',dungeon:'snd/bgm_dungeon.mp3',deep:'snd/bgm_deep.mp3',raid:'snd/bgm_raid.mp3'};
+/* V007: 혈월 궁궐 · 봉인된 터 · 무한 심연은 전용 곡(Cavernous Pulse) */
+const DEEPBGM={palace:1,sealed:1,abyss:1};
 SND.mus={};SND.cur='';
-function bgmKey(){if(G.scene!=='play')return 'village';if(G.raid)return 'raid';const M=MAPS[G.map];return !M||M.safe?'village':'dungeon'}
+function bgmKey(){if(G.scene!=='play')return 'village';if(G.raid)return 'raid';const M=MAPS[G.map];return !M||M.safe?'village':DEEPBGM[G.map]?'deep':'dungeon'}
 function musEl(k){let m=SND.mus[k];if(m)return m;const el=new Audio();el.loop=true;el.preload='auto';el.setAttribute('playsinline','');el.setAttribute('webkit-playsinline','');el.src=A(BGMF[k]);
   m=SND.mus[k]={el,g:null,want:0};
   try{const src=SND.ctx.createMediaElementSource(el),g=SND.ctx.createGain();g.gain.value=0;src.connect(g);g.connect(SND.bgmG);m.g=g}catch(_){el.volume=0}
