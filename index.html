@@ -433,7 +433,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
       <div class="seal">血月<br>夜行</div>
       <h1>혈월야행</h1>
       <p class="sub">핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥</p>
-      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V004</p>
+      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V005</p>
       <div class="row"><button class="btn pri" id="bNew">새로 깨어나기</button><button class="btn" id="bCont" hidden>이어하기</button></div>
       <button class="btn fsT" id="fsTitle" hidden>⛶ 전체화면으로</button>
       <p class="rot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
@@ -525,7 +525,7 @@ const MOBS={
 /* sprite mapping: which image a monster shape uses, its draw height, and whether the image's L side faces right */
 const MSPR={ghost:{k:'ghost',h:3.3,a:'float'},wisp:{k:'wisp',h:3.8,a:'float'},dokkaebi:{k:'goblin',h:4.1,a:'walk'},jiangshi:{k:'jiangshi',h:4.3,a:'hop'},fox:{k:'fox',h:3.1,a:'walk'},
   skel:{k:'skel',h:4.4,a:'walk'},shaman:{k:'shaman',h:4.4,a:'float'},snake:{k:'snake',h:3.3,a:'slither'},demon:{k:'demon',h:4.6,a:'walk'},chasa:{k:'chasa',h:4.6,a:'float'},
-  reaper:{k:'reaper',h:5.4,a:'float'},gumiho:{k:'gumiho',h:4.6,a:'float'},imugi:{k:'dragon',h:3.5,a:'slither'},king:{k:'king',h:4.7,a:'float'}};
+  reaper:{k:'reaper',h:5.4,a:'float'},gumiho:{k:'gumiho',h:4.6,a:'float'},imugi:{k:'dragon',h:3.5,a:'slither'},king:{k:'king',h:4.7,a:'float'},guardian:{k:'guardian',h:5.2,a:'walk'}};
 
 /* bound = walkable rectangle as fractions of the map; bg = painted backdrop image */
 const AB=[.07,.09,.93,.92];
@@ -533,11 +533,12 @@ const MAPS={
   village:{n:'청등마을',kind:'마을',safe:1,w:2128,h:1064,bg:'village',bound:[.025,.42,.975,.76],ground:'#2b2620',dark:.3,diff:0,desc:'푸른 등불이 지키는 마지막 마을. 무녀 설화, 대장장이 강쇠, 묘의 잡화점, 의뢰 게시판이 있다.'},
   shop:{n:'묘의 잡화점',kind:'상점',safe:1,hidden:1,w:2040,h:1020,bg:'shop',bound:[.09,.4,.86,.86],ground:'#2a1d15',dark:.12,diff:0,desc:'떠돌이 상인 묘가 차린 가게.'},
   field:{n:'버려진 논두렁',kind:'사냥터',lv:[1,6],w:2000,h:2000,bg:'arena',bound:AB,ground:'#171c18',mobs:['ghoul','wisp','goblin'],off:0,dark:.55,tint:'rgba(30,50,30,.12)',diff:.55,desc:'추수하지 못한 논 위로 원귀와 도깨비불이 떠돈다. 모든 부위가 고르게 나온다.'},
-  fox:{n:'여우골 동굴',kind:'던전',dg:1,lv:[6,12],uq:'여우골 입구',w:2000,h:2000,bg:'arena',bound:AB,ground:'#1d1614',mobs:['fox','wisp','ghoul'],off:1,boss:'gumiho',favor:['ring','neck'],dark:.66,tint:'rgba(140,60,20,.16)',diff:.95,desc:'여우불이 흔들리는 동굴. 반지와 목걸이가 잘 나온다.'},
-  river:{n:'저승 나루터',kind:'던전',dg:1,lv:[12,20],uq:'검은 강의 망자',w:2000,h:2000,bg:'arena',bound:AB,ground:'#11151c',mobs:['ghoul','archer','jiangshi','chasa'],off:2,boss:'reaper',favor:['weapon'],dark:.68,tint:'rgba(20,50,120,.2)',diff:1.05,desc:'혼을 실은 배가 떠나는 검은 강. 무기가 잘 나온다.'},
-  swamp:{n:'이무기 늪',kind:'던전',dg:1,lv:[20,30],uq:'늪의 독기',w:2000,h:2000,bg:'arena',bound:AB,ground:'#111912',mobs:['snake','shaman','goblin'],off:3,boss:'imugi',favor:['armor','helm'],dark:.68,tint:'rgba(40,110,20,.18)',diff:1.15,desc:'용이 되지 못한 뱀이 잠든 늪. 갑옷과 투구가 잘 나온다.'},
-  palace:{n:'혈월 궁궐',kind:'던전',dg:1,lv:[30,40],uq:'궁궐의 혈귀',w:2000,h:2000,bg:'arena',bound:AB,ground:'#1a0f12',mobs:['blood','archer','jiangshi','shaman','chasa'],off:4,boss:'bloodking',favor:['boots','weapon'],dark:.68,tint:'rgba(160,10,30,.22)',diff:1.3,desc:'핏빛 달이 걸린 궁궐. 신발과 무기가 잘 나온다.'},
-  abyss:{n:'무한 심연',kind:'무한',dg:1,endless:1,uq:'바닥 없는 밤 · 첫째',w:2000,h:2000,bg:'arena',bound:AB,ground:'#0e0c15',mobs:Object.keys(MOBS),off:3,favor:null,dark:.74,tint:'rgba(70,20,130,.26)',diff:1.25,desc:'바닥 없는 어둠. 단계마다 적이 1레벨씩 강해지고, 이미 돌파한 단계는 골라서 들어갈 수 있다.'},
+  fox:{n:'여우골 동굴',kind:'던전',dg:1,lv:[6,12],uq:'여우골 입구',w:3000,h:1688,bg:'fox',bound:[.04,.36,.96,.9],ground:'#1d1614',mobs:['fox','wisp','ghoul'],off:1,boss:'gumiho',favor:['ring','neck'],dark:.66,diff:.95,desc:'여우불이 흔들리는 동굴. 반지와 목걸이가 잘 나온다.'},
+  river:{n:'저승 나루터',kind:'던전',dg:1,lv:[12,20],uq:'검은 강의 망자',w:3000,h:1688,bg:'river',bound:[.04,.35,.96,.88],ground:'#11151c',mobs:['ghoul','archer','jiangshi','chasa'],off:2,boss:'reaper',favor:['weapon'],dark:.68,diff:1.05,desc:'혼을 실은 배가 떠나는 검은 강. 무기가 잘 나온다.'},
+  swamp:{n:'이무기 늪',kind:'던전',dg:1,lv:[20,30],uq:'늪의 독기',w:3000,h:1688,bg:'swamp',bound:[.05,.33,.95,.86],ground:'#111912',mobs:['snake','shaman','goblin'],off:3,boss:'imugi',favor:['armor','helm'],dark:.68,diff:1.15,desc:'용이 되지 못한 뱀이 잠든 늪. 갑옷과 투구가 잘 나온다.'},
+  palace:{n:'혈월 궁궐',kind:'던전',dg:1,lv:[30,40],uq:'궁궐의 혈귀',w:3000,h:1688,bg:'palace',bound:[.04,.37,.96,.9],ground:'#1a0f12',mobs:['blood','archer','jiangshi','shaman','chasa'],off:4,boss:'bloodking',favor:['boots','weapon'],dark:.68,diff:1.3,desc:'핏빛 달이 걸린 궁궐. 신발과 무기가 잘 나온다.'},
+  sealed:{n:'봉인된 터',kind:'던전',dg:1,lv:[40,48],uq:'봉인된 터',w:3000,h:1688,bg:'sealed',bound:[.05,.39,.95,.9],ground:'#16130f',mobs:['archer','jiangshi','shaman','chasa','blood','goblin'],off:5,boss:'guardian',favor:['neck','helm'],dark:.62,diff:1.45,desc:'혈월 궁궐 옥좌 뒤로 이어진 옛 사찰 터. 무언가가 봉인되어 있다. 목걸이와 투구가 잘 나온다.'},
+  abyss:{n:'무한 심연',kind:'무한',dg:1,endless:1,uq:'바닥 없는 밤 · 첫째',w:3000,h:1688,bg:'abyss',bound:[.04,.34,.96,.88],ground:'#0e0c15',mobs:Object.keys(MOBS),off:3,favor:null,dark:.74,diff:1.25,desc:'바닥 없는 어둠. 단계마다 적이 1레벨씩 강해지고, 이미 돌파한 단계는 골라서 들어갈 수 있다.'},
   gate:{n:'귀문관',kind:'종언',dg:1,end:1,req:100,w:2000,h:2000,bg:'arena',bound:AB,ground:'#140a0e',mobs:['blood','chasa','jiangshi','shaman','fox','goblin'],off:6,favor:null,dark:.76,tint:'rgba(170,0,40,.3)',diff:2.4,desc:'레벨 100 이상만 들어설 수 있는 저승의 마지막 관문. 적의 레벨이 나를 따라 오르며, 같은 레벨 에픽 +20 풀세트로 상대할 수 있게 맞춰져 있다.'},
   raid:{n:'어둑시니의 굴',kind:'레이드',raid:1,hidden:1,w:2600,h:2000,bg:'arena',bound:[.06,.1,.94,.92],ground:'#07060b',mobs:[],dark:.82,tint:'rgba(20,10,40,.55)',diff:0,desc:'모든 빛을 삼키는 그림자, 어둑시니가 기다리는 곳.'}};
 const mbound=M=>({x0:M.w*M.bound[0],y0:M.h*M.bound[1],x1:M.w*M.bound[2],y1:M.h*M.bound[3]});
@@ -546,6 +547,7 @@ const BOSSES={
   gumiho:{n:'구미호 · 월희',hp:30,dmg:1.3,r:36,c:'#ff9a4d',s:'gumiho',pats:['radial','charge','circles','summon','chase','spiral'],intro:'아홉 꼬리가 달빛을 가른다'},
   reaper:{n:'저승차사 · 흑영',hp:34,dmg:1.4,r:34,c:'#2e3242',s:'reaper',pats:['donut','circles','charge','summon','cross','safe'],intro:'명부가 펼쳐진다'},
   imugi:{n:'이무기 · 묵린',hp:40,dmg:1.5,r:46,c:'#5e8f3c',s:'imugi',pats:['sweep','pool','radial','circles','chase','cross','meteor'],intro:'늪 바닥이 꿈틀거린다'},
+  guardian:{n:'사찰 수호귀',hp:52,dmg:1.7,r:44,c:'#8a7a5a',s:'guardian',pats:['donut','radial','charge','circles','sweep','meteor','cross','safe'],intro:'깨진 범종이 울린다'},
   bloodking:{n:'혈월왕',hp:46,dmg:1.6,r:40,c:'#c9283f',s:'king',pats:['donut','radial','charge','circles','sweep','summon','spiral','safe','cross','meteor'],intro:'달이 피를 흘린다'}};
 
 const CH={
@@ -553,6 +555,7 @@ const CH={
   gumiho:{n:'구미호 · 월희',p:{skin:'#f0e2d2',hair:'#efe6da',hs:'long',robe:'#6b1d29',robe2:'#3d0f17',trim:'#e0a35a',eye:'#ffb347',acc:['tails','ears']}},
   reaper:{n:'저승차사 · 흑영',p:{skin:'#cdd0d8',hair:'#0b0b0f',hs:'short',robe:'#1b1c24',robe2:'#08080b',trim:'#3a3e4c',eye:'#9fb4ff',acc:['gat']}},
   imugi:{n:'이무기 · 묵린',p:{skin:'#b6c4a2',hair:'#18261a',hs:'long',robe:'#2e4a2a',robe2:'#162415',trim:'#c8a259',eye:'#e9f04c',acc:['horns']}},
+  guardian:{n:'사찰 수호귀',p:{skin:'#d8d2c4',hair:'#e8e4da',hs:'long',robe:'#2a2f3e',robe2:'#151821',trim:'#b08a4a',eye:'#7fe0c8',acc:['horns']}},
   king:{n:'혈월왕',p:{skin:'#d9c7c0',hair:'#250810',hs:'long',robe:'#5a0c19',robe2:'#2a050b',trim:'#c8a259',eye:'#ff3a4a',acc:['aura','crown']}},
   smith:{n:'대장장이 강쇠',p:{skin:'#c3a07f',hair:'#34281f',hs:'top',robe:'#4a3a2b',robe2:'#2a2018',trim:'#8a6a40',eye:'#2b1d14',acc:['band']}},
   merch:{n:'떠돌이 상인 묘',p:{skin:'#e1cdb4',hair:'#1d1d22',hs:'short',robe:'#34465a',robe2:'#1c2733',trim:'#c8a259',eye:'#3b2a1a',acc:['gat']}}};
@@ -677,7 +680,37 @@ const MAINQ=[
     {w:'king',t:'그릇이 주인을 거부하는구나. 재미있다.'},
     {w:'seol',t:'오라버니! …이건, 이건 내가 원한 게 아니었어!'},
     {w:'king',t:'원했지. 오라비를 돌려 달라 빌던 네 목소리를 아직 기억한다. 대가는 받아야겠다… 이번엔 영원히.'},
-    {w:'n',t:'혈월왕의 형체가 무너져 내리며 땅 아래, 바닥 없는 심연으로 스며들었다.'}]},
+    {w:'n',t:'혈월왕의 형체가 무너져 내리며 땅 아래, 바닥 없는 심연으로 스며들었다.'},
+    {w:'n',t:'그가 사라진 자리, 무너진 옥좌 뒤로 차가운 바람이 새어 나오는 좁은 통로가 드러났다.'},
+    {w:'n',t:'통로 깊은 곳에서… 금이 간 범종 소리가 한 번, 낮게 울렸다.'}]},
+  /* V005: 숨겨진 통로 → 봉인된 터 → 사찰 수호귀 → 봉인된 것의 정체(어둑시니) */
+  {t:'옥좌 뒤의 통로',type:'talk',npc:'seol',end:()=>[
+    {w:'me',t:'옥좌 뒤에 길이 있었다. 그 끝에서 종소리가 들렸어.'},
+    {w:'seol',t:'…봉인된 터. 궁궐이 세워지기 훨씬 전, 그 자리에 있던 옛 사찰이야.'},
+    {w:'seol',t:'스님들이 무언가를 땅 아래 가두고, 그 위에 궁궐을 올려 입구를 덮어 버렸대. 아무도 다시는 내려가지 못하도록.'},
+    {w:'seol',t:'혈월왕이 무너지면서 덮개가 열린 거야. 거긴 혈귀들보다 훨씬 오래된 것들이 지키고 있어. 조심해.'}]},
+  {t:'봉인된 터',type:'kill',map:'sealed',n:120,lv:38,end:()=>[
+    {w:'n',t:'무너진 법당 기둥마다 붉은 부적이 겹겹이 붙어 있었다. 모두 안쪽을 향해, 무언가를 밀어 넣듯이.'},
+    {w:'n',t:'망자들은 사찰 마당을 넘지 않았다. 마치 그 아래 있는 것이 두려운 듯이.'}]},
+  {t:'깨진 범종',type:'collect',map:'sealed',n:20,item:'깨진 범종 조각',p:.14,end:()=>[
+    {w:'n',t:'범종 조각을 맞추자 새겨진 글귀가 드러났다.'},
+    {w:'n',t:'"빛 없는 곳에서 자라는 것. 두려움을 먹고 커지는 것. 이 종이 울리는 동안 깨어나지 말라."'},
+    {w:'me',t:'…종은 이미 깨져 있었다.'}]},
+  {t:'봉인의 파수꾼',type:'elite',map:'sealed',n:8,end:()=>[
+    {w:'n',t:'파수꾼들이 쓰러질 때마다 땅 밑에서 무언가가 숨을 들이쉬는 듯 바닥이 미세하게 떨렸다.'}]},
+  {t:'사찰 수호귀',type:'boss',map:'sealed',boss:'guardian',lv:42,end:()=>[
+    {w:'guardian',t:'…천 년이다. 천 년을 이 종 아래에서 지켰다.'},
+    {w:'guardian',t:'어리석은 망자여. 나를 쓰러뜨려 무엇을 얻었느냐. 이 종이 마지막 빗장이었거늘.'},
+    {w:'me',t:'무엇을 지키고 있었지.'},
+    {w:'guardian',t:'어둑시니. 사람이 어둠을 두려워하는 만큼 커지는 그림자… 빛이란 빛을 모조리 삼키는 것.'},
+    {w:'guardian',t:'혈월이 떠오른 뒤로 놈은 매일 밤 조금씩 자라났다. 이제 남은 것은… 등불 몇 개뿐이로구나.'},
+    {w:'n',t:'수호귀가 무너지자, 깨진 범종 아래 깊은 곳에서 등불 하나가 꺼지는 소리가 들렸다.'}]},
+  {t:'봉인 아래의 그림자',type:'talk',npc:'seol',end:()=>[
+    {w:'seol',t:'…어둑시니. 할머니가 들려주던 옛이야기 속 괴물인 줄 알았어.'},
+    {w:'seol',t:'청등마을의 푸른 등불은 원래 그것을 막으려고 켜 둔 거래. 혼을 태워서라도 빛을 꺼뜨리지 말라고.'},
+    {w:'me',t:'그럼 네가 등불에 사람들을 가둔 것도.'},
+    {w:'seol',t:'……봉인이 버티는 동안은 아직 시간이 있어. 혈월왕이 심연에서 다시 올라오기 전에, 먼저 그쪽을 끝내야 해.'},
+    {w:'seol',t:'하지만 잊지 마. 언젠가 저 아래 그림자와 마주해야 할 날이 와. 그때까지… 강해져.'}]},
   {t:'심연으로',type:'talk',npc:'seol',end:()=>[
     {w:'seol',t:'달이 지지 않는 한 저건 다시 올라와. 심연 끝까지 쫓아가야 해.'},
     {w:'seol',t:'그리고… 다 끝나면, 등불 속 사람들을 놓아줄게. 나도 같이.'},
@@ -702,14 +735,17 @@ const MAINQ=[
     {w:'n',t:'망자의 칼끝에는 끝이 없었다. 그리고 그 곁엔, 언제나 푸른 등불 하나가 따라왔다.'}]},
   {t:'끝나지 않는 사냥',type:'endless'}];
 /* 이전 버전 저장(임무 10개)의 진행 위치를 새 임무 번호로 옮긴다 */
-const QMIG=[0,1,7,8,14,15,21,28,32,36];
+const QMIG=[0,1,7,8,14,15,21,28,38,42];
+/* V005: 혈월왕 다음에 봉인된 터 임무 6개가 들어가, qv 3 저장의 '심연으로'(29번) 이후 번호를 6칸 민다 */
+const QV=4,QINS_AT=29,QINS_N=6;
+function qOf(o){if(!o.qv)return QMIG[Math.min(o.q||0,QMIG.length-1)];if(o.qv<4&&(o.q||0)>=QINS_AT)return (o.q||0)+QINS_N;return o.q||0}
 const SEOLFLAV=['등불에서 너무 멀어지지 마.','오라… 아니, 아무것도 아니야.','장비는 대장장이 강쇠에게 맡겨. 두드릴수록 단단해질 거야.','심연에는 끝이 없대. 그러니까 너도 끝없이 강해져야 해.','네 눈, 등불이랑 같은 색이야. 알고 있었어?'];
 
 /* ================= state ================= */
 const pl={x:0,y:0,r:15,hp:100,face:0,aim:0,aimT:0,dash:0,dashCd:0,dvx:0,dvy:0,buffs:{},shield:0,cds:[0,0,0,0,0],flash:0,iframe:0,d:{},moving:false,
   name:'무명',cls:'warrior',lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:0,stone:0,soul:0,skl:[1,1,1,1,1],q:0,qk:0,bounty:null,abyss:0,
   set:{autoEquip:true,autoDis:0,autoLoot:true,dmgNum:true,target:'near',autoPot:false},map:'village',board:null,st:null,ach:{},
-  walkT:0,atkT:0,trail:[],pots:[0,0,0,0],potCd:0,pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,chan:null,god:false,qv:3};
+  walkT:0,atkT:0,trail:[],pots:[0,0,0,0],potCd:0,pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,chan:null,god:false,qv:4};
 const PKEYS=['name','cls','lv','exp','pts','stats','gear','inv','gold','stone','soul','skl','q','qk','qv','bounty','abyss','set','map','board','st','ach','pots','pets','pet','ess','mend','sq','relic','invx','bounties','skin'];
 const newSt=()=>({repair:0,bounty:0,gateK:0,raid:0,raidW:{},kills:0,bosses:0,bk:{},gold:0,dash:0,dis:0,deaths:0,maxEnh:0,gotG:-1,gate:0,gateB:0});
 const G={scene:'title',map:'village',ents:[],projs:[],eprojs:[],zones:[],teles:[],drops:[],texts:[],parts:[],fx:[],timers:[],npcs:[],decor:[],lights:[],
@@ -1007,6 +1043,7 @@ function bossUpd(e,dt){if(e.raid){raidBossUpd(e,dt);return}
     /* V004: 이무기·혈월왕 공격 모션 (그림은 왼쪽을 보고, 오른쪽을 볼 때는 뒤집어 그린다) */
     if(e.bk==='imugi'&&ANIM.dragon_atk){e.anim={k:'dragon_atk',t:0,dur:.9};e.atkA=0}
     if(e.bk==='bloodking'&&ANIM.king_atk){e.anim={k:'king_atk',t:0,dur:1.4};e.atkA=0}
+    if(e.bk==='guardian'&&ANIM.guardian_atk){e.anim={k:'guardian_atk',t:0,dur:1.3};e.atkA=0}
     if(e.fury&&p!=='safe'&&Math.random()<.5)later(.5,()=>{if(!e.dead)doPattern(e,'circles')});
     e.pt=e.fury?1.4:e.enr?1.8:2.6}
   if(!e.enr&&e.hp<e.mhp*.5){e.enr=true;banner('격노',`${e.n} · 패턴이 빨라지고 겹친다`);fxRing(e.x,e.y,10,300,'#ff3e5d',.8,10);shake(10)}
@@ -1032,7 +1069,7 @@ function qEvent(type,data){const q=qCur();if(!q||G.qBusy||q.type==='endless')ret
 function qComplete(){const q=qCur(),i=pl.q;G.qBusy=true;
   const big=q.type==='boss'||q.type==='abyss',r={exp:Math.floor(need(pl.lv)*(big?.5:q.type==='talk'?.15:.3)),gold:Math.floor((120+pl.lv*30)*(big?3:1)),stone:8+i*2+(big?20:0),soul:1+Math.floor(i/3)+(big?3:0)};
   const after=()=>{G.qBusy=false;reward(r);if(q.type==='boss'){const it=makeItem(pick(SLOTS),Math.max(3,rollGrade(1,SHOP_MAXG)),pl.lv);collect({it})}
-    sfx('quest');toast(`<b style="color:#c8a259">임무 완료 · ${q.t}</b> · 금화 ${fmt(r.gold)} · 강화석 ${r.stone} · 혼석 ${r.soul}`);
+    sfx('questDone');toast(`<b style="color:#c8a259">임무 완료 · ${q.t}</b> · 금화 ${fmt(r.gold)} · 강화석 ${r.stone} · 혼석 ${r.soul}`);
     pl.q=Math.min(pl.q+1,MAINQ.length-1);pl.qk=0;const n=qCur();later(.6,()=>banner('새 임무',n.t));save();later(.2,()=>qEvent('check'))};
   if(q.end)vn(q.end(),after);else after()}
 function qMap(q){if(q.type==='talk')return QNPCMAP[q.npc];if(q.type==='abyss'||q.type==='endless')return'abyss';if(q.type==='enh')return'village';return q.map||null}
@@ -1050,7 +1087,7 @@ function qProg(q){const need=q.lv&&pl.lv<q.lv&&q.type!=='lv'?` · <span class="n
 const BOUNTY_MAX=3;
 /* 의뢰는 동시에 3개까지. 예전 저장(pl.bounty 하나)은 bnts()가 처음 불릴 때 배열로 옮긴다 */
 function bnts(){if(!Array.isArray(pl.bounties))pl.bounties=[];if(pl.bounty){if(pl.bounties.length<BOUNTY_MAX)pl.bounties.push(pl.bounty);pl.bounty=null}return pl.bounties}
-function makeOffers(){const maps=['field','fox','river','swamp','palace','abyss','gate'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:6+pl.lv+dg*4,soul:ri(1,2)+dg,exp:Math.floor(need(pl.lv)*.25)}})}return o}
+function makeOffers(){const maps=['field','fox','river','swamp','palace','sealed','abyss','gate'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:6+pl.lv+dg*4,soul:ri(1,2)+dg,exp:Math.floor(need(pl.lv)*.25)}})}return o}
 
 /* ================= 동반자 (pets) ================= */
 const CUR={gold:'금화',stone:'강화석',soul:'혼석',ess:'동반자 정수'},CURC={gold:'#f3cf45',stone:'#9fc3e8',soul:'#c79bff',ess:'#7ff7e4'};
@@ -1173,7 +1210,7 @@ const SUBQ=[
 const sqState=q=>(pl.sq||{})[q.id]===2?2:pl.lv<q.lv?-1:q.p()[0]>=q.p()[1]?1:0;
 function sqRwText(r){const a=[];if(r.gold)a.push(`금화 ${fmt(r.gold)}`);if(r.stone)a.push(`강화석 ${fmt(r.stone)}`);if(r.soul)a.push(`혼석 ${r.soul}`);if(r.ess)a.push(`정수 ${r.ess}`);if(r.mend)a.push(`복원의 혼 ${r.mend}`);return a.join(' · ')}
 function claimSub(id){const q=SUBQ.find(x=>x.id===id);if(!q||sqState(q)!==1)return;
-  const go=()=>{(pl.sq=pl.sq||{})[id]=2;const r=q.rw;pl.gold+=r.gold||0;pl.stone+=r.stone||0;pl.soul+=r.soul||0;pl.ess+=r.ess||0;pl.mend=(pl.mend||0)+(r.mend||0);
+  const go=()=>{sfx('questDone');(pl.sq=pl.sq||{})[id]=2;const r=q.rw;pl.gold+=r.gold||0;pl.stone+=r.stone||0;pl.soul+=r.soul||0;pl.ess+=r.ess||0;pl.mend=(pl.mend||0)+(r.mend||0);
     if(q.raid){ROOT.raidUnlocked=true;writeRoot();banner('레이드 해금','어둑시니의 굴 · 지도에서 입장')}toast(`<b style="color:#c8a259">서브 임무 완료 · ${q.n}</b> · ${sqRwText(r)}`);save();if(G.modal)renderPanel()};
   if(q.raid){closeModal();vn([{w:'seol',t:'귀문관 너머에서… 등불이 하나씩 꺼지고 있어. 바람도 없는데.'},{w:'seol',t:'어둑시니야. 사람이 두려워하는 만큼 커지는 그림자. 혈월이 그걸 깨웠어.'},{w:'me',t:'혼자서는 무리라는 얼굴이군.'},{w:'seol',t:'응. 모험단 모두를 데려가. 그리고… 그게 손을 들면 등불 아래로 숨어. 한 사람에 등불 하나씩. 하나라도 비면 모두 삼켜져.'},{w:'n',t:'지도에 새 길이 열렸다 — 어둑시니의 굴.'}],go)}else go()}
 /* ================= 스킨 (V001) =================
@@ -1359,6 +1396,7 @@ const ACH=[
   {id:'k10k',g:'獵',n:'만귀참',d:'적 10,000마리 처치',p:()=>[pl.st.kills,1e4],rw:{pts:5,box:5}},
   {id:'k50k',g:'獵',n:'저승의 공포',d:'적 50,000마리 처치',p:()=>[pl.st.kills,5e4],rw:{pts:10,box:5}},
   {id:'bg',g:'狐',n:'여우 사냥',d:'구미호 · 월희 처치',p:()=>[pl.st.bk.gumiho||0,1],rw:{soul:5,stone:50}},
+  {id:'bg',g:'鐘',n:'깨진 범종',d:'사찰 수호귀 처치',p:()=>[(pl.st.bk||{}).guardian||0,1],rw:{soul:12,stone:150}},
   {id:'br',g:'冥',n:'명부를 찢다',d:'저승차사 · 흑영 처치',p:()=>[pl.st.bk.reaper||0,1],rw:{soul:8,stone:80}},
   {id:'bi',g:'蛇',n:'용이 되지 못한 것',d:'이무기 · 묵린 처치',p:()=>[pl.st.bk.imugi||0,1],rw:{soul:10,stone:100}},
   {id:'bk',g:'月',n:'핏빛 달을 베다',d:'혈월왕 처치',p:()=>[pl.st.bk.bloodking||0,1],rw:{pts:2,box:4}},
@@ -1422,11 +1460,13 @@ function buildMap(id){
       {npc:1,id:'exit',x:.11*M.w,y:.5*M.h,n:'마을로 나가기',obj:'door'}];
   }
   else if(id==='field'){put('grass',60);put('grave',6);put('candle',8)}
-  else if(id==='fox'){put('candle',20);put('bone',18);put('torii',2)}
-  else if(id==='river'){put('water',8);put('reed',30);put('bluec',14)}
-  else if(id==='swamp'){put('pool',12);put('reed',40);put('greenc',10)}
-  else if(id==='palace'){put('redl',14);put('pillar',8);put('tilef',10)}
-  else if(id==='abyss'){put('crystal',20);put('eye',8)}
+  /* V005: 그림 배경이 있는 맵은 덧그리는 장식을 줄인다 */
+  else if(id==='fox'){put('candle',6);put('bone',6)}
+  else if(id==='river'){put('reed',8);put('bluec',6)}
+  else if(id==='swamp'){put('pool',3);put('reed',10);put('greenc',4)}
+  else if(id==='palace'){put('redl',5)}
+  else if(id==='sealed'){put('candle',6);put('bone',5)}
+  else if(id==='abyss'){put('crystal',6);put('eye',3)}
   else if(id==='gate'){put('eye',12);put('redl',10);put('bone',20);put('torii',3)}
   D.sort((a,b)=>(FLAT[a.t]?0:1)-(FLAT[b.t]?0:1)||a.y-b.y);
   G.decor=D;G.lights=D.filter(d=>LIGHT[d.t]);
@@ -1478,7 +1518,7 @@ function collect(d){d.dead=1;
   if(pl.set.autoEquip&&isUpgrade(it)){equipItem(it);toast(`${nm} 자동 착용 ▲`);addText(pl.x,pl.y-48,'장비 강화!','#7fd88f',14,true);return}
   if(it.g<=pl.set.autoDis&&!it.set){const y=dismantle(it);addText(pl.x,pl.y-40,`해체 · 강화석 +${y.stone}`,'#9fc3e8',11);return}
   if(pl.inv.length>=invCap()){const y=dismantle(it);toast(`가방이 가득 차 ${nm} 해체 · 강화석 ${y.stone}`);return}
-  sfx(it.g>=5?'drop':'pick');pl.inv.push(it);toast(`획득 ${nm}${isUpgrade(it)?' <span class="pos">▲</span>':''}`)}
+  sfx('item');if(it.g>=5)sfx('drop',.8);pl.inv.push(it);toast(`획득 ${nm}${isUpgrade(it)?' <span class="pos">▲</span>':''}`)}
 
 /* ================= canvas ================= */
 const cv=$('#cv'),cx=cv.getContext('2d');
@@ -1796,14 +1836,14 @@ const IMG={},FLASH={},TINT={};
 function loadImg(k,src,cb){const im=new Image();im.onload=()=>{IMG[k]=im;if(cb)try{cb(im)}catch(_){}};im.src=src}
 function silh(im,col){const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return c}
 function tinted(im,col){const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-atop';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return c}
-['archer','warrior','mage','healer','archer_myth','warrior_myth','mage_myth','healer_myth','chasa','gumiho','npc','ghost','goblin','reaper','seol','smith','demon','dragon','king','wisp','snake','fox','shaman','skel','jiangshi','tiger','fairy','coin'].forEach(n=>['L','R'].forEach(sd=>loadImg(n+'_'+sd,A(`img/${n}_${sd}.webp`),im=>{
+['archer','warrior','mage','healer','archer_myth','warrior_myth','mage_myth','healer_myth','chasa','guardian','gumiho','npc','ghost','goblin','reaper','seol','smith','demon','dragon','king','wisp','snake','fox','shaman','skel','jiangshi','tiger','fairy','coin'].forEach(n=>['L','R'].forEach(sd=>loadImg(n+'_'+sd,A(`img/${n}_${sd}.webp`),im=>{
   FLASH[n+'_'+sd]=silh(im,'#ffffff');
   if(CLS[n])TINT['dash_'+n+'_'+sd]=silh(im,CLS[n].col);})));
-['village','arena','shop'].forEach(b=>loadImg('bg_'+b,A(`img/bg_${b}.jpg`)));
+['village','arena','shop','fox','swamp','river','palace','sealed','abyss'].forEach(b=>loadImg('bg_'+b,A(`img/bg_${b}.jpg`)));
 SLOTS.forEach(sl=>loadImg('ic_'+sl,A(`img/ic_${sl}.webp`)));
 /* 프레임 시트(가로 n컷): ax = 발 기준 가로 위치 비율, hs = 첫 컷(또는 중간값) 몸 높이 대비 시트 높이.
    걷기는 *_walkL/R(4컷), 서 있을 때는 기존 스탠딩 그림(<직업>_L/R). 스킨은 <직업>_<스킨> 접두어로 같은 이름 규칙을 따른다 */
-const ANIMDEF={"archer_walkL":{"n":4,"ax":0.4779,"hs":1.0046},"archer_walkR":{"n":4,"ax":0.5027,"hs":1.0094},"mage_walkL":{"n":4,"ax":0.5884,"hs":1.0048},"mage_walkR":{"n":4,"ax":0.4097,"hs":1.0024},"warrior_walkL":{"n":4,"ax":0.5547,"hs":1.008},"warrior_walkR":{"n":4,"ax":0.4602,"hs":1.008},"healer_walkL":{"n":4,"ax":0.5818,"hs":1.0095},"healer_walkR":{"n":4,"ax":0.4155,"hs":1.007},"archer_myth_walkL":{"n":4,"ax":0.5355,"hs":1.0058},"archer_myth_walkR":{"n":4,"ax":0.4602,"hs":1.0105},"warrior_myth_walkL":{"n":4,"ax":0.5635,"hs":1.0084},"warrior_myth_walkR":{"n":4,"ax":0.436,"hs":1.0094},"archer_atk1L":{"n":5,"ax":0.6333,"hs":1.0172},"archer_atk1R":{"n":5,"ax":0.3643,"hs":1.0142},"archer_myth_atk1L":{"n":5,"ax":0.5811,"hs":1.0055},"archer_myth_atk1R":{"n":5,"ax":0.3945,"hs":1.0082},"archer_atkR":{"n":16,"ax":0.5029,"hs":1.022},"archer_atkL":{"n":16,"ax":0.5184,"hs":1.0204},"archer_myth_atkR":{"n":16,"ax":0.4221,"hs":1.0236},"archer_myth_atkL":{"n":16,"ax":0.5433,"hs":1.0167},"gumiho_cast":{"n":12,"ax":0.5028,"hs":1.0686},"dark_L":{"n":1,"ax":0.5586,"hs":1.0012},"dark_R":{"n":1,"ax":0.4545,"hs":1.0011},"dark_walkL":{"n":8,"ax":0.5393,"hs":1.0117},"dark_walkR":{"n":8,"ax":0.447,"hs":1.0089},"dark_groggy":{"n":16,"ax":0.5663,"hs":1.1389},"dark_death":{"n":16,"ax":0.4507,"hs":1.0031},"dark_mind":{"n":16,"ax":0.5333,"hs":1.0164},"dark_aoe":{"n":16,"ax":0.5309,"hs":1.0181},"dark_black":{"n":16,"ax":0.5157,"hs":1.0403},"mage_myth_walkL":{"n":4,"ax":0.537,"hs":1.0108},"mage_myth_walkR":{"n":4,"ax":0.4431,"hs":1.0048},"healer_myth_walkL":{"n":4,"ax":0.5608,"hs":1.0084},"healer_myth_walkR":{"n":4,"ax":0.4581,"hs":1.0036},"goblin_walkL":{"n":4,"ax":0.6659,"hs":1.0128},"goblin_walkR":{"n":4,"ax":0.3769,"hs":1.0049},"fox_walkL":{"n":4,"ax":0.4883,"hs":1.0089},"fox_walkR":{"n":4,"ax":0.516,"hs":1.0103},"shaman_walkL":{"n":4,"ax":0.646,"hs":1.0254},"shaman_walkR":{"n":4,"ax":0.3896,"hs":1.0074},"skel_walkL":{"n":4,"ax":0.4823,"hs":1.0083},"skel_walkR":{"n":4,"ax":0.5105,"hs":1.006},"reaper_walkL":{"n":4,"ax":0.605,"hs":1.0128},"reaper_walkR":{"n":4,"ax":0.3919,"hs":1.0132},"gumiho_walkL":{"n":4,"ax":0.5286,"hs":1.0071},"gumiho_walkR":{"n":4,"ax":0.4699,"hs":1.0059},"dragon_walkL":{"n":4,"ax":0.5529,"hs":1.0035},"dragon_walkR":{"n":4,"ax":0.4477,"hs":1.0083},"dragon_atk":{"n":8,"ax":0.4758,"hs":1.125},"king_walkL":{"n":4,"ax":0.5132,"hs":1.0045},"king_walkR":{"n":4,"ax":0.4956,"hs":1.0116},"king_atk":{"n":16,"ax":0.5096,"hs":1.0034},"snake_walkL":{"n":4,"ax":0.5248,"hs":1.0144},"snake_walkR":{"n":4,"ax":0.4826,"hs":1.0036}};
+const ANIMDEF={"archer_walkL":{"n":4,"ax":0.4779,"hs":1.0046},"archer_walkR":{"n":4,"ax":0.5027,"hs":1.0094},"mage_walkL":{"n":4,"ax":0.5884,"hs":1.0048},"mage_walkR":{"n":4,"ax":0.4097,"hs":1.0024},"warrior_walkL":{"n":4,"ax":0.5547,"hs":1.008},"warrior_walkR":{"n":4,"ax":0.4602,"hs":1.008},"healer_walkL":{"n":4,"ax":0.5818,"hs":1.0095},"healer_walkR":{"n":4,"ax":0.4155,"hs":1.007},"archer_myth_walkL":{"n":4,"ax":0.5355,"hs":1.0058},"archer_myth_walkR":{"n":4,"ax":0.4602,"hs":1.0105},"warrior_myth_walkL":{"n":4,"ax":0.5635,"hs":1.0084},"warrior_myth_walkR":{"n":4,"ax":0.436,"hs":1.0094},"archer_atk1L":{"n":5,"ax":0.6333,"hs":1.0172},"archer_atk1R":{"n":5,"ax":0.3643,"hs":1.0142},"archer_myth_atk1L":{"n":5,"ax":0.5811,"hs":1.0055},"archer_myth_atk1R":{"n":5,"ax":0.3945,"hs":1.0082},"archer_atkR":{"n":16,"ax":0.5029,"hs":1.022},"archer_atkL":{"n":16,"ax":0.5184,"hs":1.0204},"archer_myth_atkR":{"n":16,"ax":0.4221,"hs":1.0236},"archer_myth_atkL":{"n":16,"ax":0.5433,"hs":1.0167},"gumiho_cast":{"n":12,"ax":0.5028,"hs":1.0686},"dark_L":{"n":1,"ax":0.5586,"hs":1.0012},"dark_R":{"n":1,"ax":0.4545,"hs":1.0011},"dark_walkL":{"n":8,"ax":0.5393,"hs":1.0117},"dark_walkR":{"n":8,"ax":0.447,"hs":1.0089},"dark_groggy":{"n":16,"ax":0.5663,"hs":1.1389},"dark_death":{"n":16,"ax":0.4507,"hs":1.0031},"dark_mind":{"n":16,"ax":0.5333,"hs":1.0164},"dark_aoe":{"n":16,"ax":0.5309,"hs":1.0181},"dark_black":{"n":16,"ax":0.5157,"hs":1.0403},"mage_myth_walkL":{"n":4,"ax":0.537,"hs":1.0108},"mage_myth_walkR":{"n":4,"ax":0.4431,"hs":1.0048},"healer_myth_walkL":{"n":4,"ax":0.5608,"hs":1.0084},"healer_myth_walkR":{"n":4,"ax":0.4581,"hs":1.0036},"goblin_walkL":{"n":4,"ax":0.6659,"hs":1.0128},"goblin_walkR":{"n":4,"ax":0.3769,"hs":1.0049},"fox_walkL":{"n":4,"ax":0.4883,"hs":1.0089},"fox_walkR":{"n":4,"ax":0.516,"hs":1.0103},"shaman_walkL":{"n":4,"ax":0.646,"hs":1.0254},"shaman_walkR":{"n":4,"ax":0.3896,"hs":1.0074},"skel_walkL":{"n":4,"ax":0.4823,"hs":1.0083},"skel_walkR":{"n":4,"ax":0.5105,"hs":1.006},"reaper_walkL":{"n":4,"ax":0.605,"hs":1.0128},"reaper_walkR":{"n":4,"ax":0.3919,"hs":1.0132},"gumiho_walkL":{"n":4,"ax":0.5286,"hs":1.0071},"gumiho_walkR":{"n":4,"ax":0.4699,"hs":1.0059},"dragon_walkL":{"n":4,"ax":0.5529,"hs":1.0035},"dragon_walkR":{"n":4,"ax":0.4477,"hs":1.0083},"dragon_atk":{"n":8,"ax":0.4758,"hs":1.125},"king_walkL":{"n":4,"ax":0.5132,"hs":1.0045},"king_walkR":{"n":4,"ax":0.4956,"hs":1.0116},"king_atk":{"n":16,"ax":0.5096,"hs":1.0034},"snake_walkL":{"n":4,"ax":0.5248,"hs":1.0144},"snake_walkR":{"n":4,"ax":0.4826,"hs":1.0036},"guardian_walkL":{"n":4,"ax":0.5234,"hs":1.009},"guardian_walkR":{"n":4,"ax":0.4726,"hs":1.0058},"guardian_atk":{"n":16,"ax":0.4869,"hs":1.0817}};
 const ANIM={},WALK={};
 Object.keys(ANIMDEF).forEach(k=>{const v=ANIMDEF[k];if(typeof v!=='object')return;loadImg('a_'+k,A(`img/${k}.webp`),im=>{const o={im,fl:silh(im,'#ffffff'),n:v.n,ax:v.ax,hs:v.hs,idle:ANIMDEF[k+'_idle']||0};ANIM[k]=o;const m=k.match(/^(\w+)_walk([LR])$/);if(m)WALK[m[1]+'_'+m[2]]=o})});
 /* o: ox oy rot sx sy alpha flash flip sil */
@@ -2056,7 +2096,7 @@ function portrait(k,o){const id='p'+k,acc=o.acc||[];
   if(acc.includes('crown'))s+=`<path d="M106 136 L114 94 L132 118 L150 80 L168 118 L186 94 L194 136 Z" fill="${o.trim}"/><circle cx="150" cy="108" r="6" fill="${o.eye}"/>`;
   if(acc.includes('gat'))s+=`<ellipse cx="150" cy="142" rx="112" ry="16" fill="#09090c" opacity=".92"/><path d="M114 142 L118 82 Q150 70 182 82 L186 142 Z" fill="#09090c" opacity=".95"/><path d="M110 150 L120 300 M190 150 L180 300" stroke="#26262e" stroke-width="2"/>`;
   return s+'</svg>'}
-const PIMG={gumiho:'por_gumiho',merch:'por_npc',seol:'por_seol',smith:'por_smith',king:'por_king',imugi:'por_dragon',reaper:'por_reaper'};
+const PIMG={gumiho:'por_gumiho',merch:'por_npc',seol:'por_seol',smith:'por_smith',king:'por_king',imugi:'por_dragon',reaper:'por_reaper',guardian:'por_guardian'};
 function porOf(w){if(w==='me')return `<img src="${A(`img/por_${pl.cls}.webp`)}" alt="">`;if(PIMG[w])return `<img src="${A(`img/${PIMG[w]}.webp`)}" alt="">`;return PCACHE[w]||(PCACHE[w]=portrait(w,CH[w].p))}
 
 /* ================= visual novel ================= */
@@ -2078,7 +2118,7 @@ $('#vnSkip').addEventListener('click',e=>{e.stopPropagation();vnSkip()});
 
 /* ================= panels ================= */
 const TITLES={bag:['가방','I'],stat:['능력치','C'],skill:['기술','K'],map:['지도','M'],set:['설정',''],shop:['묘의 잡화점',''],board:['의뢰 게시판',''],ach:['업적','U'],pet:['동반자','P'],party:['모험단','O'],cheat:['테스트 도구',''],quest:['임무','J'],relic:['유물','Y'],raid:['어둑시니 레이드',''],raidres:['레이드 결과','']};
-function openPanel(k){if(G.scene!=='play'||G.dead>0||G.vn)return;sfx('open');G.modal=k;G.keys={};G.joy=null;G.mouse=null;$('#modal').hidden=false;renderPanel();$('#mB').scrollTop=0}
+function openPanel(k){if(G.scene!=='play'||G.dead>0||G.vn)return;G.modal=k;G.keys={};G.joy=null;G.mouse=null;$('#modal').hidden=false;renderPanel();$('#mB').scrollTop=0}
 function closeModal(){G.modal=null;G.keyWait=null;$('#modal').hidden=true;G.confirmReset=false;G.confirmDel=null;G.confirmRst=null;G.code=null;save()}
 function renderPanel(){const k=G.modal;if(!k)return;const T=TITLES[k];$('#mT').innerHTML=T[0]+(T[1]?`<small>단축키 ${T[1]}</small>`:'');
   const B=$('#mB'),sc=B.scrollTop;B.innerHTML=({bag:bagH,stat:statH,skill:skillH,map:mapH,set:setH,shop:shopH,board:boardH,ach:achH,pet:petH,party:partyH,cheat:cheatH,quest:questH,relic:relicH,raid:raidH,raidres:raidResH})[k]();B.scrollTop=sc}
@@ -2216,7 +2256,7 @@ function petH(){return `<div class="pw"><span>동반자 정수</span><b class="n
     <div class="acts">${on?'<button class="sb" disabled>함께하는 중</button>':`<button class="sb pri" data-act="petsel" data-id="${k}">데리고 다니기</button>`}${lv>=PET_MAX?'<button class="sb" disabled>최대 강화</button>':`<button class="sb" data-act="petup" data-id="${k}" ${pl.ess>=c.ess&&pl.gold>=c.gold?'':'disabled'}>강화 Lv.${lv+1} · 정수 ${c.ess} · 금화 ${fmt(c.gold)}</button>`}</div></div></div>`}).join('')}
 function partyH(){const n=Object.keys(ROOT.chars).length;return `<div class="pw"><span>모험단</span><b class="num">${n}/4</b><small>직업마다 캐릭터 하나 · 진행은 따로, 창고는 함께 쓴다</small></div>`+
   Object.values(CLS).map(c=>{const ch=ROOT.chars[c.id],cur=pl.cls===c.id,data=cur?pl:ch;
-    if(ch||cur){const q=MAINQ[clamp((data.qv?data.q:QMIG[Math.min(data.q||0,9)])|0,0,MAINQ.length-1)];
+    if(ch||cur){const q=MAINQ[clamp(qOf(data)|0,0,MAINQ.length-1)];
       return `<div class="partyrow${cur?' on':''}" style="--cc:${c.col}"><img src="${A(`img/${c.id}_L.webp`)}" alt=""><div><h5>${esc(data.name)} <span class="tag" style="color:${c.col};border-color:${c.col}">${c.n}</span> <small class="num">Lv.${data.lv}</small></h5><p>임무 · ${q.t} · 무한 심연 ${data.abyss||0}단계</p>
       <div class="acts">${cur?'<button class="sb" disabled>플레이 중</button>':`<button class="sb pri" data-act="switch" data-id="${c.id}">이 캐릭터로 전환</button><button class="sb${G.confirmDel===c.id?' pri':''}" data-act="delchar" data-id="${c.id}">${G.confirmDel===c.id?'한 번 더 누르면 삭제':'삭제'}</button>`}<button class="sb${G.confirmRst===c.id?' pri':''}" data-act="rstchar" data-id="${c.id}">${G.confirmRst===c.id?'한 번 더 누르면 Lv.1부터 다시':'진행 초기화'}</button></div></div></div>`}
     return `<div class="partyrow empty" style="--cc:${c.col}"><img src="${A(`img/${c.id}_L.webp`)}" alt=""><div><h5>빈 자리 <span class="tag" style="color:${c.col};border-color:${c.col}">${c.n}</span></h5><p>${c.d}</p>
@@ -2382,12 +2422,13 @@ function loadFrom(o){Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});p
   pl.pots=Array.isArray(o.pots)?o.pots.slice(0,4):[3,0,0,0];while(pl.pots.length<4)pl.pots.push(0);
   pl.pets=Object.assign({tiger:1,fairy:1,coin:1},o.pets||{});pl.pet=o.pet||'tiger';pl.ess=o.ess||0;pl.god=false;
   pl.mend=o.mend||0;pl.sq=o.sq||{};pl.relic=o.relic||null;pl.relCd=0;pl.pearlCd=0;pl.mind=0;pl.lv=Math.min(pl.lv,MAXLV);
-  if(!o.qv){pl.q=QMIG[Math.min(o.q||0,QMIG.length-1)];pl.qk=0;pl.qv=3}
+  if(!o.qv){pl.q=QMIG[Math.min(o.q||0,QMIG.length-1)];pl.qk=0;pl.qv=QV}
+  else if(pl.qv<4){if(pl.q>=QINS_AT)pl.q+=QINS_N;pl.qv=QV}
   pl.q=clamp(pl.q|0,0,MAINQ.length-1);
   SLOTS.forEach(s=>{if(!pl.gear[s])pl.gear[s]=null;else if(pl.gear[s].broken){pl.inv.unshift(pl.gear[s]);pl.gear[s]=null}});pl.d={};recalc();pl.hp=pl.d.mhp;startPlay();setMenu(menuOpen());
   const m=MAPS[pl.map]&&!MAPS[pl.map].raid?pl.map:'village';if(!travel(m))travel('village');later(.3,()=>qEvent('check'))}
 /* 새 캐릭터 기본값 (진행 초기화에도 쓴다) */
-function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:2,skl:[1,1,1,1,1],q:0,qk:0,qv:3,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
+function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:2,skl:[1,1,1,1,1],q:0,qk:0,qv:4,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
     pots:[3,0,0,0],pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,mend:0,sq:{},relic:null};
   o.stats[CLS[cls].main]+=5;SLOTS.forEach(s=>o.gear[s]=null);o.gear.weapon=makeItem('weapon',1,1,cls,null);o.gear.armor=makeItem('armor',0,1,cls,null);return o}
 function newGame(cls,name){
@@ -2451,7 +2492,7 @@ function sndInit(){
     SND.bgmG=c.createGain();SND.sfxG=c.createGain();SND.bgmG.connect(SND.master);SND.sfxG.connect(SND.master);
     SND.rev=c.createConvolver();SND.rev.buffer=sndImpulse(c,2.6,2.4);const rg=c.createGain();rg.gain.value=.4;SND.rev.connect(rg);rg.connect(SND.master);
     const n=c.sampleRate*2,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;SND.noise=b;
-    sndVol();if(c.state==='suspended')c.resume().catch(()=>{});sndLoadBuf('sk1','snd/sk1.mp3')}catch(_){SND.ctx=null}}
+    sndVol();if(c.state==='suspended')c.resume().catch(()=>{});['sk1','ui','sk_archer','sk_mage','sk_warrior','sk_healer','death','item','quest'].forEach(k=>sndLoadBuf(k,`snd/${k}.mp3`))}catch(_){SND.ctx=null}}
 function sndVol(){if(!SND.ctx)return;const v=SND.vol,t=SND.ctx.currentTime;for(const k in (SND.mus||{})){const m=SND.mus[k];if(!m.g)m.el.volume=Math.max(0,Math.min(1,v.mute?0:m.want*v.m*v.b))}SND.master.gain.setTargetAtTime(v.mute?0:v.m,t,.05);SND.bgmG.gain.setTargetAtTime(v.b*.7,t,.05);SND.sfxG.gain.setTargetAtTime(v.s,t,.05)}
 ['pointerdown','pointerup','touchstart','touchend','click','keydown'].forEach(ev=>addEventListener(ev,sndUnlock,{capture:true,passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!SND.ctx)return;if(document.hidden){SND.ctx.suspend().catch(()=>{});for(const k in SND.mus){try{SND.mus[k].el.pause()}catch(_){}}if(SND.tag){try{SND.tag.pause()}catch(_){}}SND.tagOn=false}else SND.ctx.resume().catch(()=>{})});
@@ -2521,10 +2562,18 @@ const SFX={
   warp(t,v){sNoi(t,.6,.35*v,{f:300,to:3000,q:2,rev:.4});sOsc('sine',300,t,.6,.08*v,{to:1200,rev:.4})},
   open(t,v){sNoi(t,.08,.08*v,{f:2200,q:3});sOsc('triangle',700,t,.06,.05*v,{to:1000})}};
 const SKSFX={warrior:['slash','slam','gong','whirl','ghost'],archer:['arrow','scatter','pierce','rain','thunder'],mage:['foxfire','ice','talisman','cloud','dragon'],healer:['orb','heal','cross','bless','smite']};
-const SFXGAP={hurt:.09,arrow:.05,slash:.06,orb:.06,foxfire:.06,drop:.15,hit:.06,crit:.08,kill:.07,coin:.05,pick:.08,open:.1};
-function sfx(k,v){const c=SND.ctx;if(!c||c.state!=='running'||SND.vol.mute||!SND.vol.s||!SFX[k])return;const now=c.currentTime;if(now-(SND.last[k]||-9)<(SFXGAP[k]||.04))return;SND.last[k]=now;try{SFX[k](now+.01,v??1)}catch(_){}}
+const SFXGAP={ui:.06,item:.12,questDone:.5,hurt:.09,arrow:.05,slash:.06,orb:.06,foxfire:.06,drop:.15,hit:.06,crit:.08,kill:.07,coin:.05,pick:.08,open:.1};
+/* 직접 제공된 음원이 있는 효과음: UI 터치 · 사망 · 장비 획득 · 임무 완료 (불러오기 전이거나 실패하면 합성음으로 대신한다) */
+const SMP={ui:['ui',.55],death:['death',.85],item:['item',.7],questDone:['quest',.8]};
+function sfx(k,v){const c=SND.ctx;if(!c||c.state!=='running'||SND.vol.mute||!SND.vol.s)return;const now=c.currentTime;if(now-(SND.last[k]||-9)<(SFXGAP[k]||.04))return;
+  const sm=SMP[k];if(sm&&SND.buf[sm[0]]){SND.last[k]=now;sBuf(sm[0],now+.005,sm[1]*(v??1));return}
+  const f=SFX[k]||(k==='item'?SFX.pick:k==='questDone'?SFX.quest:null);if(!f)return;SND.last[k]=now;try{f(now+.01,v??1)}catch(_){}}
+/* 게임 안의 버튼·탭·메뉴를 누를 때 UI 효과음 (대쉬 버튼은 대쉬 소리만) */
+document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('button,.tab,[data-act],[data-open],select,#vn');if(b&&b.id!=='dashB')sfx('ui')},true);
 function sfxSkill(cls,i,v){
   if(i===0){const c=SND.ctx;if(c&&c.state==='running'&&!SND.vol.mute&&SND.vol.s){const now=c.currentTime;if(now-(SND.last.sk1||-9)<.07)return;SND.last.sk1=now;if(sBuf('sk1',now+.005,.55*(v??1),.94+Math.random()*.12))return}}
+  /* V005: 2~5번 기술은 직업별 공용 효과음 (직접 제공된 음원) */
+  if(i>0){const c=SND.ctx;if(c&&c.state==='running'&&!SND.vol.mute&&SND.vol.s){const now=c.currentTime,kk='sk_'+cls;if(now-(SND.last[kk]||-9)<.1)return;SND.last[kk]=now;if(sBuf(kk,now+.005,.75*(v??1),.97+Math.random()*.06))return}}
   const k=SKSFX[cls]&&SKSFX[cls][i];if(k)sfx(k,(i===0?.55:1)*(v??1))}
 /* ---- 배경음 (V004): 직접 제공된 음원 3곡 ----
    청등마을·잡화점(타이틀 포함) / 레이드를 뺀 모든 전투 던전 / 어둑시니 레이드.
@@ -2552,7 +2601,7 @@ function sBuf(k,t,vol,rate){const b=SND.buf[k];if(!b)return false;const c=SND.ct
 function sndH(){const v=SND.vol,row=(k,n)=>`<label><span>${n}</span><span class="sndv"><input type="range" min="0" max="1" step="0.05" value="${v[k]}" data-snd="${k}"><b class="num">${Math.round(v[k]*100)}%</b></span></label>`;
   return `<p class="sec">사운드</p><div class="set">${row('m','전체 음량')}${row('b','배경음')}${row('s','효과음')}<label><span>음소거</span><input type="checkbox" data-snd="mute" ${v.mute?'checked':''}></label></div>
   <div class="acts"><button class="sb" data-act="sndtest">소리 테스트</button><span class="hint" id="sndSt" style="margin:0">${sndState()}</span></div>
-  <p class="hint">배경음은 마을·던전·레이드 전용 곡, 1번 기술은 공용 효과음을 쓰고 나머지 효과음은 실시간 합성된다. 아이폰에서 소리가 안 나면 「소리 테스트」를 한 번 누르고, 볼륨 버튼으로 미디어 음량을 올려 보자.</p>`}
+  <p class="hint">배경음은 마을·던전·레이드 전용 곡을, 기술·UI·사망·장비 획득·임무 완료는 전용 효과음을 쓴다. 아이폰에서 소리가 안 나면 「소리 테스트」를 한 번 누르고, 볼륨 버튼으로 미디어 음량을 올려 보자.</p>`}
 function sndState(){const c=SND.ctx;return !c?'소리 꺼짐 (화면을 한 번 터치하면 켜진다)':c.state==='running'?'소리 켜짐':'소리 대기 중 · 화면을 터치하자'}
 document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.snd;if(!k)return;sndInit();
   if(k==='mute')SND.vol.mute=e.target.checked;else{SND.vol[k]=+e.target.value;const b=e.target.nextElementSibling;if(b)b.textContent=Math.round(SND.vol[k]*100)+'%';if(k==='s')sfx('orb')}
