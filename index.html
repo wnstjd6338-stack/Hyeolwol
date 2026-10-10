@@ -446,7 +446,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V010</span>
+      <span class="tver num" id="tVer">V011</span>
       <button class="thot" id="bNew" style="left:37.68%;top:58.34%;width:13.46%;height:6.7%" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" style="left:52.09%;top:58.34%;width:10.29%;height:6.7%" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" style="left:42.94%;top:67.38%;width:14.17%;height:6.48%" aria-label="전체화면으로"></button>
@@ -2636,9 +2636,9 @@ function sfxSkill(cls,i,v){
 /* ---- 배경음 (V004): 직접 제공된 음원 3곡 ----
    청등마을·잡화점(타이틀 포함) / 레이드를 뺀 모든 전투 던전 / 어둑시니 레이드.
    <audio>를 Web Audio 그래프에 연결해 볼륨을 조절하고(아이폰은 audio.volume을 무시한다), 바뀔 때 1.2초간 겹쳐 넘긴다 */
-const BGMF={village:'snd/bgm_village.mp3',dungeon:'snd/bgm_dungeon.mp3',deep:'snd/bgm_deep.mp3',raid:'snd/bgm_raid.mp3'};
+const BGMF={village:'snd/bgm_village.mp3',dungeon:'snd/bgm_dungeon.mp3',deep:'snd/bgm_deep2.mp3',raid:'snd/bgm_raid.mp3'};
 /* V007: 혈월 궁궐 · 봉인된 터 · 무한 심연은 전용 곡(Cavernous Pulse) */
-const DEEPBGM={palace:1,sealed:1,abyss:1};
+const DEEPBGM={palace:1,sealed:1,abyss:1,gate:1}; /* V011: 귀문관 포함, 곡 교체 */
 SND.mus={};SND.cur='';
 function bgmKey(){if(G.scene!=='play')return 'village';if(G.raid)return 'raid';const M=MAPS[G.map];return !M||M.safe?'village':DEEPBGM[G.map]?'deep':'dungeon'}
 function musEl(k){let m=SND.mus[k];if(m)return m;const el=new Audio();el.loop=true;el.preload='auto';el.setAttribute('playsinline','');el.setAttribute('webkit-playsinline','');el.src=A(BGMF[k]);
