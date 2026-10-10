@@ -150,6 +150,8 @@ h1{font-family:var(--f-disp);font-weight:400;font-size:clamp(52px,13vw,104px);le
 .tq b{font-weight:400;font-family:var(--f-disp);font-size:14px}
 .tq span{color:#cfc7b3}
 .tq .go{color:var(--jade);font-size:11px}
+.tq .qc{display:block!important;font-size:11.5px;line-height:1.35;color:#e2d9c4}
+.tq .qbar{display:block;height:3px;margin-top:3px;background:rgba(0,0,0,.55);max-width:220px}.tq .qbar u{display:block;height:100%;background:var(--gold)}.tq.b .qbar u{background:var(--jade)}
 .tr{position:absolute;right:16px;top:calc(12px + env(safe-area-inset-top,0px));display:grid;gap:6px}
 .mb{width:50px;height:50px;border:1px solid var(--line);background:rgba(12,13,18,.8);display:grid;place-items:center;align-content:center;border-radius:2px;padding:0;position:relative}
 .mb span{font-family:var(--f-disp);font-size:20px;line-height:1.05}
@@ -446,7 +448,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V012</span>
+      <span class="tver num" id="tVer">V013</span>
       <button class="thot" id="bNew" style="left:37.68%;top:58.34%;width:13.46%;height:6.7%" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" style="left:52.09%;top:58.34%;width:10.29%;height:6.7%" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" style="left:42.94%;top:67.38%;width:14.17%;height:6.48%" aria-label="전체화면으로"></button>
@@ -545,14 +547,13 @@ const AB=[.07,.09,.93,.92];
 const MAPS={
   village:{n:'청등마을',kind:'마을',safe:1,w:2128,h:1064,bg:'village',bound:[.025,.42,.975,.76],ground:'#2b2620',dark:.3,diff:0,desc:'푸른 등불이 지키는 마지막 마을. 무녀 설화, 대장장이 강쇠, 묘의 잡화점, 의뢰 게시판이 있다.'},
   shop:{n:'묘의 잡화점',kind:'상점',safe:1,hidden:1,w:2040,h:1020,bg:'shop',bound:[.09,.4,.86,.86],ground:'#2a1d15',dark:.12,diff:0,desc:'떠돌이 상인 묘가 차린 가게.'},
-  field:{n:'버려진 논두렁',kind:'사냥터',lv:[1,6],w:2000,h:2000,bg:'arena',bound:AB,ground:'#171c18',mobs:['ghoul','wisp','goblin'],off:0,dark:.55,tint:'rgba(30,50,30,.12)',diff:.55,desc:'추수하지 못한 논 위로 원귀와 도깨비불이 떠돈다. 모든 부위가 고르게 나온다.'},
-  fox:{n:'여우골 동굴',kind:'던전',dg:1,lv:[6,12],uq:'여우골 입구',w:3000,h:1688,bg:'fox',bound:[.04,.36,.96,.9],ground:'#1d1614',mobs:['fox','wisp','ghoul'],off:1,boss:'gumiho',favor:['ring','neck'],dark:.66,diff:.95,desc:'여우불이 흔들리는 동굴. 반지와 목걸이가 잘 나온다.'},
-  river:{n:'저승 나루터',kind:'던전',dg:1,lv:[12,20],uq:'검은 강의 망자',w:3000,h:1688,bg:'river',bound:[.04,.35,.96,.88],ground:'#11151c',mobs:['ghoul','archer','jiangshi','chasa'],off:2,boss:'reaper',favor:['weapon'],dark:.68,diff:1.05,desc:'혼을 실은 배가 떠나는 검은 강. 무기가 잘 나온다.'},
-  swamp:{n:'이무기 늪',kind:'던전',dg:1,lv:[20,30],uq:'늪의 독기',w:3000,h:1688,bg:'swamp',bound:[.05,.33,.95,.86],ground:'#111912',mobs:['snake','shaman','goblin'],off:3,boss:'imugi',favor:['armor','helm'],dark:.68,diff:1.15,desc:'용이 되지 못한 뱀이 잠든 늪. 갑옷과 투구가 잘 나온다.'},
-  palace:{n:'혈월 궁궐',kind:'던전',dg:1,lv:[30,40],uq:'궁궐의 혈귀',w:3000,h:1688,bg:'palace',bound:[.04,.37,.96,.9],ground:'#1a0f12',mobs:['blood','archer','jiangshi','shaman','chasa'],off:4,boss:'bloodking',favor:['boots','weapon'],dark:.68,diff:1.3,desc:'핏빛 달이 걸린 궁궐. 신발과 무기가 잘 나온다.'},
-  sealed:{n:'봉인된 터',kind:'던전',dg:1,lv:[40,48],uq:'봉인된 터',w:3000,h:1688,bg:'sealed',bound:[.05,.39,.95,.9],ground:'#16130f',mobs:['archer','jiangshi','shaman','chasa','blood','goblin'],off:5,boss:'guardian',favor:['neck','helm'],dark:.62,diff:1.45,desc:'혈월 궁궐 옥좌 뒤로 이어진 옛 사찰 터. 무언가가 봉인되어 있다. 목걸이와 투구가 잘 나온다.'},
-  abyss:{n:'무한 심연',kind:'무한',dg:1,endless:1,uq:'바닥 없는 밤 · 첫째',w:3000,h:1688,bg:'abyss',bound:[.04,.34,.96,.88],ground:'#0e0c15',mobs:Object.keys(MOBS),off:3,favor:null,dark:.74,diff:1.25,desc:'바닥 없는 어둠. 단계마다 적이 1레벨씩 강해지고, 이미 돌파한 단계는 골라서 들어갈 수 있다.'},
-  gate:{n:'귀문관',kind:'종언',dg:1,end:1,req:100,w:2000,h:2000,bg:'arena',bound:AB,ground:'#140a0e',mobs:['blood','chasa','jiangshi','shaman','fox','goblin'],off:6,favor:null,dark:.76,tint:'rgba(170,0,40,.3)',diff:2.4,desc:'레벨 100 이상만 들어설 수 있는 저승의 마지막 관문. 적의 레벨이 나를 따라 오르며, 같은 레벨 에픽 +20 풀세트로 상대할 수 있게 맞춰져 있다.'},
+  field:{n:'버려진 논두렁',kind:'사냥터',lv:[1,5],w:2000,h:2000,bg:'arena',bound:AB,ground:'#171c18',mobs:['ghoul','wisp','goblin'],off:0,dark:.55,tint:'rgba(30,50,30,.12)',diff:.55,desc:'추수하지 못한 논 위로 원귀와 도깨비불이 떠돈다. 모든 부위가 고르게 나온다.'},
+  fox:{n:'여우골 동굴',kind:'던전',dg:1,lv:[6,20],uq:'여우골 입구',w:3000,h:1688,bg:'fox',bound:[.04,.36,.96,.9],ground:'#1d1614',mobs:['fox','wisp','ghoul'],off:1,boss:'gumiho',favor:['ring','neck'],dark:.66,diff:.95,desc:'여우불이 흔들리는 동굴. 반지와 목걸이가 잘 나온다.'},
+  river:{n:'저승 나루터',kind:'던전',dg:1,lv:[21,40],uq:'검은 강의 망자',w:3000,h:1688,bg:'river',bound:[.04,.35,.96,.88],ground:'#11151c',mobs:['ghoul','archer','jiangshi','chasa'],off:2,boss:'reaper',favor:['weapon'],dark:.68,diff:1.05,desc:'혼을 실은 배가 떠나는 검은 강. 무기가 잘 나온다.'},
+  swamp:{n:'이무기 늪',kind:'던전',dg:1,lv:[41,60],uq:'늪의 독기',w:3000,h:1688,bg:'swamp',bound:[.05,.33,.95,.86],ground:'#111912',mobs:['snake','shaman','goblin'],off:3,boss:'imugi',favor:['armor','helm'],dark:.68,diff:1.15,desc:'용이 되지 못한 뱀이 잠든 늪. 갑옷과 투구가 잘 나온다.'},
+  palace:{n:'혈월 궁궐',kind:'던전',dg:1,lv:[61,80],uq:'궁궐의 혈귀',w:3000,h:1688,bg:'palace',bound:[.04,.37,.96,.9],ground:'#1a0f12',mobs:['blood','archer','jiangshi','shaman','chasa'],off:4,boss:'bloodking',favor:['boots','weapon'],dark:.68,diff:1.3,desc:'핏빛 달이 걸린 궁궐. 신발과 무기가 잘 나온다.'},
+  sealed:{n:'봉인된 터',kind:'던전',dg:1,lv:[81,100],uq:'봉인된 터',w:3000,h:1688,bg:'sealed',bound:[.05,.39,.95,.9],ground:'#16130f',mobs:['archer','jiangshi','shaman','chasa','blood','goblin'],off:5,boss:'guardian',favor:['neck','helm'],dark:.62,diff:1.45,desc:'혈월 궁궐 옥좌 뒤로 이어진 옛 사찰 터. 무언가가 봉인되어 있다. 목걸이와 투구가 잘 나온다.'},
+  abyss:{n:'무한 심연',kind:'무한',dg:1,endless:1,req:100,uq:'바닥 없는 밤 · 첫째',w:3000,h:1688,bg:'abyss',bound:[.04,.34,.96,.88],ground:'#0e0c15',mobs:Object.keys(MOBS),off:3,favor:null,dark:.74,diff:1.25,desc:'바닥 없는 어둠. 단계마다 적이 1레벨씩 강해지고, 이미 돌파한 단계는 골라서 들어갈 수 있다.'},
   raid:{n:'어둑시니의 굴',kind:'레이드',raid:1,hidden:1,w:2600,h:2000,bg:'arena',bound:[.06,.1,.94,.92],ground:'#07060b',mobs:[],dark:.82,tint:'rgba(20,10,40,.55)',diff:0,desc:'모든 빛을 삼키는 그림자, 어둑시니가 기다리는 곳.'}};
 const mbound=M=>({x0:M.w*M.bound[0],y0:M.h*M.bound[1],x1:M.w*M.bound[2],y1:M.h*M.bound[3]});
 
@@ -577,40 +578,63 @@ const MEP={warrior:{robe:'#2f2a2a',robe2:'#151313',trim:'#b03a2e',hs:'top'},arch
 function meP(cls){return Object.assign({skin:'#d9cbb8',hair:'#121014',eye:'#5ed4b9',acc:[]},MEP[cls||pl.cls])}
 
 /* ================= story ================= */
-/* v3 메인 이야기: Lv.50까지 이어지는 37개 임무.
+/* V013 메인 이야기: 튜토리얼(논두렁) → 여우골(6~20) → 나루터(21~40) → 늪(41~60) → 궁궐(61~80) → 봉인된 터(81~100) → 심연(100) → 어둑시니 쉬움.
+   hint: 임무를 받을 때 띄우는 안내 · raidUnlock: 완료 시 레이드 해금 · 새 type: bounty(의뢰 완료) gear(에픽+ 착용 수) gearEnh(에픽+ ·+e 착용 수) raid(어둑시니 토벌)
+   (예전 설명) v3 메인 이야기: Lv.50까지 이어지는 37개 임무.
    type: talk(대화) kill(처치) elite(정예 처치) collect(전리품 모으기) boss(특정 보스) bossAny(아무 보스) lv(레벨 달성) enh(강화) abyss(심연 단계) endless
    lv: 이 레벨이 되어야 완료된다 */
 const MAINQ=[
-  {t:'푸른 등불 아래',type:'talk',npc:'seol',end:()=>[
+  {t:'푸른 등불 아래',type:'talk',npc:'seol',hint:'오른쪽 위 지도(또는 마을 아래 산길 다리)로 「버려진 논두렁」에 가자',end:()=>[
     {w:'seol',t:'…눈을 떴구나. 몸은 좀 어때?'},
     {w:'me',t:'차가워. 숨을 쉬는데도, 숨이 없는 것처럼.'},
     {w:'seol',t:`기억이 안 나도 괜찮아. 네 이름은 ${pl.name}. 내가 기억하고 있으니까.`},
     {w:'seol',t:'혈월이 뜬 뒤로 죽은 자들이 땅 위를 걸어. 마을 밖 논두렁부터 원혼이 넘쳐흘러.'},
     {w:'seol',t:'청등마을의 푸른 등불 곁에 있는 한, 넌 안전해. …적어도 지금은.'}]},
-  {t:'논두렁의 원혼',type:'kill',map:'field',n:30,end:()=>[
+  {t:'첫 사냥',type:'kill',map:'field',n:10,hint:'기술은 재사용 대기시간이 돌아오면 저절로 발동한다 · 이동만 신경 쓰자',end:()=>[
+    {w:'n',t:`칼끝이 저절로 움직였다. 몸이 싸우는 법을 기억하고 있었다.`},
+    {w:'me',t:`…기술은 생각하기도 전에 나간다. 나는 움직이기만 하면 되는군.`}]},
+  {t:'논두렁의 원혼',type:'kill',map:'field',n:25,hint:'붉은 표시가 뜨면 대쉬(Space · 步 버튼)로 피하자 · 대쉬 중에는 피해를 받지 않는다',end:()=>[
     {w:'n',t:'원혼들은 쓰러지며 하나같이 같은 말을 중얼거렸다.'},
     {w:'n',t:'"돌아왔구나. 돌아와서는 안 되는 것이, 돌아왔구나."'},
     {w:'me',t:'…놈들이 나를 보고 고개를 숙였다. 마치 같은 편을 대하듯이.'}]},
-  {t:'원혼의 우두머리',type:'elite',map:'field',n:3,end:()=>[
+  {t:'몸을 다스리는 법',type:'lv',lv:3,hint:'레벨이 오르면 능력(力) 창에서 능력치 3점을 나눠 주자',end:()=>[
+    {w:'seol',t:`레벨이 오를 때마다 몸에 힘이 차오를 거야. 능력(力) 창에서 그 힘을 나눠 담아.`},
+    {w:'seol',t:`힘은 체력과 방어, 민첩은 치명타와 몸놀림, 지력은 기술을 더 자주 쓰게 해 줘.`}]},
+  {t:'원혼의 우두머리',type:'elite',map:'field',n:3,hint:'금테를 두른 정예 원혼은 강하지만 좋은 장비를 떨어뜨린다',end:()=>[
     {w:'n',t:'금빛 테를 두른 원혼은 쓰러지면서도 웃고 있었다.'},
     {w:'n',t:'"등불 아래서 따뜻하더냐? 우리는 그 불 속에서 사흘째 타고 있다."'},
     {w:'me',t:'…무슨 소리지.'}]},
-  {t:'쇠를 두드리는 망자',type:'talk',npc:'smith',end:()=>[
+  {t:'쇠를 두드리는 망자',type:'talk',npc:'smith',hint:'청등마을의 대장장이 강쇠에게 가 보자',end:()=>[
     {w:'smith',t:'네가 그 무녀가 데려온 놈이로군. 손 좀 보자. …차갑구먼. 쇠보다 차가워.'},
     {w:'smith',t:'원혼 놈들한테 강화석이 나와. 가져오면 네 장비를 두드려 주지. 망자의 쇠는 두드릴수록 단단해지거든.'},
     {w:'me',t:'당신은 내가 무섭지 않나.'},
     {w:'smith',t:'이 마을에 아직 숨 쉬는 사람이 나 하나뿐이라는 게 더 무섭다, 젊은이.'}]},
-  {t:'첫 번째 담금질',type:'enh',n:3,end:()=>[
+  {t:'첫 번째 담금질',type:'enh',n:3,hint:'가방(囊)에서 장비를 누르고 「강화」 · 강화석은 사냥에서 얻는다',end:()=>[
     {w:'smith',t:'좋아, 쇠가 네 손을 기억하기 시작했어.'},
     {w:'smith',t:'…그런데 말이야. 사흘 전 밤, 무녀가 나한테 등잔 틀을 백서른두 개 주문했었지. 무슨 굿에 그렇게 많이 쓰는지 원.'}]},
-  {t:'잃어버린 이름들',type:'collect',map:'field',n:12,item:'끊어진 이름패',p:.3,end:()=>[
+  {t:'잃어버린 이름들',type:'collect',map:'field',n:12,item:'끊어진 이름패',p:.3,hint:'논두렁의 적을 쓰러뜨리면 가끔 이름패가 떨어진다',end:()=>[
     {w:'n',t:'모은 이름패에는 마을 사람들의 이름이 새겨져 있었다. 대장장이의 아내, 방앗간 집 아이들, 서당 훈장.'},
     {w:'n',t:'그리고 맨 마지막 하나에는, 피로 지워진 이름 옆에 낯익은 글씨가 덧쓰여 있었다.'},
     {w:'me',t:`…${pl.name}. 내 이름이다.`}]},
-  {t:'여우골 입구',type:'kill',map:'fox',n:40,lv:5,end:()=>[
+  {t:'의뢰 게시판',type:'bounty',n:1,hint:'마을의 의뢰 게시판에서 의뢰를 맡고 완료하자 · 동시에 3개까지',end:()=>[
+    {w:'n',t:`게시판에 붙은 종이에는 서툰 글씨로 사라진 가족의 이름이 적혀 있었다.`},
+    {w:'me',t:`…죽은 자가 죽은 자를 찾아 달라고 하는군.`}]},
+  {t:'논두렁 끝의 동굴',type:'lv',lv:5,hint:'레벨 5가 되면 여우골 동굴이 열린다',end:()=>[
+    {w:'seol',t:`논두렁 끝 산자락에 여우골이 있어. 거기서 아홉 갈래 웃음소리가 들린대.`},
+    {w:'seol',t:`동굴의 적은 네가 강해지는 만큼 같이 강해져. 서두르지 말고, 하지만 멈추지도 말고.`}]},
+  {t:'여우골 입구',type:'kill',map:'fox',n:50,lv:6,end:()=>[
     {w:'n',t:'동굴 깊은 곳에서 아홉 갈래의 웃음소리가 메아리쳤다.'},
     {w:'gumiho',t:'어머, 손님이네. 등불 냄새를 묻히고 오다니… 그 무녀의 개구나?'}]},
-  {t:'아홉 꼬리의 거짓말',type:'boss',map:'fox',boss:'gumiho',lv:7,end:()=>[
+  {t:'꼬리 셋 달린 여우',type:'elite',map:'fox',n:5,end:()=>[
+    {w:'n',t:`정예 여우령의 꼬리가 하나씩 꺼질 때마다 동굴 안쪽에서 누군가 혀를 찼다.`}]},
+  {t:'여우 방울',type:'collect',map:'fox',n:15,item:'여우 방울',p:0.2,end:()=>[
+    {w:'n',t:`방울마다 작은 글씨가 새겨져 있었다. "약속은 지켜야지, 무녀야."`},
+    {w:'me',t:`…또 그 무녀 이야기다.`}]},
+  {t:'더 깊은 굴',type:'lv',lv:14,end:()=>[
+    {w:'gumiho',t:`어머, 아직도 여기 있네? 좀 더 단단해지면 안쪽까지 와 봐. 놀아 줄게.`}]},
+  {t:'여우골의 원혼',type:'kill',map:'fox',n:120,lv:16,end:()=>[
+    {w:'n',t:`동굴 벽에 걸린 등잔들이 하나둘 꺼졌다. 남은 것은 가장 안쪽의 붉은 빛 하나뿐.`}]},
+  {t:'아홉 꼬리의 거짓말',type:'boss',map:'fox',boss:'gumiho',lv:18,hint:'여우골 동굴에서 적을 쓰러뜨려 보스 게이지를 채우면 구미호가 나타난다',end:()=>[
     {w:'gumiho',t:'후후… 아홉 번째 꼬리까지 잘라 가다니. 그런데 너, 냄새가 이상하네.'},
     {w:'gumiho',t:'산 놈한테선 이런 냄새가 안 나거든. 갓 덮은 무덤 흙 냄새.'},
     {w:'me',t:'헛소리 마라.'},
@@ -620,28 +644,38 @@ const MAINQ=[
     {w:'seol',t:'…여우는 원래 거짓말을 해. 신경 쓰지 마.'},
     {w:'n',t:'설화의 손끝이 떨렸다. 소매 아래로 붉은 실이 칭칭 감긴 손목이 언뜻 보였다.'},
     {w:'seol',t:'저승 나루터로 가 줘. 저승사자가 마을 사람들의 혼을 배에 싣고 있대. …하지만 지금의 너로는 무리야. 더 강해져서 가.'}]},
-  {t:'저승으로 가는 길',type:'lv',lv:10,end:()=>[
+  {t:'저승으로 가는 길',type:'lv',lv:21,end:()=>[
     {w:'seol',t:'이걸 가져가. 내 머리카락으로 엮은 부적이야.'},
     {w:'seol',t:'저승의 물은 망자를 붙잡아. 너를 놓치면… 다시는 못 불러와.'},
     {w:'me',t:'"다시는"? 전에도 불러온 적이 있다는 말처럼 들리는데.'},
     {w:'seol',t:'……가.'}]},
-  {t:'검은 강의 망자',type:'kill',map:'river',n:60,end:()=>[
+  {t:'검은 강의 망자',type:'kill',map:'river',n:80,lv:21,end:()=>[
     {w:'n',t:'강물 위로 떠내려가는 등잔 하나하나에 사람의 얼굴이 비쳤다.'},
     {w:'n',t:'누군가 강가에 명부를 찢어 흩뿌려 놓았다. 젖은 종이 조각들이 물살에 휩쓸려 가고 있었다.'}]},
-  {t:'찢어진 명부',type:'collect',map:'river',n:15,item:'찢어진 명부 조각',p:.22,end:()=>[
+  {t:'찢어진 명부',type:'collect',map:'river',n:18,item:'찢어진 명부 조각',p:.22,end:()=>[
     {w:'n',t:'명부 조각을 이어 붙이자 한 줄이 드러났다.'},
     {w:'n',t:'"청등마을 백서른두 명 — 혈월 첫날 밤 몰(歿). 사유: 제물."'},
     {w:'me',t:'제물이라고…?'}]},
-  {t:'나루터의 사공들',type:'elite',map:'river',n:5,end:()=>[
+  {t:'나루터의 사공들',type:'elite',map:'river',n:8,end:()=>[
     {w:'n',t:'노를 쥔 망자 사공이 마지막으로 중얼거렸다.'},
     {w:'n',t:'"배 삯은 이미 치러졌다. 백서른두 개의 혼으로. 그런데 왜 너 하나만 배에서 내렸지?"'}]},
+  {t:'강을 건너는 등불',type:'lv',lv:28,end:()=>[
+    {w:'seol',t:`강 위로 떠내려가던 등잔, 기억나? 그건 내가 띄운 거야. 길 잃은 혼이 마을로 돌아오라고.`},
+    {w:'me',t:`돌아온 혼은 어디로 가지.`},
+    {w:'seol',t:`…등불 속으로.`}]},
   {t:'저승의 쇠',type:'talk',npc:'smith',end:()=>[
     {w:'smith',t:'명부에 제물이라고 적혀 있었다고? ……'},
     {w:'smith',t:'솔직히 말하마. 그 등잔 틀, 쇠에 피를 먹여 달라고 했어. 굿에 쓸 거라면서.'},
     {w:'smith',t:'난 돈을 받았고, 묻지 않았지. 그게 내 죄다.'},
     {w:'me',t:'그럼 당신은 왜 살아 있지?'},
     {w:'smith',t:'…그 밤에 나는 대장간 화로 앞에 있었어. 등불이 닿지 않는 곳에. 그게 다야.'}]},
-  {t:'명부에 덧쓴 글씨',type:'boss',map:'river',boss:'reaper',lv:15,end:()=>[
+  {t:'단련된 쇠',type:'enh',n:8,hint:'저승의 쇠로 장비를 +8까지 강화하자',end:()=>[
+    {w:'smith',t:`저승 쇠가 이제 좀 말을 듣는구먼. 여덟 번 두드린 쇠는 쉽게 부러지지 않아.`}]},
+  {t:'나루터의 의뢰',type:'bounty',n:2,end:()=>[
+    {w:'n',t:`의뢰를 마치고 돌아오니 게시판 한쪽에 누군가 서툰 글씨로 "고맙소"라고 적어 두었다.`}]},
+  {t:'사공의 노래',type:'kill',map:'river',n:150,lv:34,end:()=>[
+    {w:'n',t:`강 건너편에서 노 젓는 소리가 들렸다. 박자에 맞춰 누군가 이름을 부르고 있었다. 내 이름을.`}]},
+  {t:'명부에 덧쓴 글씨',type:'boss',map:'river',boss:'reaper',lv:37,end:()=>[
     {w:'reaper',t:'멈춰라. 나는 너를 데려갈 수 없다.'},
     {w:'reaper',t:'명부를 보아라. 네 이름은 사흘 전에 이미 지워졌다. 그런데 그 옆에, 산 자의 손으로 덧쓴 글씨가 있지.'},
     {w:'me',t:'누구의 글씨냐.'},
@@ -653,10 +687,10 @@ const MAINQ=[
     {w:'n',t:'등불 속에서 낯익은 얼굴들이 소리 없이 비명을 지르고 있었다.'},
     {w:'seol',t:'넌 내 오라비야. 사흘 전 밤에 죽었지. 그래서 다시 불렀어. 백서른두 개의 혼을 태워서.'},
     {w:'seol',t:'원망해도 좋아. 대신 늪의 이무기를 죽여 줘. 그게 혈월의 문을 지키고 있어. 그것만 없애면 다 끝낼 수 있어.'}]},
-  {t:'타오르는 등불 아래',type:'lv',lv:18,end:()=>[
+  {t:'타오르는 등불 아래',type:'lv',lv:41,end:()=>[
     {w:'n',t:'밤마다 등불이 조금씩 어두워졌다. 그 안의 얼굴들이 하나둘 사라지고 있었다.'},
     {w:'seol',t:'시간이 없어. 등불이 다 꺼지면… 너도 같이 꺼져.'}]},
-  {t:'늪의 독기',type:'kill',map:'swamp',n:100,end:()=>[
+  {t:'늪의 독기',type:'kill',map:'swamp',n:100,lv:41,end:()=>[
     {w:'n',t:'늪 바닥에서 거대한 무언가가 숨을 쉬었다. 물거품이 터질 때마다 비린 피 냄새가 올라왔다.'}]},
   {t:'묵린의 비늘',type:'collect',map:'swamp',n:20,item:'이무기 비늘',p:.15,end:()=>[
     {w:'n',t:'비늘마다 오래된 봉인 문양이 새겨져 있었다. 누군가 이무기를 이곳에 묶어 둔 것이다.'},
@@ -666,9 +700,16 @@ const MAINQ=[
     {w:'merch',t:'사흘 전에 그 무녀가 나한테서 굿 하나를 샀어. "죽은 자를 다시 부르는 굿". 대가는 혼 백서른셋.'},
     {w:'me',t:'백서른둘이 아니라?'},
     {w:'merch',t:'하나가 모자랐지. 그래서 아직 굿이 안 끝났어. …마지막 하나가 누구일 것 같나?'}]},
-  {t:'늪지기',type:'elite',map:'swamp',n:8,end:()=>[
+  {t:'늪지기',type:'elite',map:'swamp',n:10,end:()=>[
     {w:'n',t:'늪지기들이 쓰러지자 늪 한가운데의 물이 소용돌이치기 시작했다.'}]},
-  {t:'늪 아래 잠든 것',type:'boss',map:'swamp',boss:'imugi',lv:25,end:()=>[
+  {t:'독무 속의 길',type:'lv',lv:50,end:()=>[
+    {w:'merch',t:`늪 깊은 곳은 독무가 짙어. 몸이 버틸 만큼 단단해진 다음에 들어가라고. 장사는 살아 있는 손님이랑 해야 남거든.`}]},
+  {t:'되살아난 비늘',type:'kill',map:'swamp',n:200,lv:53,end:()=>[
+    {w:'n',t:`쓰러뜨린 독사들이 늪 속으로 가라앉았다가, 비늘 하나 다르지 않은 모습으로 다시 떠올랐다.`},
+    {w:'me',t:`늪 바닥의 무언가가 계속 되살리고 있다.`}]},
+  {t:'늪의 의뢰',type:'bounty',n:2,end:()=>[
+    {w:'n',t:`늪가 마을의 마지막 의뢰였다. 의뢰인의 이름 옆에는 이미 검은 줄이 그어져 있었다.`}]},
+  {t:'늪 아래 잠든 것',type:'boss',map:'swamp',boss:'imugi',lv:57,end:()=>[
     {w:'imugi',t:'어리석은 것… 나는 문을 지킨 게 아니다. 막고 있었던 것이다.'},
     {w:'imugi',t:'그 계집이 너를 살린 줄 아느냐? 너라는 그릇에 혈월왕을 담으려는 것이다.'},
     {w:'n',t:'늪이 갈라지고 하늘의 달이 한층 더 붉어졌다. 멀리서 궁궐 문이 열리는 소리가 들렸다.'}]},
@@ -677,41 +718,56 @@ const MAINQ=[
     {w:'seol',t:'아니야! 처음엔… 처음엔 정말 오라버니를 돌려받고 싶었을 뿐이야.'},
     {w:'seol',t:'그런데 굿이 끝나지 않았어. 달이 대답했어. "그릇을 바치면 오라비를 돌려주마."'},
     {w:'seol',t:'…미안해. 궁궐로 가. 혈월왕을 죽여 줘. 그러면 내가 마지막 혼이 될게.'}]},
-  {t:'핏빛 궁궐의 문',type:'lv',lv:28,end:()=>[
+  {t:'핏빛 궁궐의 문',type:'lv',lv:61,end:()=>[
     {w:'n',t:'궁궐로 가는 길 위에 붉은 비가 내렸다. 빗방울 하나하나가 따뜻했다.'}]},
-  {t:'궁궐의 혈귀',type:'kill',map:'palace',n:150,end:()=>[
+  {t:'궁궐의 혈귀',type:'kill',map:'palace',n:150,lv:61,end:()=>[
     {w:'n',t:'혈귀들은 모두 같은 옷을 입고 있었다. 사흘 전 굿판에 섰던 마을 사람들의 옷이었다.'}]},
   {t:'달의 파편',type:'collect',map:'palace',n:25,item:'혈월의 파편',p:.12,end:()=>[
     {w:'n',t:'모은 파편을 손에 쥐자 귓가에 목소리가 울렸다.'},
     {w:'king',t:'왔구나, 나의 그릇. 그 몸은 처음부터 내 것이었다.'}]},
-  {t:'혈위대',type:'elite',map:'palace',n:10,end:()=>[
+  {t:'혈위대',type:'elite',map:'palace',n:12,end:()=>[
     {w:'n',t:'호위들이 무너지자 옥좌로 가는 계단이 핏물에 잠긴 채 드러났다.'}]},
+  {t:'명장의 칼날',type:'enh',n:12,end:()=>[
+    {w:'smith',t:'열두 번을 버틴 쇠다. 이 정도면 달도 벨 수 있겠어.'},
+    {w:'smith',t:'돌아오면 술 한잔하자. 산 사람이든 죽은 사람이든.'}]},
+  {t:'피의 연회',type:'lv',lv:70,end:()=>[
+    {w:'n',t:`궁궐 연회장에는 차려진 음식이 썩지도 않고 그대로였다. 의자마다 혈귀가 앉아 같은 잔을 들고 있었다.`},
+    {w:'king',t:`손님이 왔구나. 앉아라, 그릇아. 네 자리는 늘 비워 두었다.`}]},
   {t:'다섯 번의 토벌',type:'bossAny',n:5,end:()=>[
     {w:'smith',t:'보스 놈들을 다섯이나 베고 왔다고? 그 칼, 이제 왕의 목에도 들어가겠군.'},
     {w:'smith',t:'…무녀를 너무 미워하진 마라. 그 아이도 그 밤에 반쯤은 죽었으니까.'}]},
-  {t:'핏빛 달 아래',type:'boss',map:'palace',boss:'bloodking',lv:35,end:()=>[
+  {t:'궁궐 깊은 곳',type:'kill',map:'palace',n:250,lv:74,end:()=>[
+    {w:'n',t:`옥좌로 이어지는 복도의 촛불이 모두 붉게 타올랐다.`}]},
+  {t:'핏빛 달 아래',type:'boss',map:'palace',boss:'bloodking',lv:77,end:()=>[
     {w:'king',t:'그릇이 주인을 거부하는구나. 재미있다.'},
     {w:'seol',t:'오라버니! …이건, 이건 내가 원한 게 아니었어!'},
     {w:'king',t:'원했지. 오라비를 돌려 달라 빌던 네 목소리를 아직 기억한다. 대가는 받아야겠다… 이번엔 영원히.'},
     {w:'n',t:'혈월왕의 형체가 무너져 내리며 땅 아래, 바닥 없는 심연으로 스며들었다.'},
     {w:'n',t:'그가 사라진 자리, 무너진 옥좌 뒤로 차가운 바람이 새어 나오는 좁은 통로가 드러났다.'},
     {w:'n',t:'통로 깊은 곳에서… 금이 간 범종 소리가 한 번, 낮게 울렸다.'}]},
-  /* V005: 숨겨진 통로 → 봉인된 터 → 사찰 수호귀 → 봉인된 것의 정체(어둑시니) */
   {t:'옥좌 뒤의 통로',type:'talk',npc:'seol',end:()=>[
     {w:'me',t:'옥좌 뒤에 길이 있었다. 그 끝에서 종소리가 들렸어.'},
     {w:'seol',t:'…봉인된 터. 궁궐이 세워지기 훨씬 전, 그 자리에 있던 옛 사찰이야.'},
     {w:'seol',t:'스님들이 무언가를 땅 아래 가두고, 그 위에 궁궐을 올려 입구를 덮어 버렸대. 아무도 다시는 내려가지 못하도록.'},
     {w:'seol',t:'혈월왕이 무너지면서 덮개가 열린 거야. 거긴 혈귀들보다 훨씬 오래된 것들이 지키고 있어. 조심해.'}]},
-  {t:'봉인된 터',type:'kill',map:'sealed',n:120,lv:38,end:()=>[
+  {t:'봉인된 터',type:'kill',map:'sealed',n:150,lv:81,end:()=>[
     {w:'n',t:'무너진 법당 기둥마다 붉은 부적이 겹겹이 붙어 있었다. 모두 안쪽을 향해, 무언가를 밀어 넣듯이.'},
     {w:'n',t:'망자들은 사찰 마당을 넘지 않았다. 마치 그 아래 있는 것이 두려운 듯이.'}]},
   {t:'깨진 범종',type:'collect',map:'sealed',n:20,item:'깨진 범종 조각',p:.14,end:()=>[
     {w:'n',t:'범종 조각을 맞추자 새겨진 글귀가 드러났다.'},
     {w:'n',t:'"빛 없는 곳에서 자라는 것. 두려움을 먹고 커지는 것. 이 종이 울리는 동안 깨어나지 말라."'},
     {w:'me',t:'…종은 이미 깨져 있었다.'}]},
-  {t:'봉인의 파수꾼',type:'elite',map:'sealed',n:8,end:()=>[
+  {t:'봉인의 파수꾼',type:'elite',map:'sealed',n:10,end:()=>[
     {w:'n',t:'파수꾼들이 쓰러질 때마다 땅 밑에서 무언가가 숨을 들이쉬는 듯 바닥이 미세하게 떨렸다.'}]},
-  {t:'사찰 수호귀',type:'boss',map:'sealed',boss:'guardian',lv:42,end:()=>[
+  {t:'천 년의 염불',type:'lv',lv:90,end:()=>[
+    {w:'n',t:`법당 터 바닥에 새겨진 염불이 발밑에서 희미하게 빛났다. 글자 몇 개는 누군가 손톱으로 긁어 지워 놓았다.`},
+    {w:'me',t:`봉인을 안에서 긁어낸 흔적이다.`}]},
+  {t:'범종의 메아리',type:'kill',map:'sealed',n:300,lv:93,end:()=>[
+    {w:'n',t:`적을 쓰러뜨릴 때마다 깨진 범종이 스스로 한 번씩 울렸다. 소리는 점점 낮고 길어졌다.`}]},
+  {t:'마지막 담금질',type:'enh',n:15,hint:'장비 하나를 +15까지 강화하자 · 어둑시니에 맞서려면 에픽 +15 장비가 필요하다',end:()=>[
+    {w:'smith',t:`열다섯 번. 내가 두드려 본 쇠 중에 가장 무거운 쇠야.`},
+    {w:'smith',t:`저 아래 것이 무엇이든… 이 쇠는 너보다 먼저 부러지지 않을 거다.`}]},
+  {t:'사찰 수호귀',type:'boss',map:'sealed',boss:'guardian',lv:97,end:()=>[
     {w:'guardian',t:'…천 년이다. 천 년을 이 종 아래에서 지켰다.'},
     {w:'guardian',t:'어리석은 망자여. 나를 쓰러뜨려 무엇을 얻었느냐. 이 종이 마지막 빗장이었거늘.'},
     {w:'me',t:'무엇을 지키고 있었지.'},
@@ -724,41 +780,55 @@ const MAINQ=[
     {w:'me',t:'그럼 네가 등불에 사람들을 가둔 것도.'},
     {w:'seol',t:'……봉인이 버티는 동안은 아직 시간이 있어. 혈월왕이 심연에서 다시 올라오기 전에, 먼저 그쪽을 끝내야 해.'},
     {w:'seol',t:'하지만 잊지 마. 언젠가 저 아래 그림자와 마주해야 할 날이 와. 그때까지… 강해져.'}]},
-  {t:'심연으로',type:'talk',npc:'seol',end:()=>[
+  {t:'심연으로',type:'talk',npc:'seol',lv:100,hint:'레벨 100이 되면 무한 심연이 열린다 · 심연에서 어둑시니에 맞설 장비를 모으자',end:()=>[
     {w:'seol',t:'달이 지지 않는 한 저건 다시 올라와. 심연 끝까지 쫓아가야 해.'},
     {w:'seol',t:'그리고… 다 끝나면, 등불 속 사람들을 놓아줄게. 나도 같이.'},
     {w:'me',t:'그럼 내려가지. 몇 번이고.'}]},
-  {t:'바닥 없는 밤 · 첫째',type:'abyss',n:5,end:()=>[
+  {t:'바닥 없는 밤 · 첫째',type:'abyss',n:3,end:()=>[
     {w:'n',t:'다섯 번째 문을 지나자 위아래가 사라졌다. 떨어지는 것인지 오르는 것인지 알 수 없었다.'}]},
-  {t:'깊어지는 그림자',type:'lv',lv:40,end:()=>[
+  {t:'에픽의 무게',type:'gear',n:6,hint:'에픽 이상 장비 6부위를 착용하자 · 에픽은 보스에게서만 나온다',end:()=>[
+    {w:'smith',t:`보스 놈들이 떨군 쇠로군. 여섯 부위를 다 맞추니 그림자가 다 무거워 보여.`},
+    {w:'seol',t:`심연이 깊어질수록 좋은 장비가 더 많이 나와. 너무 서두르지는 마.`}]},
+  {t:'깊어지는 그림자',type:'abyss',n:6,end:()=>[
     {w:'king',t:'깊이 올수록 너는 나를 닮아 간다. 거울을 보아라, 그릇아.'}]},
-  {t:'바닥 없는 밤 · 둘째',type:'abyss',n:10,lv:40,end:()=>[
+  {t:'바닥 없는 밤 · 둘째',type:'abyss',n:8,end:()=>[
     {w:'seol',t:'열 번째 문… 달빛이 아주 조금 옅어졌어.'},
     {w:'me',t:'아직이다. 저 아래에서 아직 웃고 있어.'}]},
-  {t:'명장의 칼날',type:'enh',n:12,end:()=>[
-    {w:'smith',t:'열두 번을 버틴 쇠다. 이 정도면 달도 벨 수 있겠어.'},
-    {w:'smith',t:'돌아오면 술 한잔하자. 산 사람이든 죽은 사람이든.'}]},
-  {t:'바닥 없는 밤 · 셋째',type:'abyss',n:20,lv:45,end:()=>[
+  {t:'열다섯 번 두드린 갑주',type:'gearEnh',n:6,e:15,hint:'에픽 이상 장비 6부위를 모두 +15 이상으로 강화하자 (어둑시니 쉬움 권장 사양)',end:()=>[
+    {w:'smith',t:`여섯 부위 모두 열다섯 번씩. …이제 내가 더 해 줄 수 있는 건 없다.`},
+    {w:'smith',t:`가거라. 그리고 꼭 돌아와. 술은 내가 산다.`}]},
+  {t:'바닥 없는 밤 · 셋째',type:'abyss',n:10,end:()=>[
     {w:'n',t:'스무 번째 문 너머에서 혈월왕의 웃음이 처음으로 멎었다.'}]},
-  {t:'오십 번째 밤',type:'lv',lv:50,end:()=>[
+  {t:'꺼져 가는 등불',type:'talk',npc:'seol',raidUnlock:1,end:()=>[
+    {w:'seol',t:`심연 아래에서… 등불이 하나씩 꺼지고 있어. 바람도 없는데.`},
+    {w:'seol',t:`어둑시니야. 사람이 두려워하는 만큼 커지는 그림자. 수호귀가 지키던 봉인이 깨지면서 깨어났어.`},
+    {w:'me',t:`혼자서는 무리라는 얼굴이군.`},
+    {w:'seol',t:`응. 모험단 모두를 데려가. 그리고… 그게 손을 들면 등불 아래로 숨어. 한 사람에 등불 하나씩. 하나라도 비면 모두 삼켜져.`},
+    {w:'n',t:`지도에 새 길이 열렸다 — 어둑시니의 굴.`}]},
+  {t:'어둠을 삼키는 것',type:'raid',diff:0,hint:'지도에서 「어둑시니의 굴」 → 쉬움 난이도에 도전하자 · 모험단 동료가 함께 싸운다',end:()=>[
+    {w:'n',t:`마지막 그림자가 흩어지자 굴 안의 등불이 하나둘 다시 켜졌다.`},
     {w:'seol',t:`${pl.name}… 아니, 오라버니. 달이 기울기 시작했어.`},
-    {w:'seol',t:'등불 속 사람들도 하나둘 잠들고 있어. 이제야 편해 보여.'},
-    {w:'me',t:'끝난 건가.'},
-    {w:'seol',t:'아니. 심연에는 바닥이 없으니까. 하지만 이제 혼자 내려가진 않아도 돼.'},
-    {w:'n',t:'망자의 칼끝에는 끝이 없었다. 그리고 그 곁엔, 언제나 푸른 등불 하나가 따라왔다.'}]},
+    {w:'seol',t:`등불 속 사람들도 하나둘 잠들고 있어. 이제야 편해 보여.`},
+    {w:'me',t:`끝난 건가.`},
+    {w:'seol',t:`아니. 심연에는 바닥이 없고, 어둠은 사람이 두려워하는 한 다시 자라. 하지만 이제 혼자 내려가진 않아도 돼.`},
+    {w:'n',t:`망자의 칼끝에는 끝이 없었다. 그리고 그 곁엔, 언제나 푸른 등불 하나가 따라왔다.`}]},
   {t:'끝나지 않는 사냥',type:'endless'}];
 /* 이전 버전 저장(임무 10개)의 진행 위치를 새 임무 번호로 옮긴다 */
 const QMIG=[0,1,7,8,14,15,21,28,38,42];
 /* V005: 혈월왕 다음에 봉인된 터 임무 6개가 들어가, qv 3 저장의 '심연으로'(29번) 이후 번호를 6칸 민다 */
-const QV=4,QINS_AT=29,QINS_N=6;
-function qOf(o){if(!o.qv)return QMIG[Math.min(o.q||0,QMIG.length-1)];if(o.qv<4&&(o.q||0)>=QINS_AT)return (o.q||0)+QINS_N;return o.q||0}
+const QV=5,QINS_AT=29,QINS_N=6;
+/* V013: qv4 임무 목록(제목). 새 목록으로 옮길 때 같은 제목을 찾고, 레벨이 모자라면 레벨에 맞는 앞 임무로 돌려 둔다 */
+const OLDQ4=["푸른 등불 아래", "논두렁의 원혼", "원혼의 우두머리", "쇠를 두드리는 망자", "첫 번째 담금질", "잃어버린 이름들", "여우골 입구", "아홉 꼬리의 거짓말", "무녀의 손목", "저승으로 가는 길", "검은 강의 망자", "찢어진 명부", "나루터의 사공들", "저승의 쇠", "명부에 덧쓴 글씨", "등불은 무엇으로 타는가", "타오르는 등불 아래", "늪의 독기", "묵린의 비늘", "떠돌이 상인의 거래", "늪지기", "늪 아래 잠든 것", "그릇", "핏빛 궁궐의 문", "궁궐의 혈귀", "달의 파편", "혈위대", "다섯 번의 토벌", "핏빛 달 아래", "옥좌 뒤의 통로", "봉인된 터", "깨진 범종", "봉인의 파수꾼", "사찰 수호귀", "봉인 아래의 그림자", "심연으로", "바닥 없는 밤 · 첫째", "깊어지는 그림자", "바닥 없는 밤 · 둘째", "명장의 칼날", "바닥 없는 밤 · 셋째", "오십 번째 밤", "끝나지 않는 사냥"];
+function q4Of(o){if(!o.qv)return QMIG[Math.min(o.q||0,QMIG.length-1)];if(o.qv<4&&(o.q||0)>=QINS_AT)return (o.q||0)+QINS_N;return o.q||0}
+function qOf(o){if(o.qv>=5)return o.q||0;let i=q4Of(o),idx=-1;for(;i>=0&&idx<0;i--)idx=qIdx(OLDQ4[i]==='오십 번째 밤'?'어둠을 삼키는 것':OLDQ4[i]);if(idx<0)idx=0;
+  const lv=o.lv||1,cap=MAINQ.findIndex(q=>q.lv&&q.lv>lv+2);return cap>=0?Math.min(idx,cap):idx}
 const SEOLFLAV=['등불에서 너무 멀어지지 마.','오라… 아니, 아무것도 아니야.','장비는 대장장이 강쇠에게 맡겨. 두드릴수록 단단해질 거야.','심연에는 끝이 없대. 그러니까 너도 끝없이 강해져야 해.','네 눈, 등불이랑 같은 색이야. 알고 있었어?'];
 
 /* ================= state ================= */
 const pl={x:0,y:0,r:15,hp:100,face:0,aim:0,aimT:0,dash:0,dashCd:0,dvx:0,dvy:0,buffs:{},shield:0,cds:[0,0,0,0,0],flash:0,iframe:0,d:{},moving:false,
   name:'무명',cls:'warrior',lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:0,stone:0,soul:0,skl:[1,1,1,1,1],q:0,qk:0,bounty:null,abyss:0,
   set:{autoEquip:true,autoDis:0,autoLoot:true,dmgNum:true,target:'near',autoPot:false},map:'village',board:null,st:null,ach:{},
-  walkT:0,atkT:0,trail:[],pots:[0,0,0,0],potCd:0,pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,chan:null,god:false,qv:4};
+  walkT:0,atkT:0,trail:[],pots:[0,0,0,0],potCd:0,pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,chan:null,god:false,qv:5};
 const PKEYS=['name','cls','lv','exp','pts','stats','gear','inv','gold','stone','soul','skl','q','qk','qv','bounty','abyss','set','map','board','st','ach','pots','pets','pet','ess','mend','sq','relic','invx','bounties','skin'];
 const newSt=()=>({repair:0,bounty:0,gateK:0,raid:0,raidW:{},kills:0,bosses:0,bk:{},gold:0,dash:0,dis:0,deaths:0,maxEnh:0,gotG:-1,gate:0,gateB:0});
 const G={scene:'title',map:'village',ents:[],projs:[],eprojs:[],zones:[],teles:[],drops:[],texts:[],parts:[],fx:[],timers:[],npcs:[],decor:[],lights:[],
@@ -853,10 +923,18 @@ function refRaw(L,g,e){const k=L+'|'+g+'|'+e;let v=REFC.get(k);if(v)return v;let
 function refStats(L){L=Math.max(1,Math.round(L));if(L<=40)return refRaw(L,2,0);if(L>=100)return refRaw(L,6,20);
   const t=(L-40)/60,a=refRaw(L,2,0),b=refRaw(L,6,20),mix=k=>Math.exp(Math.log(a[k])*(1-t)+Math.log(b[k])*t);return {atk:mix('atk'),mhp:mix('mhp'),ehp:mix('ehp'),cp:mix('cp')}}
 const MAXLV=1000;
-function mapMobLv(M){if(M.end)return Math.max(100,pl.lv+3)+ri(-1,1);if(M.endless)return 37+G.tier+ri(0,1);return M.lv?ri(M.lv[0],M.lv[1]):1}
-function mapBossLv(M){if(M.end)return Math.max(100,pl.lv+3)+3;if(M.endless)return 37+G.tier+3;return M.lv?M.lv[1]+2:1}
-function mobLvOf(id,tier){const M=MAPS[id];if(M.safe||M.raid)return[0,0];if(M.end){const b=Math.max(100,pl.lv+3);return[b-1,b+1]}if(M.endless){const t=tier||G.tier||pl.abyss+1;return[37+t,38+t]}return M.lv||[1,1]}
-function recCP(id,tier){const M=MAPS[id];if(M.safe||M.raid)return 0;const L=mobLvOf(id,tier)[1];return Math.round(refStats(L).cp*(M.end?1:.85))}
+/* V013: 던전 몬스터 레벨 = 내 레벨에 비례(내 레벨 -1~+2), 단 던전마다 정해진 범위 안. 심연은 Lv.100 고정(단계는 배율로) */
+function mapMobLv(M){if(M.endless)return 100;return M.lv?clamp(pl.lv+ri(-1,2),M.lv[0],M.lv[1]):1}
+function mapBossLv(M){if(M.endless)return 100;return M.lv?clamp(pl.lv+2,M.lv[0]+2,M.lv[1]+2):1}
+function mobLvOf(id,tier){const M=MAPS[id];if(M.safe||M.raid)return[0,0];if(M.endless)return[100,100];return M.lv||[1,1]}
+/* 지금 내 레벨에서 실제로 나오는 레벨(권장 전투력 계산용) */
+function mobLvNow(id){const M=MAPS[id];if(M.endless)return 100;return M.lv?clamp(pl.lv+2,M.lv[0],M.lv[1]):1}
+/* 이야기 던전은 Lv.40부터 조금씩 순하게 (Lv.100에서 기준 캐릭터의 65%) — 심연에서 장비를 맞추기 전에도 진행할 수 있게 */
+const storyMul=L=>1-.35*clamp((L-40)/60,0,1);
+/* 심연 단계 배율: 레벨은 100 고정, 체력·공격력·방어력만 오른다 */
+const abyHp=t=>.55*(1+.12*(t-1)),abyDmg=t=>.6*(1+.06*(t-1)),abyDr=t=>Math.min(.5,(t-1)*.008);
+const abyDrop=t=>Math.min(2.5,1+.05*(t-1)),abyGrade=t=>Math.min(1.2,t*.03);
+function recCP(id,tier){const M=MAPS[id];if(M.safe||M.raid)return 0;const L=mobLvNow(id);if(M.endless){const t=tier||G.tier||pl.abyss+1;return Math.round(refStats(100).cp*.85*Math.sqrt(abyHp(t)*abyDmg(t))/(1-abyDr(t)*.5))}return Math.round(refStats(L).cp*.85*storyMul(L))}
 const qIdx=t=>MAINQ.findIndex(q=>q.t===t);
 function mapOpen(id){const M=MAPS[id];if(M.req&&pl.lv<M.req)return false;if(M.uq&&pl.q<qIdx(M.uq))return false;if(M.raid)return raidOpen();return true}
 function mapLockTxt(id){const M=MAPS[id];if(M.req&&pl.lv<M.req)return `Lv.${M.req} 필요`;if(M.uq&&pl.q<qIdx(M.uq))return `임무 「${M.uq}」에서 열림`;return ''}
@@ -865,7 +943,8 @@ function bossAllowed(M){if(!M.boss)return true;return pl.q>=bossQ(M.boss)}
 /* v2: 레벨업 요구 경험치 대폭 상향 */
 const need=lv=>Math.floor(40*Math.pow(lv,1.9)+80);
 /* 처치 경험치: 저레벨은 그대로, 고레벨은 레벨당 대략 600~2,000마리 */
-const expKill=lv=>Math.max(4+lv*1.2,need(lv)/(600+lv*3));
+/* V013: Lv.100까지는 이야기를 따라가며 오를 수 있게 레벨당 약 40~240마리, 그 뒤로는 점점 느리게 */
+const expKill=lv=>Math.max(4+lv*1.2,need(lv)/(lv<=100?40+lv*2:240+(lv-100)*4));
 const totalPower=()=>SLOTS.reduce((a,s)=>a+power(pl.gear[s]),0)+(pl.d.main||0)*3+pl.lv*10;
 const atkMul=()=>(pl.buffs.bless>0?1.35:1)*(pl.buffs.fairy>0?1+petFairyAtk():1);
 function gainExp(n){if(pl.lv>=MAXLV){pl.exp=0;return}pl.exp+=n;let up=false;while(pl.lv<MAXLV&&pl.exp>=need(pl.lv)){pl.exp-=need(pl.lv);pl.lv++;pl.pts+=3;up=true;const i=UNL.indexOf(pl.lv);if(i>=0)later(1.2,()=>banner('새 기술 해금',`${SK[pl.cls][i].g} ${SK[pl.cls][i].n}`))}
@@ -926,6 +1005,7 @@ function hit(e,dmg,o,sx,sy){if(e.dead)return;o=o||{};const mine=!o.src,S=o.src||
   const cr=(mine&&pl.buffs.blade>0)||Math.random()*100<S.crit+(mine&&pl.buffs.r_flute>0?30:0);
   let d=dmg*(cr?S.critd/100:1)*rnd(.92,1.08)*(e.groggy>0?1.5:1);
   if(mine){d*=relDmgMul(e);if(hasRel('dice')&&Math.random()<.1){d*=5;addText(e.x,e.y-e.r-30,'운명!','#f3cf45',15,true)}}
+  if(e.dr)d*=1-e.dr;
   e.hp-=d;e.flash=.08;if(mine)sfx(cr?'crit':'hit',cr?.7:.5);
   if(G.raid){const k=mine?'me':o.who||'?';G.raid.dmg[k]=(G.raid.dmg[k]||0)+d}
   if(mine){if(hasRel('fang'))pl.hp=Math.min(pl.d.mhp,pl.hp+d*.02);if(pl.buffs.r_oath>0)pl.hp=Math.min(pl.d.mhp,pl.hp+d*.08);if(hasRel('chain'))e.slow=Math.max(e.slow,.5);
@@ -974,17 +1054,17 @@ function spawnMob(type,x,y){
   const M=MAPS[G.map],D=MOBS[type],tier=curTier();
   if(x===undefined)[x,y]=spawnPos(480,760);
   const lv=mapMobLv(M);
-  const elite=Math.random()<(M.dg?.08:.05),hm=1,dm=1;
-  const e={type,x,y,r:D.r*(elite?1.3:1),c:D.c,s:D.s,n:D.n,lv,mhp:mobHp(lv)*D.hp*(elite?4:1)*hm,dmg:mobDmg(lv)*D.dmg*(elite?1.6:1)*dm,spd:D.spd*rnd(.9,1.1),ranged:D.ranged,elite,atk:rnd(.5,2),cd:0,slow:0,stun:0,kbx:0,kby:0,flash:0,ph:rnd(0,TAU),face:1,walkT:rnd(0,9),atkA:0,born:0};
+  const elite=Math.random()<(M.dg?.08:.05),hm=M.endless?abyHp(tier):storyMul(lv),dm=M.endless?abyDmg(tier):storyMul(lv);
+  const e={type,x,y,r:D.r*(elite?1.3:1),c:D.c,s:D.s,n:D.n,lv,mhp:mobHp(lv)*D.hp*(elite?4:1)*hm,dmg:mobDmg(lv)*D.dmg*(elite?1.6:1)*dm,spd:D.spd*rnd(.9,1.1),ranged:D.ranged,elite,atk:rnd(.5,2),cd:0,slow:0,stun:0,kbx:0,kby:0,flash:0,ph:rnd(0,TAU),face:1,walkT:rnd(0,9),atkA:0,born:0,dr:M.endless?abyDr(tier):0};
   e.hp=e.mhp;G.ents.push(e);burst(x,y,'#3a3046',10,120,4);return e}
 function spawnBoss(){
   const M=MAPS[G.map],bk=(M.endless||M.end)?pick(Object.keys(BOSSES)):M.boss,B=BOSSES[bk],tier=curTier();
-  const lv=mapBossLv(M),hm=1,dm=1;
+  const lv=mapBossLv(M),hm=M.endless?abyHp(tier):storyMul(lv),dm=M.endless?abyDmg(tier):storyMul(lv);
   const [x,y]=spawnPos(320,380);
   /* v2 fix: 보스 객체에 좌표(x,y)가 빠져 NaN이 되고, 탄막을 그릴 때 캔버스 오류로 게임 루프가 멈추던 문제 */
   /* v3: 보스 공격력 1.9배 */
   const BOSS_DMG=1.9;
-  const e={boss:true,bk,x,y,n:(M.endless?`심연 ${tier}단계 · `:M.end?'귀문관 · ':'')+B.n,s:B.s,c:B.c,r:B.r,lv,mhp:mobHp(lv)*B.hp*hm,dmg:mobDmg(lv)*B.dmg*dm*BOSS_DMG,spd:72,fury:false,pt:2.2,cast:0,last:'',enr:false,dashing:0,dvx:0,dvy:0,cd:0,slow:0,stun:0,kbx:0,kby:0,flash:0,ph:0,face:1,atk:0,walkT:0,atkA:0};
+  const e={boss:true,bk,x,y,n:(M.endless?`심연 ${tier}단계 · `:'')+B.n,s:B.s,c:B.c,r:B.r,lv,mhp:mobHp(lv)*B.hp*hm,dmg:mobDmg(lv)*B.dmg*dm*BOSS_DMG,spd:72,dr:M.endless?abyDr(tier):0,fury:false,pt:2.2,cast:0,last:'',enr:false,dashing:0,dvx:0,dvy:0,cd:0,slow:0,stun:0,kbx:0,kby:0,flash:0,ph:0,face:1,atk:0,walkT:0,atkA:0};
   e.hp=e.mhp;G.boss=e;G.ents.push(e);sfx('bossIn');banner(e.n,B.intro);fxRing(x,y,10,260,B.c,1,10);burst(x,y,B.c,80,420,5);shake(12)}
 function killEnemy(e){
   if(e.dead)return;if(e.raid){raidWin(e);return}e.dead=true;sfx(e.boss?'bossDie':'kill',e.boss?1:.7);const M=MAPS[G.map];
@@ -1000,13 +1080,14 @@ function killEnemy(e){
   if(e.boss&&Math.random()<(M.end?.5:.3))dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'ess',M.end?2:1);
   if(e.boss||e.elite||Math.random()<.12*ex)dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'stone',(e.boss?10:e.elite?ri(2,4):1)*sa*ex);
   if(e.boss||Math.random()<(e.elite?.3:.03)*ex)dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'soul',(e.boss?3+Math.floor(e.lv/20):1)*ex);
-  const tb=(M.endless?Math.min(1.5,curTier()*.02):0)+(M.end?.5:0),ib=e.lv;
+  /* V013: 심연은 단계가 오를수록 드랍률·등급이 오른다 (상한 있음) */
+  const at=curTier(),tb=M.endless?abyGrade(at):0,adm=M.endless?abyDrop(at):1,ib=e.lv;
   /* v2: 일반·정예 몬스터는 레전더리까지만. 에픽·태초는 보스 전용 */
-  if(e.boss){for(let i=0;i<(M.end?5:3);i++)dropItem(e.x,e.y,(M.end?1.3:.9)+tb,3,ib,7)}
-  else if(e.elite){dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG);if(Math.random()<(M.end?.8:.4)*dropMul())dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG)}
-  else if(Math.random()<(M.end?.35:M.dg?.2:.16)*dropMul())dropItem(e.x,e.y,(M.dg?.1:0)+tb,0,ib,MOB_MAXG);
+  if(e.boss){const nb=M.endless?3+Math.min(2,Math.floor(at/10)):3;for(let i=0;i<nb;i++)dropItem(e.x,e.y,.9+tb,3,ib,7)}
+  else if(e.elite){dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG);if(Math.random()<Math.min(.9,.4*adm*dropMul()))dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG)}
+  else if(Math.random()<Math.min(.5,(M.dg?.2:.16)*adm*dropMul()))dropItem(e.x,e.y,(M.dg?.1:0)+tb,0,ib,MOB_MAXG);
   qEvent('kill',{map:G.map,elite:e.elite});
-  for(const b of bnts().slice())if(b.map===G.map){b.k++;if(b.k>=b.n){pl.bounties.splice(pl.bounties.indexOf(b),1);pl.st.bounty=(pl.st.bounty||0)+1;reward(b.rw);toast(`<b style="color:#5ed4b9">의뢰 완료 · ${MAPS[b.map].n}</b> · 금화 ${fmt(b.rw.gold)} 강화석 ${b.rw.stone} 혼석 ${b.rw.soul}`)}}
+  for(const b of bnts().slice())if(b.map===G.map){b.k++;if(b.k>=b.n){pl.bounties.splice(pl.bounties.indexOf(b),1);pl.st.bounty=(pl.st.bounty||0)+1;reward(b.rw);qEvent('bounty');toast(`<b style="color:#5ed4b9">의뢰 완료 · ${MAPS[b.map].n}</b> · 금화 ${fmt(b.rw.gold)} 강화석 ${b.rw.stone} 혼석 ${b.rw.soul}`)}}
   if(M.dg&&!M.raid&&!e.boss&&!G.boss&&bossAllowed(M)){G.gauge++;if(G.gauge>=GAUGE)spawnBoss()}
   if(e.boss)bossDefeated(e)}
 function bossDefeated(e){
@@ -1014,11 +1095,14 @@ function bossDefeated(e){
   G.ents.forEach(o=>{if(!o.dead&&!o.boss){o.hp=0;killEnemy(o)}});
   banner('토벌 완료',e.n);shake(18);
   pl.st.bosses++;pl.st.bk[e.bk]=(pl.st.bk[e.bk]||0)+1;if(MAPS[G.map].end)pl.st.gateB++;
-  if(MAPS[G.map].endless){const t=G.tier;pl.abyss=Math.max(pl.abyss,t);toast(`<b style="color:#c79bff">무한 심연 ${t}단계 돌파</b>`);if(G.tier<pl.abyss+1){G.tier++;later(1.5,()=>banner(`심연 ${G.tier}단계`,'한 층 더 내려간다 · 적 Lv.'+(37+G.tier)))}}
+  if(MAPS[G.map].endless){const t=G.tier;pl.abyss=Math.max(pl.abyss,t);toast(`<b style="color:#c79bff">무한 심연 ${t}단계 돌파</b>`);if(G.tier<pl.abyss+1){G.tier++;later(1.5,()=>banner(`심연 ${G.tier}단계`,'한 층 더 내려간다 · 적이 더 단단해지고 장비가 더 잘 나온다'))}}
   qEvent('boss',{boss:MAPS[G.map].endless||MAPS[G.map].end?'_':e.bk});
   save()}
 function dropItem(x,y,bonus,minG,ilvB,maxG){const g=Math.max(minG||0,rollGrade(bonus,maxG));const M=MAPS[G.map];const slot=(M.favor&&Math.random()<.55)?pick(M.favor):pick(SLOTS);
-  const L=Math.max(1,(ilvB||pl.lv)+ri(-1,1));const a=rnd(0,TAU),d=rnd(10,50);G.drops.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,it:makeItem(slot,g,L),t:0});
+  const L=Math.max(1,(ilvB||pl.lv)+ri(-1,1));const a=rnd(0,TAU),d=rnd(10,50),it=makeItem(slot,g,L);
+  /* V013 과부하 방지: 바닥에 떨어진 장비가 40개를 넘으면 새 장비는 바로 줍는다 (가방/자동 해체 규칙 그대로) */
+  if(G.drops.length>=40&&g<5){collect({it});return}
+  G.drops.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,it,t:0});
   if(g>=5){fxPillar(x,y,40,GRADES[g].c,1.2);burst(x,y,GRADES[g].c,40,300,4)}}
 function dropCur(x,y,kind,amt){G.drops.push({x:x+rnd(-14,14),y:y+rnd(-14,14),kind,amt,t:0})}
 function eshot(x,y,a,sp,r,dmg,c){G.eprojs.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r,dmg,c,l:3.2})}
@@ -1073,37 +1157,51 @@ const QNPC={seol:'무녀 설화',smith:'대장장이 강쇠',merch:'떠돌이 �
 const QNPCMAP={seol:'village',smith:'village',merch:'shop'};
 function qDone(q){switch(q.type){
   case'lv':return pl.lv>=q.lv;case'enh':return pl.st.maxEnh>=q.n;case'abyss':return pl.abyss>=q.n;
-  case'kill':case'elite':case'collect':case'bossAny':return pl.qk>=q.n;default:return false}}
+  case'kill':case'elite':case'collect':case'bossAny':case'bounty':return pl.qk>=q.n;
+  case'gear':return gearCnt(0)>=q.n;case'gearEnh':return gearCnt(q.e)>=q.n;
+  case'raid':return ((pl.st.raidW||{})[q.diff||0]||0)>=1;default:return false}}
+/* 에픽 이상(+e 이상) 착용 부위 수 */
+function gearCnt(e){return SLOTS.filter(sl=>{const it=pl.gear[sl];return it&&!it.broken&&it.g>=6&&it.enh>=(e||0)}).length}
+/* 퀘스트 조건 진행도 [현재, 목표] (막대 표시용) */
+function qPct(q){switch(q.type){case'kill':case'elite':case'collect':case'bossAny':case'bounty':return[Math.min(pl.qk,q.n),q.n];
+  case'lv':return[Math.min(pl.lv,q.lv),q.lv];case'enh':return[Math.min(pl.st.maxEnh,q.n),q.n];case'abyss':return[Math.min(pl.abyss,q.n),q.n];
+  case'gear':return[gearCnt(0),q.n];case'gearEnh':return[gearCnt(q.e),q.n];case'boss':return G.map===q.map&&!G.boss&&bossAllowed(MAPS[q.map])?[G.gauge,GAUGE]:null;default:return null}}
 function qEvent(type,data){const q=qCur();if(!q||G.qBusy||q.type==='endless')return;data=data||{};
   if(type==='kill'&&data.map===q.map){
     if(q.type==='kill'&&pl.qk<q.n)pl.qk++;
     else if(q.type==='elite'&&data.elite&&pl.qk<q.n)pl.qk++;
     else if(q.type==='collect'&&pl.qk<q.n&&Math.random()<q.p*(data.elite?3:1)){pl.qk++;addText(pl.x,pl.y-80,`+1 ${q.item} (${pl.qk}/${q.n})`,'#f3cf45',13,true)}}
+  if(type==='bounty'&&q.type==='bounty'&&pl.qk<q.n)pl.qk++;
   if(type==='boss'){if(q.type==='bossAny'&&pl.qk<q.n)pl.qk++;if(q.type==='boss'&&data.boss===q.boss)pl.qk=1}
   if(type==='talk'&&q.type==='talk'&&data.npc===q.npc){if(qLvOk(q))qComplete();else toast(`레벨 ${q.lv}이 되면 다시 오자`);return}
   if(q.type==='boss'?pl.qk>=1&&qLvOk(q):qDone(q)&&qLvOk(q))qComplete()}
 function qComplete(){const q=qCur(),i=pl.q;G.qBusy=true;
   const big=q.type==='boss'||q.type==='abyss',r={exp:Math.floor(need(pl.lv)*(big?.5:q.type==='talk'?.15:.3)),gold:Math.floor((120+pl.lv*30)*(big?3:1)),stone:8+i*2+(big?20:0),soul:1+Math.floor(i/3)+(big?3:0)};
-  const after=()=>{G.qBusy=false;reward(r);if(q.type==='boss'){const it=makeItem(pick(SLOTS),Math.max(3,rollGrade(1,SHOP_MAXG)),pl.lv);collect({it})}
+  const after=()=>{G.qBusy=false;reward(r);if(q.raidUnlock){ROOT.raidUnlocked=true;writeRoot();later(1,()=>banner('레이드 해금','어둑시니의 굴 · 지도에서 입장'))}if(q.type==='boss'){const it=makeItem(pick(SLOTS),Math.max(3,rollGrade(1,SHOP_MAXG)),pl.lv);collect({it})}
     sfx('questDone');toast(`<b style="color:#c8a259">임무 완료 · ${q.t}</b> · 금화 ${fmt(r.gold)} · 강화석 ${r.stone} · 혼석 ${r.soul}`);
-    pl.q=Math.min(pl.q+1,MAINQ.length-1);pl.qk=0;const n=qCur();later(.6,()=>banner('새 임무',n.t));save();later(.2,()=>qEvent('check'))};
+    pl.q=Math.min(pl.q+1,MAINQ.length-1);pl.qk=0;const n=qCur();later(.6,()=>banner('새 임무',n.t));if(n.hint)later(1.4,()=>toast(`<b style="color:#5ed4b9">안내</b> · ${n.hint}`));save();later(.2,()=>qEvent('check'))};
   if(q.end)vn(q.end(),after);else after()}
-function qMap(q){if(q.type==='talk')return QNPCMAP[q.npc];if(q.type==='abyss'||q.type==='endless')return'abyss';if(q.type==='enh')return'village';return q.map||null}
-function qProg(q){const need=q.lv&&pl.lv<q.lv&&q.type!=='lv'?` · <span class="neg">Lv.${q.lv} 필요</span>`:'';switch(q.type){
-  case'talk':return `${QNPC[q.npc]}와 대화${need}`;
-  case'kill':return `${MAPS[q.map].n} · 적 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
-  case'elite':return `${MAPS[q.map].n} · 정예 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
-  case'collect':return `${MAPS[q.map].n} · ${q.item} ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
-  case'boss':return `${MAPS[q.map].n} · ${BOSSES[q.boss].n} 처치${pl.qk?' ✓':''}${need}`;
-  case'bossAny':return `아무 보스 ${Math.min(pl.qk,q.n)}/${q.n}회 처치${need}`;
-  case'lv':return `레벨 ${q.lv} 달성 (현재 ${pl.lv})`;
+function qMap(q){if(q.type==='talk')return QNPCMAP[q.npc];if(q.type==='abyss'||q.type==='endless'||q.type==='gear')return pl.lv>=100?'abyss':null;if(q.type==='enh'||q.type==='gearEnh'||q.type==='bounty')return'village';if(q.type==='raid')return null;return q.map||null}
+/* V013: 임무 조건을 '어디서 무엇을 몇 개'로 짧게 */
+function qProg(q){const need=q.lv&&pl.lv<q.lv&&q.type!=='lv'?` · <span class="neg">Lv.${q.lv} 필요</span>`:'';const mn=q.map&&MAPS[q.map]?MAPS[q.map].n:'';switch(q.type){
+  case'talk':return `${MAPS[QNPCMAP[q.npc]].n}의 ${QNPC[q.npc]}에게 말 걸기${need}`;
+  case'kill':return `${mn}에서 적 처치 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
+  case'elite':return `${mn}에서 정예(금테) 처치 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
+  case'collect':return `${mn}에서 ${q.item} 모으기 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
+  case'boss':{const ok=pl.qk>=1;return ok?`${BOSSES[q.boss].n} 토벌 ✓${need}`:`${mn}에서 적 ${GAUGE}마리 → ${BOSSES[q.boss].n} 토벌${G.map===q.map&&!G.boss?` (게이지 ${G.gauge}/${GAUGE})`:G.boss&&G.boss.bk===q.boss?' · 보스 출현!':''}${need}`}
+  case'bossAny':return `아무 던전 보스 토벌 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
+  case'bounty':return `의뢰 게시판 의뢰 완료 ${Math.min(pl.qk,q.n)}/${q.n}${need}`;
+  case'lv':return `레벨 ${q.lv} 달성 (현재 Lv.${pl.lv})`;
   case'enh':return `장비 하나를 +${q.n}까지 강화 (최고 +${pl.st.maxEnh})${need}`;
-  case'abyss':return `무한 심연 ${Math.min(pl.abyss,q.n)}/${q.n}단계 돌파${need}`;
-  default:return `무한 심연 최고 ${pl.abyss}단계`}}
+  case'gear':return `에픽 이상 장비 착용 ${gearCnt(0)}/${q.n}부위${need}`;
+  case'gearEnh':return `에픽 이상 +${q.e} 장비 착용 ${gearCnt(q.e)}/${q.n}부위${need}`;
+  case'abyss':return `무한 심연 ${q.n}단계 돌파 (최고 ${pl.abyss}단계)${need}`;
+  case'raid':return `레이드 어둑시니(쉬움) 토벌${need}`;
+  default:return `무한 심연 최고 ${pl.abyss}단계 · 어둑시니 보통·어려움에 도전`}}
 const BOUNTY_MAX=3;
 /* 의뢰는 동시에 3개까지. 예전 저장(pl.bounty 하나)은 bnts()가 처음 불릴 때 배열로 옮긴다 */
 function bnts(){if(!Array.isArray(pl.bounties))pl.bounties=[];if(pl.bounty){if(pl.bounties.length<BOUNTY_MAX)pl.bounties.push(pl.bounty);pl.bounty=null}return pl.bounties}
-function makeOffers(){const maps=['field','fox','river','swamp','palace','sealed','abyss','gate'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:6+pl.lv+dg*4,soul:ri(1,2)+dg,exp:Math.floor(need(pl.lv)*.25)}})}return o}
+function makeOffers(){const maps=['field','fox','river','swamp','palace','sealed','abyss'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:6+pl.lv+dg*4,soul:ri(1,2)+dg,exp:Math.floor(need(pl.lv)*.25)}})}return o}
 
 /* ================= 동반자 (pets) ================= */
 const CUR={gold:'금화',stone:'강화석',soul:'혼석',ess:'동반자 정수'},CURC={gold:'#f3cf45',stone:'#9fc3e8',soul:'#c79bff',ess:'#7ff7e4'};
@@ -1217,8 +1315,6 @@ const SUBQ=[
  {id:'pet',n:'동반자의 성장',lv:15,d:'동반자 하나를 Lv.5까지 강화',p:()=>[Math.max(1,...Object.values(pl.pets||{})),5],rw:{ess:3,gold:8000}},
  {id:'aby30',n:'심연 순례',lv:50,d:'무한 심연 30단계 돌파',p:()=>[pl.abyss,30],rw:{soul:30,stone:1000}},
  {id:'enh20',n:'명장의 증표',lv:80,d:'장비 하나를 +20까지 강화',p:()=>[pl.st.maxEnh,20],rw:{soul:60,stone:3000}},
- {id:'raid',n:'어둠을 보는 눈',lv:100,d:'귀문관에서 적 300마리, 귀문관 보스 3회 처치 → 무녀 설화에게 보고',raid:1,
-  p:()=>[Math.min(pl.st.gateK||0,300)+Math.min(pl.st.gateB||0,3)*100,600],txt:()=>`귀문관 적 ${Math.min(pl.st.gateK||0,300)}/300 · 귀문관 보스 ${Math.min(pl.st.gateB||0,3)}/3`,rw:{soul:50,mend:1}},
  {id:'mend',n:'복원의 기술',lv:100,d:'파괴된 장비 1개 복구',p:()=>[pl.st.repair||0,1],rw:{stone:2000,soul:20}},
  {id:'raidE',n:'그림자 사냥 · 쉬움',lv:100,d:'어둑시니 레이드(쉬움) 처치',p:()=>[(pl.st.raidW||{})[0]||0,1],rw:{mend:2,soul:40}},
  {id:'raidN',n:'그림자 사냥 · 보통',lv:300,d:'어둑시니 레이드(보통) 처치',p:()=>[(pl.st.raidW||{})[1]||0,1],rw:{mend:3,soul:100}},
@@ -1240,7 +1336,7 @@ const SKINS={
 const ownSkin=id=>!!(ROOT.skins&&ROOT.skins[id]);
 function skinBase(cls,skin){return skin&&SKINS[skin]&&SKINS[skin].cls===cls&&ownSkin(skin)?skin:cls}
 function grantSkin(){const own=ROOT.skins||(ROOT.skins={});const pool=Object.keys(SKINS).filter(k=>!own[k]);if(!pool.length)return null;const k=pick(pool);own[k]=1;writeRoot();return k}
-const raidOpen=()=>!!ROOT.raidUnlocked&&pl.lv>=100;
+const raidOpen=()=>(!!ROOT.raidUnlocked||pl.q>qIdx('꺼져 가는 등불'))&&pl.lv>=100;
 
 /* ================= 레이드 보스 · 어둑시니 ================= */
 const RAID_DIFF=[
@@ -1435,8 +1531,6 @@ const ACH=[
   {id:'a25',g:'淵',n:'심연을 걷다',d:'무한 심연 25단계 돌파',p:()=>[pl.abyss,25],rw:{pts:3,box:5}},
   {id:'a50',g:'淵',n:'심연이 되다',d:'무한 심연 50단계 돌파',p:()=>[pl.abyss,50],rw:{pts:5,box:5}},
   {id:'a100',g:'淵',n:'바닥에 닿다',d:'무한 심연 100단계 돌파',p:()=>[pl.abyss,100],rw:{pts:10,box:5}},
-  {id:'gt',g:'門',n:'귀문 너머',d:'귀문관 입장',p:()=>[pl.st.gate,1],rw:{soul:30}},
-  {id:'gtb',g:'門',n:'종언의 사냥',d:'귀문관 보스 처치',p:()=>[pl.st.gateB,1],rw:{pts:5,box:5}},
   {id:'st',g:'話',n:'바닥 없는 밤',d:'메인 이야기 끝까지 보기',p:()=>[pl.q>=MAINQ.length-1?1:0,1],rw:{pts:3,box:5}},
   {id:'gd',g:'錢',n:'부자 망자',d:'금화 누적 100,000 획득',p:()=>[pl.st.gold,1e5],rw:{stone:100}},
   {id:'ds',g:'步',n:'축지법 달인',d:'대쉬 1,000회',p:()=>[pl.st.dash,1000],rw:{pts:1}},
@@ -1483,7 +1577,6 @@ function buildMap(id){
   else if(id==='palace'){put('redl',5)}
   else if(id==='sealed'){put('candle',6);put('bone',5)}
   else if(id==='abyss'){put('crystal',6);put('eye',3)}
-  else if(id==='gate'){put('eye',12);put('redl',10);put('bone',20);put('torii',3)}
   D.sort((a,b)=>(FLAT[a.t]?0:1)-(FLAT[b.t]?0:1)||a.y-b.y);
   G.decor=D;G.lights=D.filter(d=>LIGHT[d.t]);
   const pc=document.createElement('canvas');pc.width=pc.height=256;const p=pc.getContext('2d');p.fillStyle=M.ground;p.fillRect(0,0,256,256);
@@ -2226,13 +2319,13 @@ function skillH(){const C=CLS[pl.cls],set6=setCount()>=6;
     const hint=i===4&&!set6?`<p class="hint">${SETN[pl.cls]} 세트 6부위를 모두 착용하면 「${SETSK[pl.cls].n}」(으)로 바뀐다. 세트 장비는 에픽 이상에서만 나온다.</p>`:'';
     return `<div class="skrow${lock?' lock':''}" style="--cc:${C.col}"><div class="ic">${(im=>im?`<img src="${im}" alt="">`:s.g)(skIcon(i,s))}</div><div><h5>${s.n}${setNote}<small>${lock?`Lv.${UNL[i]}에 해금`:`기술 Lv.${lv} · 재사용 ${f1(cdOf(i))}초`}</small></h5><p>${s.desc}</p>${hint}${lock?'':lv>=30?'<button class="sb" disabled>최대 강화</button>':`<button class="sb" data-act="skup" data-i="${i}" ${pl.soul>=c.soul&&pl.gold>=c.gold?'':'disabled'}>강화 Lv.${lv+1} · 혼석 ${c.soul} · 금화 ${fmt(c.gold)}</button>`}</div></div>`}).join('')+
   `<div class="skrow" style="--cc:var(--jade)"><div class="ic"><img src="${A('img/sk_dash.webp')}" alt=""></div><div><h5>축지 <small>이동기 · 대쉬</small></h5><p>짧은 거리를 순식간에 이동하며 그동안 피해를 받지 않는다. Space · Shift · 대쉬 버튼. 민첩이 높을수록 자주 쓸 수 있다.</p></div></div>`}
-function mapH(){const my=myCP();return `<div class="pw"><span>내 전투력</span><b class="num">${fmt(my)}</b><small>사냥터·던전은 몬스터 레벨이 고정 · 귀문관만 내 레벨을 따라온다</small></div><p class="hint">던전에서 적 ${GAUGE}마리를 쓰러뜨리면 보스가 나타난다(해당 보스 임무를 받은 뒤부터). 에픽·태초 장비는 보스만 떨어뜨린다.</p>`+
+function mapH(){const my=myCP();return `<div class="pw"><span>내 전투력</span><b class="num">${fmt(my)}</b><small>던전 몬스터는 내 레벨을 따라 강해진다(던전마다 정해진 범위 안) · 심연은 Lv.100 고정</small></div><p class="hint">던전에서 적 ${GAUGE}마리를 쓰러뜨리면 보스가 나타난다(해당 보스 임무를 받은 뒤부터). 에픽·태초 장비는 보스만 떨어뜨린다.</p>`+
   Object.entries(MAPS).filter(([id,M])=>!M.hidden).map(([id,M])=>{const ml=mobLvOf(id),rc=recCP(id),q=qCur(),qm=qMap(q)===id,open=mapOpen(id),lt=mapLockTxt(id);
     const cpTxt=rc?` · 권장 전투력 <b class="num ${my>=rc?'pos':'neg'}">${fmt(rc)}</b>`:'';
-    const bossTxt=M.boss?(bossAllowed(M)?' · 보스 '+BOSSES[M.boss].n:' · 보스 미출현(임무 진행 시 등장)'):M.end?' · 보스 무작위 · 드랍률 대폭 증가':'';
+    const bossTxt=M.boss?(bossAllowed(M)?' · 보스 '+BOSSES[M.boss].n:' · 보스 미출현(임무 진행 시 등장)'):M.endless?' · 보스 무작위 · 단계가 오를수록 드랍률↑':'';
     const tier=M.endless&&open?`<div class="tierpick"><label for="abyT">들어갈 단계</label><input type="number" id="abyT" min="1" max="${pl.abyss+1}" value="${Math.min(G.tier||pl.abyss+1,pl.abyss+1)}"><span class="hint">1 ~ ${pl.abyss+1}단계 (돌파 ${pl.abyss}단계)</span></div>`:'';
     return `<div class="mrow"><div><h5>${M.n}<span class="tag${M.dg&&!M.endless?' dg':''}${M.endless||M.end?' inf':''}">${M.kind}</span>${qm?'<span class="tag">임무</span>':''}${!open?`<span class="lockt">${lt}</span>`:''}</h5><p>${M.desc}</p><div class="meta">${M.safe?'안전 지대 · 체력 빠르게 회복':`적 Lv.${ml[0]}~${ml[1]}`}${cpTxt}${M.favor?' · 잘 나오는 부위 '+M.favor.map(s=>SLOTN[s]).join('·'):''}${bossTxt}</div>${tier}</div><button class="sb${G.map===id&&!M.endless||!open?'':' pri'}" data-act="go" data-id="${id}" ${(G.map===id&&!M.endless)||!open?'disabled':''}>${G.map===id&&!M.endless?'현재 위치':!open?'잠김':'이동'}</button></div>`}).join('')+
-  `<div class="mrow"><div><h5>어둑시니의 굴<span class="tag inf">레이드</span>${!raidOpen()?`<span class="lockt">${pl.lv<100?'Lv.100 필요':'서브 임무 「어둠을 보는 눈」 완료 필요'}</span>`:''}</h5><p>모험단 캐릭터들과 함께 거대한 그림자 어둑시니에 맞선다. 다른 캐릭터는 AI가 조종한다. 유물과 복원의 혼을 얻는 유일한 곳.</p></div><button class="sb${raidOpen()?' pri':''}" data-act="raidlobby" ${raidOpen()?'':'disabled'}>${raidOpen()?'입장 준비':'잠김'}</button></div>`}
+  `<div class="mrow"><div><h5>어둑시니의 굴<span class="tag inf">레이드</span>${!raidOpen()?`<span class="lockt">${pl.lv<100?'Lv.100 필요':'메인 임무 「꺼져 가는 등불」 완료 필요'}</span>`:''}</h5><p>모험단 캐릭터들과 함께 거대한 그림자 어둑시니에 맞선다. 다른 캐릭터는 AI가 조종한다. 유물과 복원의 혼을 얻는 유일한 곳.</p></div><button class="sb${raidOpen()?' pri':''}" data-act="raidlobby" ${raidOpen()?'':'disabled'}>${raidOpen()?'입장 준비':'잠김'}</button></div>`}
 function questH(){const q=qCur(),done=MAINQ.slice(0,pl.q).map(x=>x.t);const subs=SUBQ.map(x=>({q:x,st:sqState(x)}));
   return `<p class="sec">메인 임무 · ${Math.min(pl.q+1,MAINQ.length)}/${MAINQ.length}</p>
   <div class="qrow"><div><h5>${q.t}<span class="tag">진행 중</span></h5><p>${qProg(q)}</p></div>${qMap(q)&&qMap(q)!==G.map&&mapOpen(qMap(q))?`<button class="sb pri" data-act="go" data-id="${qMap(q)}">이동</button>`:''}</div>
@@ -2443,7 +2536,9 @@ const HUDPOR={warrior:1,archer:1,mage:1,healer:1,warrior_myth:1,archer_myth:1,ma
 function hudPor(){const k=skinBase(pl.cls,pl.skin),el=H.hCls;if(el._por===k)return;el._por=k;
   if(HUDPOR[k]){el.textContent='';el.classList.add('hpor');el.style.backgroundImage=`url("${A(`img/hud_${k}.webp`)}")`}
   else{el.classList.remove('hpor');el.style.backgroundImage='';el.textContent=CLS[pl.cls].g}}
+let qcT=0;
 function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAcc=0;const d=pl.d,M=MAPS[G.map];hudPor();
+  if(G.t-qcT>1&&!G.modal&&!G.vn&&G.dead<=0){qcT=G.t;const q=qCur();if(q&&(q.type==='gear'||q.type==='gearEnh'||q.type==='enh'||q.type==='raid'||q.type==='lv'||q.type==='abyss'))qEvent('check')}
   hT(H.hName,pl.name);hT(H.hLv,'Lv.'+pl.lv);hT(H.hMap,M.n+(M.endless?` · ${pl.abyss+1}단계`:''));
   hW(H.hpF,clamp(pl.hp/d.mhp*100,0,100)+'%');hW(H.shF,clamp(pl.shield/d.mhp*100,0,100)+'%');hT(H.hpT,fmt(Math.max(0,pl.hp))+' / '+fmt(d.mhp));
   hW(H.xpF,clamp(pl.exp/need(pl.lv)*100,0,100)+'%');hT(H.cGold,fmt(pl.gold));hT(H.cStone,fmt(pl.stone));hT(H.cSoul,fmt(pl.soul));hT(H.cEss,fmt(pl.ess));
@@ -2461,7 +2556,7 @@ function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAc
   if(G.boss){hH(H.bossBar,false);hH(H.gauge,true);hT(H.bossN,G.boss.n+(G.boss.fury?' · 광폭':G.boss.enr?' · 격노':''));hW(H.bossF,clamp(G.boss.hp/G.boss.mhp*100,0,100)+'%')}
   else{hH(H.bossBar,true);if(M.dg&&!M.raid&&bossAllowed(M)){hH(H.gauge,false);hT(H.gaugeT,`보스 출현까지 ${G.gauge}/${GAUGE}`);hW(H.gaugeF,G.gauge/GAUGE*100+'%')}else hH(H.gauge,true)}
   const q=qCur(),qm=qMap(q),need2=qm&&qm!==G.map&&!(MAPS[qm].req&&pl.lv<MAPS[qm].req)?qm:null;
-  let s=`<div class="tq"${need2?` data-go="${need2}" role="button" tabindex="0"`:''}><em>임무</em><b>${q.t}</b><span>${qProg(q)}</span>${need2?`<span class="go">→ ${MAPS[need2].n}로 이동</span>`:''}</div>`;
+  let s=`<div class="tq"${need2?` data-go="${need2}" role="button" tabindex="0"`:''}><em>임무</em><b>${q.t}</b><span class="qc">${qProg(q)}</span>${(pp=>pp&&pp[1]>0?`<i class="qbar"><u style="width:${Math.min(100,pp[0]/pp[1]*100)}%"></u></i>`:'')(qPct(q))}${need2?`<span class="go">→ ${MAPS[need2].n}로 이동</span>`:''}</div>`;
   raidHud();
   if(G.raid){const R=G.raid;s=pl.mind>0||R.wipe||R.pre?`<div class="party">${pl.mind>0?`<span style="color:#c79bff">정신 조종 · 대쉬 ${R.mindBreak}/3</span>`:''}${R.pre?`<span style="color:#c79bff">그림자 심판 전조 · 생존 ${wipeCount()}명</span>`:''}${R.wipe?`<span style="color:#7ff7e4">등불로! ${Math.max(0,R.wipe.dur-R.wipe.t).toFixed(1)}초</span>`:''}</div>`:''}
   else for(const b of bnts()){s+=`<div class="tq b"${G.map!==b.map?` data-go="${b.map}" role="button" tabindex="0"`:''}><em>의뢰</em><b>${MAPS[b.map].n}</b><span>${b.k}/${b.n}</span>${G.map!==b.map?`<span class="go">→ 이동</span>`:''}</div>`}
@@ -2488,13 +2583,14 @@ function loadFrom(o){Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});p
   pl.pots=Array.isArray(o.pots)?o.pots.slice(0,4):[3,0,0,0];while(pl.pots.length<4)pl.pots.push(0);
   pl.pets=Object.assign({tiger:1,fairy:1,coin:1},o.pets||{});pl.pet=o.pet||'tiger';pl.ess=o.ess||0;pl.god=false;
   pl.mend=o.mend||0;pl.sq=o.sq||{};pl.relic=o.relic||null;pl.relCd=0;pl.pearlCd=0;pl.mind=0;pl.lv=Math.min(pl.lv,MAXLV);
-  if(!o.qv){pl.q=QMIG[Math.min(o.q||0,QMIG.length-1)];pl.qk=0;pl.qv=QV}
-  else if(pl.qv<4){if(pl.q>=QINS_AT)pl.q+=QINS_N;pl.qv=QV}
+  if(!o.qv||o.qv<5){const nq=qOf(o);if(nq!==pl.q)pl.qk=0;pl.q=nq;pl.qv=QV}
+  /* V013: 귀문관 삭제 — 그곳에 있던 저장·의뢰는 마을로 */
+  if(!MAPS[pl.map])pl.map='village';if(Array.isArray(pl.bounties))pl.bounties=pl.bounties.filter(b=>MAPS[b.map]);if(Array.isArray(pl.board))pl.board=pl.board.filter(b=>MAPS[b.map]);
   pl.q=clamp(pl.q|0,0,MAINQ.length-1);
   SLOTS.forEach(s=>{if(!pl.gear[s])pl.gear[s]=null;else if(pl.gear[s].broken){pl.inv.unshift(pl.gear[s]);pl.gear[s]=null}});pl.d={};recalc();pl.hp=pl.d.mhp;startPlay();setMenu(menuOpen());
   const m=MAPS[pl.map]&&!MAPS[pl.map].raid?pl.map:'village';if(!travel(m))travel('village');later(.3,()=>qEvent('check'))}
 /* 새 캐릭터 기본값 (진행 초기화에도 쓴다) */
-function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:2,skl:[1,1,1,1,1],q:0,qk:0,qv:4,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
+function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:2,skl:[1,1,1,1,1],q:0,qk:0,qv:5,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
     pots:[3,0,0,0],pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,mend:0,sq:{},relic:null};
   o.stats[CLS[cls].main]+=5;SLOTS.forEach(s=>o.gear[s]=null);o.gear.weapon=makeItem('weapon',1,1,cls,null);o.gear.armor=makeItem('armor',0,1,cls,null);return o}
 function newGame(cls,name){
@@ -2651,7 +2747,7 @@ function sfxSkill(cls,i,v){
    <audio>를 Web Audio 그래프에 연결해 볼륨을 조절하고(아이폰은 audio.volume을 무시한다), 바뀔 때 1.2초간 겹쳐 넘긴다 */
 const BGMF={village:'snd/bgm_village.mp3',dungeon:'snd/bgm_dungeon.mp3',deep:'snd/bgm_deep2.mp3',raid:'snd/bgm_raid.mp3'};
 /* V007: 혈월 궁궐 · 봉인된 터 · 무한 심연은 전용 곡(Cavernous Pulse) */
-const DEEPBGM={palace:1,sealed:1,abyss:1,gate:1}; /* V011: 귀문관 포함, 곡 교체 */
+const DEEPBGM={palace:1,sealed:1,abyss:1};
 SND.mus={};SND.cur='';
 function bgmKey(){if(G.scene!=='play')return 'village';if(G.raid)return 'raid';const M=MAPS[G.map];return !M||M.safe?'village':DEEPBGM[G.map]?'deep':'dungeon'}
 function musEl(k){let m=SND.mus[k];if(m)return m;const el=new Audio();el.loop=true;el.preload='auto';el.setAttribute('playsinline','');el.setAttribute('webkit-playsinline','');el.src=A(BGMF[k]);
