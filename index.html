@@ -415,7 +415,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
       <div class="bar hp"><i id="hpF"></i><i class="sh" id="shF"></i><span id="hpT"></span></div>
       <div class="bar xp"><i id="xpF"></i></div>
       <div class="cp"><span>전투력 <b id="hCP">0</b></span><span class="rec" id="hRec"></span></div>
-      <div class="cur num"><span class="cgd"><em>금화</em><b id="cGold">0</b></span><span class="cst"><em>강화석</em><b id="cStone">0</b></span><span class="csl"><em>혼석</em><b id="cSoul">0</b></span><span class="ces"><em>정수</em><b id="cEss">0</b></span></div>
+      <div class="cur num"><span class="cgd"><em>금화</em><b id="cGold">0</b></span><span class="cst"><em>강화석</em><b id="cStone">0</b></span><span class="csl" hidden><em>혼석</em><b id="cSoul">0</b></span><span class="ces"><em>정수</em><b id="cEss">0</b></span></div>
     </div>
     <div class="trk pe" id="trk"></div>
     <div class="raidp" id="raidP" hidden></div>
@@ -448,7 +448,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V014</span>
+      <span class="tver num" id="tVer">V015</span>
       <button class="thot" id="bNew" style="left:37.68%;top:58.34%;width:13.46%;height:6.7%" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" style="left:52.09%;top:58.34%;width:10.29%;height:6.7%" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" style="left:42.94%;top:67.38%;width:14.17%;height:6.48%" aria-label="전체화면으로"></button>
@@ -495,8 +495,8 @@ const hash=s=>{let h=7;for(const ch of s)h=h*31+ch.charCodeAt(0)|0;return h};
 
 /* ================= data ================= */
 const GRADES=[
-  {n:'언커먼',c:'#8e9196',m:1},{n:'커먼',c:'#ece6d6',m:1.2},{n:'매직',c:'#4f9dff',m:1.5},{n:'레어',c:'#f3cf45',m:1.9},
-  {n:'유니크',c:'#c07dff',m:2.5},{n:'레전더리',c:'#ff8a2c',m:3.3},{n:'에픽',c:'#ff3e5d',m:4.3},{n:'태초',c:'#7ff7e4',m:6}];
+  {n:'언커먼',c:'#8e9196',m:1},{n:'커먼',c:'#ece6d6',m:1.0323},{n:'매직',c:'#4f9dff',m:1.0657},{n:'레어',c:'#f3cf45',m:1.1002},
+  {n:'유니크',c:'#c07dff',m:1.1359},{n:'레전더리',c:'#ff8a2c',m:1.1727},{n:'에픽',c:'#ff3e5d',m:1.2107},{n:'태초',c:'#7ff7e4',m:1.2501}];
 /* v2: 유니크 이상 가중치를 이전의 1/10로 낮춤. 에픽·태초는 보스 전용 */
 const GW=[420,300,150,75,3.4,1.4,.5,.12];
 const MOB_MAXG=5, SHOP_MAXG=5;
@@ -524,7 +524,7 @@ const MAINN={str:'힘 STR',agi:'민첩 AGI',int:'지력 INT'};
 const UNL=[1,3,6,10,15];
 const INVBASE=80,INVMAX=500,INVSTEP=20,GAUGE=30;
 const invCap=()=>Math.min(INVMAX,INVBASE+((pl&&pl.invx)||0)*INVSTEP);
-const invxCost=k=>({gold:Math.round(3000*Math.pow(1.38,k)),soul:3+k*2});
+const invxCost=k=>({gold:Math.round(4000*Math.pow(1.38,k)),soul:0});
 
 const MOBS={
   ghoul:{n:'원귀',hp:1,dmg:1,spd:78,r:16,c:'#c8c2b2',s:'ghost'},
@@ -836,7 +836,10 @@ const G={scene:'title',map:'village',ents:[],projs:[],eprojs:[],zones:[],teles:[
 
 /* ================= items ================= */
 let UID=1;const newId=()=>Date.now().toString(36)+(UID++).toString(36)+Math.floor(Math.random()*1e4).toString(36);
-function statBase(k,L){const s=Math.pow(1.085,L);switch(k){case'atk':return 8*s;case'hp':return 40*s;case'armor':return 6*s;case'regen':return .8*s;case'crit':return 2.2;case'critd':return 10;default:return 2+L*.6}}
+/* V015 장비 수치 곡선: 장비 레벨 1 = 전투력 약 +1.66% (공격·체력·방어·재생이 레벨마다 1.42%씩 복리 성장, 주스탯은 선형)
+   등급 배율은 '한 등급 위 = 장비 레벨 3 위의 한 등급 아래'가 되도록 맞췄다 (예: 95 태초 ≈ 98 에픽) */
+const GEAR_K=12,GEAR_R=1.0142,GEAR_XB=.9,GEAR_X=.02,ENH_K=.012;
+function statBase(k,L){const s=GEAR_K*Math.pow(GEAR_R,L);switch(k){case'atk':return 8*s;case'hp':return 40*s;case'armor':return 6*s;case'regen':return 2*s;case'crit':return 2.2;case'critd':return 10;default:return 2+L*.6}}
 function rollStat(k,L,g){const m=GRADES[g].m;let v;if(k==='crit')v=statBase(k,L)*Math.sqrt(m);else if(k==='critd')v=statBase(k,L)*Math.pow(m,.7);else v=statBase(k,L)*m;return v*rnd(.85,1.15)}
 function itemName(slot,g,cls){const b=slot==='weapon'?BASEN.weapon[cls]:BASEN[slot];return `${ADJ[g]} ${pick(FLAV)}의 ${pick(b)}`}
 /* setCls: undefined면 에픽 이상에서 35% 확률로 세트 옵션(대개 현재 직업), null이면 없음, 직업 id면 그 세트 */
@@ -844,12 +847,12 @@ function makeItem(slot,g,L,cls,setCls){
   cls=cls||pl.cls;const main=CLS[cls].main,def=SLOTDEF[slot],st={};
   const add=(k,f)=>{const key=k==='main'?main:k;st[key]=(st[key]||0)+rollStat(k,L,g)*f};
   def.pri.forEach(k=>add(k,1));
-  const ex=[0,1,1,2,2,3,3,4][g];for(let i=0;i<ex;i++)add(pick(def.pool),.6);
+  const ex=[1,1,2,2,3,3,4,4][g];for(let i=0;i<ex;i++)add(pick(def.pool),(GEAR_XB+GEAR_X*g)/ex);
   for(const k in st)st[k]=(k==='crit'||k==='critd'||k==='regen')?Math.round(st[k]*10)/10:Math.max(1,Math.round(st[k]));
   let set=null;if(setCls)set=setCls;else if(setCls===undefined&&g>=6&&Math.random()<.06)set=Math.random()<.75?cls:pick(Object.keys(CLS));
-  return {id:newId(),slot,g,ilv:L,cls,name:(set?`[${SETN[set]}] `:'')+itemName(slot,g,cls),st,enh:0,lock:false,set};
+  return {id:newId(),v:15,slot,g,ilv:L,cls,name:(set?`[${SETN[set]}] `:'')+itemName(slot,g,cls),st,enh:0,lock:false,set};
 }
-function eff(it){const m=it.broken?0:1+.1*it.enh,o={};for(const k in it.st)o[k]=it.st[k]*m;return o}
+function eff(it){const m=it.broken?0:1+ENH_K*it.enh,o={};for(const k in it.st)o[k]=it.st[k]*m;return o}
 function power(it){if(!it||it.broken)return 0;const e=eff(it),L=pl.lv,main=CLS[pl.cls].main;let p=0;
   for(const k in e){let ref,w;if(k==='str'||k==='agi'||k==='int'){ref=statBase('main',L);w=k===main?1.4:.25}else{ref=statBase(k,L);w={atk:1.6,hp:1,armor:.9,regen:.6,crit:1.1,critd:.9}[k]}p+=e[k]/ref*w}
   if(it.set&&it.set===pl.cls)p*=1.3;
@@ -861,12 +864,16 @@ function findItem(id){for(const s of SLOTS)if(pl.gear[s]&&pl.gear[s].id===id)ret
 function equipItem(it){if(it.broken){toast('파괴된 장비는 복구해야 착용할 수 있다');return}const old=pl.gear[it.slot];const ix=pl.inv.indexOf(it);if(ix>=0)pl.inv.splice(ix,1);pl.gear[it.slot]=it;if(old)pl.inv.unshift(old);recalc()}
 function unequip(it){if(pl.inv.length>=invCap()){toast('가방이 가득 찼다');return}pl.gear[it.slot]=null;pl.inv.unshift(it);recalc()}
 const DIS_ST=[1,2,4,7,12,20,34,60];
-function disYield(it){return {stone:DIS_ST[it.g]+Math.floor(it.ilv/10)+it.enh*2,soul:it.g>=4?it.g-3:0,gold:5*(it.g+1)+it.ilv}}
+function disYield(it){return {stone:DIS_ST[it.g]+Math.floor(it.ilv/10)+it.enh*2,soul:0,gold:5*(it.g+1)+it.ilv}}
 function dismantle(it){const y=disYield(it);const ix=pl.inv.indexOf(it);if(ix>=0)pl.inv.splice(ix,1);pl.stone+=y.stone;pl.soul+=y.soul;pl.gold+=y.gold;if(pl.st)pl.st.dis++;return y}
 /* v4 강화: 최대 +40. 실패 시 +20~29는 10%, +30부터는 15% 확률로 1단계 하락, +30부터는 8% 확률로 파괴(복구 가능) */
 const MAX_ENH=40;
 function enhRate(e){return e<20?Math.max(.12,.8-.035*e):Math.max(.015,.15-.007*(e-20))}
-function enhCost(it){const e=it.enh;return {stone:Math.ceil((3+e*e*.35)*(1+it.g*.35)*(1+it.ilv/150)),gold:Math.floor(80*Math.pow(e+1,1.9)*(1+it.ilv*.06)),soul:e>=20?e-18:0,rate:enhRate(e),down:e>=30?.15:e>=20?.1:0,brk:e>=30?.08:0}}
+/* V015 강화 비용: 장비 레벨 L의 사냥터에서 '한 마리당 평균으로 얻는 재화'(레벨로만 정해지는 고정값) × 강화 단계별 처치 수 */
+const incGold=L=>1.1*L+15,incStone=L=>1+.035*L;
+/* 에픽 1개를 +0→+15: 평균 약 7,600마리 분량의 강화석 (기준 사냥 속도 분당 85마리 ≈ 1시간 30분) */
+const ENH_KS=5.1,ENH_KG=4,ENH_P=1.55;
+function enhCost(it){const e=it.enh,L=it.ilv||1,gf=1+it.g*.08,k=Math.pow(e+1,ENH_P);return {stone:Math.ceil(incStone(L)*ENH_KS*k*gf),gold:Math.ceil(incGold(L)*ENH_KG*k*gf),soul:0,rate:enhRate(e),down:e>=30?.15:e>=20?.1:0,brk:e>=30?.08:0}}
 function canEnh(it){const c=enhCost(it);return !it.broken&&it.enh<MAX_ENH&&pl.stone>=c.stone&&pl.gold>=c.gold&&pl.soul>=c.soul}
 function doEnhance(it){const c=enhCost(it);if(!canEnh(it))return;pl.stone-=c.stone;pl.gold-=c.gold;pl.soul-=c.soul;
   if(Math.random()<c.rate){it.enh++;sfx('enhOk');recalc();toast(`<b style="color:#7fd88f">강화 성공</b> · ${esc(it.name)} +${it.enh}`);return}
@@ -905,10 +912,10 @@ function recalc(){
 }
 /* 전투력: 치명타 기대값을 반영한 공격력 × 방어를 반영한 유효 체력의 기하평균. 기술 강화 수준도 곱한다 */
 function cpOf(d,skMul){const atkE=d.atk*(1+(d.crit/100)*(d.critd/100-1))*(skMul||1);const ehp=d.mhp/(1-d.dr);return Math.round(Math.sqrt(atkE*ehp)*4)}
-function myCP(){const un=SK[pl.cls].map((s,i)=>pl.lv>=UNL[i]?1+.12*(pl.skl[i]-1):null).filter(x=>x!==null);const sm=un.reduce((a,b)=>a+b,0)/Math.max(1,un.length);return cpOf(pl.d,sm)}
+function myCP(){return cpOf(pl.d,1)} /* V015: 기술 강화 삭제 — 기술은 모두 1레벨 고정 */
 /* 기준 캐릭터: 해당 레벨, 주스탯 몰빵, 전 부위 같은 등급(+0) 평균 옵션 */
 function refEff(slot,g,L,cls){const main=CLS[cls].main,def=SLOTDEF[slot],o={};const add=(k,f)=>{const key=k==='main'?main:k;let v=statBase(k,L);const m=GRADES[g].m;v*=k==='crit'?Math.sqrt(m):k==='critd'?Math.pow(m,.7):m;o[key]=(o[key]||0)+v*f};
-  def.pri.forEach(k=>add(k,1));const ex=[0,1,1,2,2,3,3,4][g];def.pool.forEach(k=>add(k,.6*ex/def.pool.length));return o}
+  def.pri.forEach(k=>add(k,1));def.pool.forEach(k=>add(k,(GEAR_XB+GEAR_X*g)/def.pool.length));return o}
 function refCP(L,g,cls){cls=cls||pl.cls;const st={str:2,agi:2,int:2};st[CLS[cls].main]+=5+3*(L-1);return cpOf(derive(L,st,SLOTS.map(s=>refEff(s,g,L,cls)),cls),1)}
 /* ---- v4 난이도 기준 ----
    몬스터 능력치는 '그 레벨의 기준 캐릭터'에 맞춰 정한다. 기준 장비는
@@ -916,12 +923,15 @@ function refCP(L,g,cls){cls=cls||pl.cls;const st={str:2,agi:2,int:2};st[CLS[cls]
    그래서 레벨이 1000까지 올라도 '같은 레벨의 기준 장비'로 상대할 수 있는 난이도가 유지된다. */
 const REFC=new Map(),ALLC=['warrior','archer','mage','healer'];
 function refRaw(L,g,e){const k=L+'|'+g+'|'+e;let v=REFC.get(k);if(v)return v;let atk=0,mhp=0,ehp=0,cp=0;
-  for(const c of ALLC){const st={str:2,agi:2,int:2};st[CLS[c].main]+=5+3*(L-1);const m=1+.1*e;
+  for(const c of ALLC){const st={str:2,agi:2,int:2};st[CLS[c].main]+=5+3*(L-1);const m=1+ENH_K*e;
     const d=derive(L,st,SLOTS.map(s=>{const o=refEff(s,g,L,c),q={};for(const k2 in o)q[k2]=o[k2]*m;return q}),c);
     atk+=d.atk/4;mhp+=d.mhp/4;ehp+=d.mhp/(1-d.dr)/4;cp+=cpOf(d,1)/4}
   v={atk,mhp,ehp,cp};if(REFC.size>4000)REFC.clear();REFC.set(k,v);return v}
-function refStats(L){L=Math.max(1,Math.round(L));if(L<=40)return refRaw(L,2,0);if(L>=100)return refRaw(L,6,20);
-  const t=(L-40)/60,a=refRaw(L,2,0),b=refRaw(L,6,20),mix=k=>Math.exp(Math.log(a[k])*(1-t)+Math.log(b[k])*t);return {atk:mix('atk'),mhp:mix('mhp'),ehp:mix('ehp'),cp:mix('cp')}}
+/* V015 기준 캐릭터: 레벨대마다 '그 구간에서 무리 없이 맞출 수 있는' 장비 등급·강화 (장비 레벨 = 캐릭터 레벨)
+   논두렁 언커먼+0 → 여우골 커먼~매직+4 → 나루터 매직~레어+7 → 늪 레어~유니크+10 → 궁궐 유니크~레전더리+12 → 봉인된 터 레전더리~에픽+15 → Lv.100 에픽+15(어둑시니 쉬움) */
+const REFSPEC=[[1,0,0],[5,0,0],[6,1,0],[20,2,4],[40,3,7],[60,4,10],[80,5,12],[100,6,15],[300,7,20],[500,7,30],[1000,7,40]];
+function refSpec(L){for(let i=1;i<REFSPEC.length;i++){const a=REFSPEC[i-1],b=REFSPEC[i];if(L<=b[0]){const t=(L-a[0])/Math.max(1,b[0]-a[0]);return [a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}}return [7,40]}
+function refStats(L){L=Math.max(1,Math.round(L));const [g,e]=refSpec(L),g0=Math.floor(g),t=g-g0,er=Math.round(e*2)/2;const a=refRaw(L,g0,er);if(t<.01)return a;const b=refRaw(L,Math.min(7,g0+1),er),mix=k=>Math.exp(Math.log(a[k])*(1-t)+Math.log(b[k])*t);return {atk:mix('atk'),mhp:mix('mhp'),ehp:mix('ehp'),cp:mix('cp')}}
 const MAXLV=1000;
 /* V013: 던전 몬스터 레벨 = 내 레벨에 비례(내 레벨 -1~+2), 단 던전마다 정해진 범위 안. 심연은 Lv.100 고정(단계는 배율로) */
 function mapMobLv(M){if(M.endless)return 100;return M.lv?clamp(pl.lv+ri(-1,2),M.lv[0],M.lv[1]):1}
@@ -930,9 +940,12 @@ function mobLvOf(id,tier){const M=MAPS[id];if(M.safe||M.raid)return[0,0];if(M.en
 /* 지금 내 레벨에서 실제로 나오는 레벨(권장 전투력 계산용) */
 function mobLvNow(id){const M=MAPS[id];if(M.endless)return 100;return M.lv?clamp(pl.lv+2,M.lv[0],M.lv[1]):1}
 /* 이야기 던전은 Lv.40부터 조금씩 순하게 (Lv.100에서 기준 캐릭터의 65%) — 심연에서 장비를 맞추기 전에도 진행할 수 있게 */
-const storyMul=L=>1-.35*clamp((L-40)/60,0,1);
+const storyMul=L=>1; /* V015: 기준 캐릭터가 현실적인 장비가 되어 보정 불필요 */
 /* 심연 단계 배율: 레벨은 100 고정, 체력·공격력·방어력만 오른다 */
-const abyHp=t=>.55*(1+.12*(t-1)),abyDmg=t=>.6*(1+.06*(t-1)),abyDr=t=>Math.min(.5,(t-1)*.008);
+/* V015 심연: 1단계 = Lv.100 레전더리+12 수준, 10단계 = 에픽+15(어둑시니 쉬움 사양), 그 뒤로 단계마다 약 +3% */
+let ABY0=null;function aby0(){if(!ABY0){const a=refRaw(100,5,12),b=refStats(100);ABY0={h:a.atk/b.atk,d:a.ehp/b.ehp}}return ABY0}
+const abyK=(r,t)=>t<=10?Math.pow(r,1-(t-1)/9):Math.pow(1.03,t-10);
+const abyHp=t=>abyK(aby0().h,t),abyDmg=t=>abyK(aby0().d,t),abyDr=t=>Math.min(.3,Math.max(0,t-10)*.006);
 const abyDrop=t=>Math.min(2.5,1+.05*(t-1)),abyGrade=t=>Math.min(1.2,t*.03);
 function recCP(id,tier){const M=MAPS[id];if(M.safe||M.raid)return 0;const L=mobLvNow(id);if(M.endless){const t=tier||G.tier||pl.abyss+1;return Math.round(refStats(100).cp*.85*Math.sqrt(abyHp(t)*abyDmg(t))/(1-abyDr(t)*.5))}return Math.round(refStats(L).cp*.85*storyMul(L))}
 const qIdx=t=>MAINQ.findIndex(q=>q.t===t);
@@ -944,7 +957,10 @@ function bossAllowed(M){if(!M.boss)return true;return pl.q>=bossQ(M.boss)}
 const need=lv=>Math.floor(40*Math.pow(lv,1.9)+80);
 /* 처치 경험치: 저레벨은 그대로, 고레벨은 레벨당 대략 600~2,000마리 */
 /* V013: Lv.100까지는 이야기를 따라가며 오를 수 있게 레벨당 약 40~240마리, 그 뒤로는 점점 느리게 */
-const expKill=lv=>Math.max(4+lv*1.2,need(lv)/(lv<=100?40+lv*2:240+(lv-100)*4));
+/* V015 경험치: 레벨당 '일반 몬스터 환산' 처치 수 = 80+37×레벨 (Lv.100 이후 3,780+50×(레벨-100)).
+   정예(×4)·보스(×25)까지 합치면 실제 처치 수는 그 절반 정도 — 시뮬레이션 기준 Lv.1→100 약 9만 마리(분당 85마리 ≈ 18시간) */
+const killsPerLv=lv=>lv<=100?80+37*lv:3780+50*(lv-100);
+const expKill=lv=>need(lv)/killsPerLv(lv);
 const totalPower=()=>SLOTS.reduce((a,s)=>a+power(pl.gear[s]),0)+(pl.d.main||0)*3+pl.lv*10;
 const atkMul=()=>(pl.buffs.bless>0?1.35:1)*(pl.buffs.fairy>0?1+petFairyAtk():1);
 function gainExp(n){if(pl.lv>=MAXLV){pl.exp=0;return}pl.exp+=n;let up=false;while(pl.lv<MAXLV&&pl.exp>=need(pl.lv)){pl.exp-=need(pl.lv);pl.lv++;pl.pts+=3;up=true;const i=UNL.indexOf(pl.lv);if(i>=0)later(1.2,()=>banner('새 기술 해금',`${SK[pl.cls][i].g} ${SK[pl.cls][i].n}`))}
@@ -997,8 +1013,7 @@ function setCount(cls){return SLOTS.filter(sl=>pl.gear[sl]&&pl.gear[sl].set===(c
 const SKIMG={archer:[1,1,1,1,1],warrior:[1,1,1,1,1],mage:[1,1,1,1,1],healer:[1,1,1,1,1]},SKSETIMG={archer:1,warrior:1,mage:1,healer:1};
 function skIcon(i,s){const c=pl.cls;if(s&&s===SETSK[c])return SKSETIMG[c]?A(`img/sk_${c}_set.webp`):null;if(s&&s!==SK[c][i])return null;return SKIMG[c]&&SKIMG[c][i]?A(`img/sk_${c}_${i}.webp`):null}
 function skillDef(i){const rs=relicSkill(i);if(rs)return rs;return i===4&&setCount()>=6?SETSK[pl.cls]:SK[pl.cls][i]}
-function cdOf(i){const lv=pl.skl[i];return skillDef(i).cd*(1-pl.d.cdr)*(1-Math.min(.3,.015*(lv-1)))*(i===0&&pl.buffs.blade>0?.3:1)*relicCdMul()}
-const skCost=lv=>({soul:lv*2,gold:80*lv*lv});
+function cdOf(i){return skillDef(i).cd*(1-pl.d.cdr)*(i===0&&pl.buffs.blade>0?.3:1)*relicCdMul()}
 
 /* ================= combat ================= */
 function hit(e,dmg,o,sx,sy){if(e.dead)return;o=o||{};const mine=!o.src,S=o.src||pl.d;
@@ -1046,7 +1061,8 @@ function respawn(){$('#death').hidden=true;pl.buffs={};pl.shield=0;travel('villa
 /* ================= enemies ================= */
 /* v2: 몬스터 강화 — 체력 최대 2.6배, 피해 최대 2배. 초반에는 완만하게, 레벨이 오를수록 가파르게 */
 /* v4: 몬스터 체력·피해를 기준 캐릭터(refStats)에서 뽑는다 */
-const mobHp=lv=>refStats(lv).atk*(2+.9*Math.min(1,lv/35))*(lv>=100?1.05:1), mobDmg=lv=>refStats(lv).ehp*(.0135+.0005*Math.min(lv,35));
+const mobHp=lv=>refStats(lv).atk*(2+.9*Math.min(1,lv/35))*(lv>=100?1.05:1), mobDmg=lv=>refStats(lv).ehp*(.0135+.0005*Math.min(lv,35))*MOB_DK;
+let MOB_DK=.35; /* V015: 기준 장비로 무리 없이 버틸 수 있게 (시뮬레이션으로 맞춤) */
 const curTier=()=>MAPS[G.map].endless?G.tier:0;
 function inBounds(x,y,pad){const b=mbound(MAPS[G.map]);pad=pad||0;return[clamp(x,b.x0+pad,b.x1-pad),clamp(y,b.y0+pad,b.y1-pad)]}
 function spawnPos(minD,maxD){for(let k=0;k<8;k++){const a=rnd(0,TAU),d=rnd(minD,maxD);const [x,y]=inBounds(pl.x+Math.cos(a)*d,pl.y+Math.sin(a)*d,20);if(Math.hypot(x-pl.x,y-pl.y)>minD*.7)return[x,y]}const b=mbound(MAPS[G.map]);return[pl.x>(b.x0+b.x1)/2?b.x0+40:b.x1-40,clamp(pl.y,b.y0+40,b.y1-40)]}
@@ -1079,15 +1095,14 @@ function killEnemy(e){
   dropCur(e.x,e.y,'gold',Math.ceil((e.lv*2+ri(2,6))*(e.elite?3:1)*(e.boss?15:1)*ex*goldMul()));
   if(e.boss&&Math.random()<(M.end?.5:.3))dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'ess',M.end?2:1);
   if(e.boss||e.elite||Math.random()<.12*ex)dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'stone',(e.boss?10:e.elite?ri(2,4):1)*sa*ex);
-  if(e.boss||Math.random()<(e.elite?.3:.03)*ex)dropCur(e.x+rnd(-20,20),e.y+rnd(-20,20),'soul',(e.boss?3+Math.floor(e.lv/20):1)*ex);
-  /* V013: 심연은 단계가 오를수록 드랍률·등급이 오른다 (상한 있음) */
+    /* V013: 심연은 단계가 오를수록 드랍률·등급이 오른다 (상한 있음) */
   const at=curTier(),tb=M.endless?abyGrade(at):0,adm=M.endless?abyDrop(at):1,ib=e.lv;
   /* v2: 일반·정예 몬스터는 레전더리까지만. 에픽·태초는 보스 전용 */
   if(e.boss){const nb=M.endless?3+Math.min(2,Math.floor(at/10)):3;for(let i=0;i<nb;i++)dropItem(e.x,e.y,.9+tb,3,ib,7)}
   else if(e.elite){dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG);if(Math.random()<Math.min(.9,.4*adm*dropMul()))dropItem(e.x,e.y,.6+tb,0,ib,MOB_MAXG)}
   else if(Math.random()<Math.min(.5,(M.dg?.2:.16)*adm*dropMul()))dropItem(e.x,e.y,(M.dg?.1:0)+tb,0,ib,MOB_MAXG);
   qEvent('kill',{map:G.map,elite:e.elite});
-  for(const b of bnts().slice())if(b.map===G.map){b.k++;if(b.k>=b.n){pl.bounties.splice(pl.bounties.indexOf(b),1);pl.st.bounty=(pl.st.bounty||0)+1;reward(b.rw);qEvent('bounty');toast(`<b style="color:#5ed4b9">의뢰 완료 · ${MAPS[b.map].n}</b> · 금화 ${fmt(b.rw.gold)} 강화석 ${b.rw.stone} 혼석 ${b.rw.soul}`)}}
+  for(const b of bnts().slice())if(b.map===G.map){b.k++;if(b.k>=b.n){pl.bounties.splice(pl.bounties.indexOf(b),1);pl.st.bounty=(pl.st.bounty||0)+1;reward(b.rw);qEvent('bounty');toast(`<b style="color:#5ed4b9">의뢰 완료 · ${MAPS[b.map].n}</b> · 금화 ${fmt(b.rw.gold)} 강화석 ${b.rw.stone}`)}}
   if(M.dg&&!M.raid&&!e.boss&&!G.boss&&bossAllowed(M)){G.gauge++;if(G.gauge>=GAUGE)spawnBoss()}
   if(e.boss)bossDefeated(e)}
 function bossDefeated(e){
@@ -1151,7 +1166,7 @@ function bossUpd(e,dt){if(e.raid){raidBossUpd(e,dt);return}
 
 /* ================= quests ================= */
 function qCur(){return MAINQ[pl.q]}
-function reward(r){pl.gold+=r.gold||0;if(r.gold)pl.st.gold+=r.gold;pl.stone+=r.stone||0;pl.soul+=r.soul||0;if(r.exp)gainExp(r.exp)}
+function reward(r){pl.gold+=r.gold||0;if(r.gold)pl.st.gold+=r.gold;pl.stone+=r.stone||0;if(r.exp)gainExp(r.exp)}
 const qLvOk=q=>!q.lv||pl.lv>=q.lv;
 const QNPC={seol:'무녀 설화',smith:'대장장이 강쇠',merch:'떠돌이 상인 묘'};
 const QNPCMAP={seol:'village',smith:'village',merch:'shop'};
@@ -1176,9 +1191,9 @@ function qEvent(type,data){const q=qCur();if(!q||G.qBusy||q.type==='endless')ret
   if(type==='talk'&&q.type==='talk'&&data.npc===q.npc){if(qLvOk(q))qComplete();else toast(`레벨 ${q.lv}이 되면 다시 오자`);return}
   if(q.type==='boss'?pl.qk>=1&&qLvOk(q):qDone(q)&&qLvOk(q))qComplete()}
 function qComplete(){const q=qCur(),i=pl.q;G.qBusy=true;
-  const big=q.type==='boss'||q.type==='abyss',r={exp:Math.floor(need(pl.lv)*(big?.5:q.type==='talk'?.15:.3)),gold:Math.floor((120+pl.lv*30)*(big?3:1)),stone:8+i*2+(big?20:0),soul:1+Math.floor(i/3)+(big?3:0)};
+  const big=q.type==='boss'||q.type==='abyss',r={exp:Math.floor(need(pl.lv)*(big?.5:q.type==='talk'?.15:.3)),gold:Math.floor((120+pl.lv*30)*(big?3:1)),stone:Math.round((8+i*2+(big?20:0))*(1+pl.lv/25))};
   const after=()=>{G.qBusy=false;reward(r);if(q.raidUnlock){ROOT.raidUnlocked=true;writeRoot();later(1,()=>banner('레이드 해금','어둑시니의 굴 · 지도에서 입장'))}if(q.type==='boss'){const it=makeItem(pick(SLOTS),Math.max(3,rollGrade(1,SHOP_MAXG)),pl.lv);collect({it})}
-    sfx('questDone');toast(`<b style="color:#c8a259">임무 완료 · ${q.t}</b> · 금화 ${fmt(r.gold)} · 강화석 ${r.stone} · 혼석 ${r.soul}`);
+    sfx('questDone');toast(`<b style="color:#c8a259">임무 완료 · ${q.t}</b> · 금화 ${fmt(r.gold)} · 강화석 ${r.stone}`);
     pl.q=Math.min(pl.q+1,MAINQ.length-1);pl.qk=0;const n=qCur();later(.6,()=>banner('새 임무',n.t));if(n.hint)later(1.4,()=>toast(`<b style="color:#5ed4b9">안내</b> · ${n.hint}`));save();later(.2,()=>qEvent('check'))};
   if(q.end)vn(q.end(),after);else after()}
 function qMap(q){if(q.type==='talk')return QNPCMAP[q.npc];if(q.type==='abyss'||q.type==='endless'||q.type==='gear')return pl.lv>=100?'abyss':null;if(q.type==='enh'||q.type==='gearEnh'||q.type==='bounty')return'village';if(q.type==='raid')return null;return q.map||null}
@@ -1201,7 +1216,7 @@ function qProg(q){const need=q.lv&&pl.lv<q.lv&&q.type!=='lv'?` · <span class="n
 const BOUNTY_MAX=3;
 /* 의뢰는 동시에 3개까지. 예전 저장(pl.bounty 하나)은 bnts()가 처음 불릴 때 배열로 옮긴다 */
 function bnts(){if(!Array.isArray(pl.bounties))pl.bounties=[];if(pl.bounty){if(pl.bounties.length<BOUNTY_MAX)pl.bounties.push(pl.bounty);pl.bounty=null}return pl.bounties}
-function makeOffers(){const maps=['field','fox','river','swamp','palace','sealed','abyss'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:6+pl.lv+dg*4,soul:ri(1,2)+dg,exp:Math.floor(need(pl.lv)*.25)}})}return o}
+function makeOffers(){const maps=['field','fox','river','swamp','palace','sealed','abyss'].filter(m=>mapOpen(m));const o=[];for(let i=0;i<5;i++){const m=pick(maps),dg=MAPS[m].dg?1:0,n=ri(15,30);o.push({map:m,n,k:0,rw:{gold:60+pl.lv*15+n*4,stone:Math.round((10+pl.lv*1.6)*(1+dg*.4)),exp:Math.floor(need(pl.lv)*.25)}})}return o}
 
 /* ================= 동반자 (pets) ================= */
 const CUR={gold:'금화',stone:'강화석',soul:'혼석',ess:'동반자 정수'},CURC={gold:'#f3cf45',stone:'#9fc3e8',soul:'#c79bff',ess:'#7ff7e4'};
@@ -1310,19 +1325,19 @@ function grantRelic(){const own=ROOT.relics||(ROOT.relics={});const pool=RELICS.
 /* ================= 서브 임무 ================= */
 const SUBQ=[
  {id:'dis',n:'해체의 미학',lv:5,d:'장비 100개 해체',p:()=>[pl.st.dis,100],rw:{stone:150,gold:3000}},
- {id:'bnty',n:'의뢰꾼',lv:8,d:'의뢰 게시판 의뢰 10건 완료',p:()=>[pl.st.bounty||0,10],rw:{soul:10,gold:5000}},
- {id:'smith',n:'대장장이의 시험',lv:10,d:'장비 하나를 +10까지 강화',p:()=>[pl.st.maxEnh,10],rw:{stone:300,soul:5}},
+ {id:'bnty',n:'의뢰꾼',lv:8,d:'의뢰 게시판 의뢰 10건 완료',p:()=>[pl.st.bounty||0,10],rw:{gold:5000,stone:100}},
+ {id:'smith',n:'대장장이의 시험',lv:10,d:'장비 하나를 +10까지 강화',p:()=>[pl.st.maxEnh,10],rw:{stone:350}},
  {id:'pet',n:'동반자의 성장',lv:15,d:'동반자 하나를 Lv.5까지 강화',p:()=>[Math.max(1,...Object.values(pl.pets||{})),5],rw:{ess:3,gold:8000}},
- {id:'aby30',n:'심연 순례',lv:50,d:'무한 심연 30단계 돌파',p:()=>[pl.abyss,30],rw:{soul:30,stone:1000}},
- {id:'enh20',n:'명장의 증표',lv:80,d:'장비 하나를 +20까지 강화',p:()=>[pl.st.maxEnh,20],rw:{soul:60,stone:3000}},
- {id:'mend',n:'복원의 기술',lv:100,d:'파괴된 장비 1개 복구',p:()=>[pl.st.repair||0,1],rw:{stone:2000,soul:20}},
- {id:'raidE',n:'그림자 사냥 · 쉬움',lv:100,d:'어둑시니 레이드(쉬움) 처치',p:()=>[(pl.st.raidW||{})[0]||0,1],rw:{mend:2,soul:40}},
- {id:'raidN',n:'그림자 사냥 · 보통',lv:300,d:'어둑시니 레이드(보통) 처치',p:()=>[(pl.st.raidW||{})[1]||0,1],rw:{mend:3,soul:100}},
- {id:'raidH',n:'그림자 사냥 · 어려움',lv:500,d:'어둑시니 레이드(어려움) 처치',p:()=>[(pl.st.raidW||{})[2]||0,1],rw:{mend:5,soul:200}}];
+ {id:'aby30',n:'심연 순례',lv:50,d:'무한 심연 30단계 돌파',p:()=>[pl.abyss,30],rw:{stone:1300}},
+ {id:'enh20',n:'명장의 증표',lv:80,d:'장비 하나를 +20까지 강화',p:()=>[pl.st.maxEnh,20],rw:{stone:3600}},
+ {id:'mend',n:'복원의 기술',lv:100,d:'파괴된 장비 1개 복구',p:()=>[pl.st.repair||0,1],rw:{stone:2200}},
+ {id:'raidE',n:'그림자 사냥 · 쉬움',lv:100,d:'어둑시니 레이드(쉬움) 처치',p:()=>[(pl.st.raidW||{})[0]||0,1],rw:{mend:2,stone:400}},
+ {id:'raidN',n:'그림자 사냥 · 보통',lv:300,d:'어둑시니 레이드(보통) 처치',p:()=>[(pl.st.raidW||{})[1]||0,1],rw:{mend:3,stone:1000}},
+ {id:'raidH',n:'그림자 사냥 · 어려움',lv:500,d:'어둑시니 레이드(어려움) 처치',p:()=>[(pl.st.raidW||{})[2]||0,1],rw:{mend:5,stone:2000}}];
 const sqState=q=>(pl.sq||{})[q.id]===2?2:pl.lv<q.lv?-1:q.p()[0]>=q.p()[1]?1:0;
 function sqRwText(r){const a=[];if(r.gold)a.push(`금화 ${fmt(r.gold)}`);if(r.stone)a.push(`강화석 ${fmt(r.stone)}`);if(r.soul)a.push(`혼석 ${r.soul}`);if(r.ess)a.push(`정수 ${r.ess}`);if(r.mend)a.push(`복원의 혼 ${r.mend}`);return a.join(' · ')}
 function claimSub(id){const q=SUBQ.find(x=>x.id===id);if(!q||sqState(q)!==1)return;
-  const go=()=>{sfx('questDone');(pl.sq=pl.sq||{})[id]=2;const r=q.rw;pl.gold+=r.gold||0;pl.stone+=r.stone||0;pl.soul+=r.soul||0;pl.ess+=r.ess||0;pl.mend=(pl.mend||0)+(r.mend||0);
+  const go=()=>{sfx('questDone');(pl.sq=pl.sq||{})[id]=2;const r=q.rw;pl.gold+=r.gold||0;pl.stone+=r.stone||0;pl.ess+=r.ess||0;pl.mend=(pl.mend||0)+(r.mend||0);
     if(q.raid){ROOT.raidUnlocked=true;writeRoot();banner('레이드 해금','어둑시니의 굴 · 지도에서 입장')}toast(`<b style="color:#c8a259">서브 임무 완료 · ${q.n}</b> · ${sqRwText(r)}`);save();if(G.modal)renderPanel()};
   if(q.raid){closeModal();vn([{w:'seol',t:'귀문관 너머에서… 등불이 하나씩 꺼지고 있어. 바람도 없는데.'},{w:'seol',t:'어둑시니야. 사람이 두려워하는 만큼 커지는 그림자. 혈월이 그걸 깨웠어.'},{w:'me',t:'혼자서는 무리라는 얼굴이군.'},{w:'seol',t:'응. 모험단 모두를 데려가. 그리고… 그게 손을 들면 등불 아래로 숨어. 한 사람에 등불 하나씩. 하나라도 비면 모두 삼켜져.'},{w:'n',t:'지도에 새 길이 열렸다 — 어둑시니의 굴.'}],go)}else go()}
 /* ================= 스킨 (V001) =================
@@ -1347,7 +1362,7 @@ const RAID_GROGGY=4; /* 등불 성공 시 그로기 시간(초) */
 const RAID_HPX=2; /* V002: 모든 난이도 체력 2배 */
 const RAID_SPD=230; /* 보스 이동 속도 = 플레이어 기본 이동 속도(스탯 미적용) */
 const ALLY_REV=5,ALLY_REVT=5; /* AI 동료 부활 횟수·부활 시간 */
-const RAID_DPSU=9.5; /* 기준 캐릭터 1명의 초당 피해(공격력 배수) — 4직업을 실제로 돌려 측정한 평균 */
+const RAID_DPSU=2.5; /* V015: 새 수치 곡선에서 다시 잰 값 (치명타 비중 감소) — 쉬움 기준 파티로 약 5분 */ /* 기준 캐릭터 1명의 초당 피해(공격력 배수) — 4직업을 실제로 돌려 측정한 평균 */
 const raidRef=di=>{const D=RAID_DIFF[di];return refRaw(D.lv,D.g,D.e)};
 function raidRecCP(di){return Math.round(raidRef(di).cp)}
 function charDerive(o){const effs=SLOTS.filter(s=>o.gear&&o.gear[s]&&!o.gear[s].broken).map(s=>eff(o.gear[s]));const d=derive(o.lv,o.stats,effs,o.cls);
@@ -1368,7 +1383,7 @@ function raidStart(opt){opt=opt||{diff:0,allies:[]};const D=RAID_DIFF[opt.diff],
 function raidCleanup(){G.allies=null;G.raid=null;pl.mind=0}
 function members(){const m=[];if(G.dead<=0&&pl.hp>0)m.push(pl);if(G.allies)for(const a of G.allies)if(!a.dead)m.push(a);return m}
 /* AI 동료는 사람만큼 피하지 못하므로 받는 피해 35% */
-function hurtAlly(a,d,raw){if(a.dead||a.iframe>0)return;const dd=(raw?d:d*(1-a.d.dr))*.35;a.hp-=dd;a.flash=.15;a.iframe=.08;addText(a.x,a.y-60,'-'+fmt(dd),'#ff9aa6',11);if(a.hp<=0)allyDown(a)}
+function hurtAlly(a,d,raw){if(a.dead||a.iframe>0)return;const dd=(raw?d:d*(1-a.d.dr))*.25;a.hp-=dd;a.flash=.15;a.iframe=.08;addText(a.x,a.y-60,'-'+fmt(dd),'#ff9aa6',11);if(a.hp<=0)allyDown(a)}
 function allyDown(a,quiet){if(a.dead)return;a.hp=0;a.dead=true;a.act=null;burst(a.x,a.y,ACLR[a.cls],30,240,3);
   if(a.revLeft>0){a.revLeft--;a.revT=ALLY_REVT;if(!quiet)toast(`<b class="neg">${esc(a.name)} 쓰러짐</b> · ${ALLY_REVT}초 뒤 부활 (남은 부활 ${a.revLeft})`)}else{a.revT=-1;if(!quiet)toast(`<b class="neg">${esc(a.name)} 전사</b> · 부활 기회를 모두 썼다`)}}
 function hurtRaw(m,frac){if(m===pl){if(G.dead>0||pl.god)return;const d=pl.d.mhp*frac;pl.hp-=d;sfx('hurt');pl.flash=.2;addText(pl.x,pl.y-60,'-'+fmt(d),'#ff5a6a',14);if(pl.hp<=0)die()}else hurtAlly(m,m.mhp*frac,true)}
@@ -1504,15 +1519,15 @@ function drawLanterns(c){const W=G.raid&&G.raid.wipe;if(!W)return;const p=W.t/W.
 /* ================= achievements ================= */
 const ACH=[
   {id:'k100',g:'獵',n:'첫 사냥',d:'적 100마리 처치',p:()=>[pl.st.kills,100],rw:{pts:1,stone:20}},
-  {id:'k1k',g:'獵',n:'원혼 사냥꾼',d:'적 1,000마리 처치',p:()=>[pl.st.kills,1000],rw:{pts:2,soul:5}},
+  {id:'k1k',g:'獵',n:'원혼 사냥꾼',d:'적 1,000마리 처치',p:()=>[pl.st.kills,1000],rw:{pts:2,stone:50}},
   {id:'k10k',g:'獵',n:'만귀참',d:'적 10,000마리 처치',p:()=>[pl.st.kills,1e4],rw:{pts:5,box:5}},
   {id:'k50k',g:'獵',n:'저승의 공포',d:'적 50,000마리 처치',p:()=>[pl.st.kills,5e4],rw:{pts:10,box:5}},
-  {id:'bg',g:'狐',n:'여우 사냥',d:'구미호 · 월희 처치',p:()=>[pl.st.bk.gumiho||0,1],rw:{soul:5,stone:50}},
-  {id:'bg',g:'鐘',n:'깨진 범종',d:'사찰 수호귀 처치',p:()=>[(pl.st.bk||{}).guardian||0,1],rw:{soul:12,stone:150}},
-  {id:'br',g:'冥',n:'명부를 찢다',d:'저승차사 · 흑영 처치',p:()=>[pl.st.bk.reaper||0,1],rw:{soul:8,stone:80}},
-  {id:'bi',g:'蛇',n:'용이 되지 못한 것',d:'이무기 · 묵린 처치',p:()=>[pl.st.bk.imugi||0,1],rw:{soul:10,stone:100}},
+  {id:'bg',g:'狐',n:'여우 사냥',d:'구미호 · 월희 처치',p:()=>[pl.st.bk.gumiho||0,1],rw:{stone:100}},
+  {id:'bg',g:'鐘',n:'깨진 범종',d:'사찰 수호귀 처치',p:()=>[(pl.st.bk||{}).guardian||0,1],rw:{stone:270}},
+  {id:'br',g:'冥',n:'명부를 찢다',d:'저승차사 · 흑영 처치',p:()=>[pl.st.bk.reaper||0,1],rw:{stone:160}},
+  {id:'bi',g:'蛇',n:'용이 되지 못한 것',d:'이무기 · 묵린 처치',p:()=>[pl.st.bk.imugi||0,1],rw:{stone:200}},
   {id:'bk',g:'月',n:'핏빛 달을 베다',d:'혈월왕 처치',p:()=>[pl.st.bk.bloodking||0,1],rw:{pts:2,box:4}},
-  {id:'b10',g:'討',n:'토벌대장',d:'보스 10회 처치',p:()=>[pl.st.bosses,10],rw:{pts:2,soul:10}},
+  {id:'b10',g:'討',n:'토벌대장',d:'보스 10회 처치',p:()=>[pl.st.bosses,10],rw:{pts:2,stone:100}},
   {id:'b50',g:'討',n:'토벌대원수',d:'보스 50회 처치',p:()=>[pl.st.bosses,50],rw:{pts:4,box:5}},
   {id:'b200',g:'討',n:'저승의 집행자',d:'보스 200회 처치',p:()=>[pl.st.bosses,200],rw:{pts:8,box:5}},
   {id:'l10',g:'昇',n:'다시 걷는 법',d:'레벨 10 달성',p:()=>[pl.lv,10],rw:{pts:1,gold:2000}},
@@ -1521,13 +1536,13 @@ const ACH=[
   {id:'l100',g:'昇',n:'귀문을 두드리다',d:'레벨 100 달성',p:()=>[pl.lv,100],rw:{pts:5,box:5}},
   {id:'l150',g:'昇',n:'이름 없는 신',d:'레벨 150 달성',p:()=>[pl.lv,150],rw:{pts:10,box:5}},
   {id:'e10',g:'鍛',n:'단련',d:'장비 하나를 +10까지 강화',p:()=>[pl.st.maxEnh,10],rw:{stone:100}},
-  {id:'e15',g:'鍛',n:'백 번 두드린 쇠',d:'장비 하나를 +15까지 강화',p:()=>[pl.st.maxEnh,15],rw:{soul:20}},
+  {id:'e15',g:'鍛',n:'백 번 두드린 쇠',d:'장비 하나를 +15까지 강화',p:()=>[pl.st.maxEnh,15],rw:{stone:200}},
   {id:'e20',g:'鍛',n:'명장의 손',d:'장비 하나를 +20까지 강화',p:()=>[pl.st.maxEnh,20],rw:{pts:4,box:5}},
   {id:'g4',g:'寶',n:'보랏빛 손맛',d:'유니크 장비 획득',p:()=>[pl.st.gotG>=4?1:0,1],rw:{stone:30}},
-  {id:'g5',g:'寶',n:'주황빛 전설',d:'레전더리 장비 획득',p:()=>[pl.st.gotG>=5?1:0,1],rw:{soul:10}},
-  {id:'g6',g:'寶',n:'핏빛 서사',d:'에픽 장비 획득 (보스 전용)',p:()=>[pl.st.gotG>=6?1:0,1],rw:{pts:3,soul:20}},
-  {id:'g7',g:'寶',n:'태초의 빛',d:'태초 장비 획득 (보스 전용)',p:()=>[pl.st.gotG>=7?1:0,1],rw:{pts:6,soul:40}},
-  {id:'a10',g:'淵',n:'심연을 엿보다',d:'무한 심연 10단계 돌파',p:()=>[pl.abyss,10],rw:{pts:2,soul:10}},
+  {id:'g5',g:'寶',n:'주황빛 전설',d:'레전더리 장비 획득',p:()=>[pl.st.gotG>=5?1:0,1],rw:{stone:100}},
+  {id:'g6',g:'寶',n:'핏빛 서사',d:'에픽 장비 획득 (보스 전용)',p:()=>[pl.st.gotG>=6?1:0,1],rw:{pts:3,stone:200}},
+  {id:'g7',g:'寶',n:'태초의 빛',d:'태초 장비 획득 (보스 전용)',p:()=>[pl.st.gotG>=7?1:0,1],rw:{pts:6,stone:400}},
+  {id:'a10',g:'淵',n:'심연을 엿보다',d:'무한 심연 10단계 돌파',p:()=>[pl.abyss,10],rw:{pts:2,stone:100}},
   {id:'a25',g:'淵',n:'심연을 걷다',d:'무한 심연 25단계 돌파',p:()=>[pl.abyss,25],rw:{pts:3,box:5}},
   {id:'a50',g:'淵',n:'심연이 되다',d:'무한 심연 50단계 돌파',p:()=>[pl.abyss,50],rw:{pts:5,box:5}},
   {id:'a100',g:'淵',n:'바닥에 닿다',d:'무한 심연 100단계 돌파',p:()=>[pl.abyss,100],rw:{pts:10,box:5}},
@@ -1536,12 +1551,12 @@ const ACH=[
   {id:'ds',g:'步',n:'축지법 달인',d:'대쉬 1,000회',p:()=>[pl.st.dash,1000],rw:{pts:1}},
   {id:'dis',g:'解',n:'해체 장인',d:'장비 500개 해체',p:()=>[pl.st.dis,500],rw:{stone:200}},
   {id:'dt',g:'死',n:'죽음은 끝이 아니다',d:'10번 쓰러지기',p:()=>[pl.st.deaths,10],rw:{pts:1}},
-  {id:'pet10',g:'伴',n:'든든한 동반자',d:'동반자 하나를 Lv.10까지 강화',p:()=>[Math.max(1,...Object.values(pl.pets||{})),10],rw:{pts:2,soul:10}},
-  {id:'set6',g:'套',n:'완성된 세트',d:'내 직업 세트 장비 6부위 착용',p:()=>[setCount(),6],rw:{pts:3,soul:20}}];
+  {id:'pet10',g:'伴',n:'든든한 동반자',d:'동반자 하나를 Lv.10까지 강화',p:()=>[Math.max(1,...Object.values(pl.pets||{})),10],rw:{pts:2,stone:100}},
+  {id:'set6',g:'套',n:'완성된 세트',d:'내 직업 세트 장비 6부위 착용',p:()=>[setCount(),6],rw:{pts:3,stone:200}}];
 function rwText(r){const a=[];if(r.pts)a.push(`능력치 +${r.pts}`);if(r.stone)a.push(`강화석 ${r.stone}`);if(r.soul)a.push(`혼석 ${r.soul}`);if(r.gold)a.push(`금화 ${fmt(r.gold)}`);if(r.box)a.push(`${GRADES[r.box].n} 확정 장비`);return a.join(' · ')}
 function checkAch(){let n=0;for(const a of ACH){if(pl.ach[a.id])continue;const [v,g]=a.p();if(v>=g){pl.ach[a.id]=1;n++;sfx('quest',.7);toast(`<b style="color:#c8a259">업적 달성 · ${a.n}</b> · 업적(U)에서 보상 받기`)}}if(n)save()}
 function claimAch(id){const a=ACH.find(x=>x.id===id);if(!a||pl.ach[id]!==1)return;pl.ach[id]=2;const r=a.rw;
-  pl.pts+=r.pts||0;pl.stone+=r.stone||0;pl.soul+=r.soul||0;if(r.gold){pl.gold+=r.gold;pl.st.gold+=r.gold}
+  pl.pts+=r.pts||0;pl.stone+=r.stone||0;if(r.gold){pl.gold+=r.gold;pl.st.gold+=r.gold}
   if(r.box)collect({it:makeItem(pick(SLOTS),r.box,pl.lv)});toast(`보상 수령 · ${a.n} · ${rwText(r)}`)}
 
 /* ================= map building ================= */
@@ -1811,7 +1826,7 @@ function updSkills(dt){
   if(MAPS[G.map].safe||(G.raid&&G.raid.over))return;const sp=(pl.buffs.bless>0?1.15:1)*(pl.buffs.fairy>0?1+petFairyHaste():1)*(pl.buffs.r_mask>0?2:1);
   for(let i=0;i<5;i++){if(pl.lv<UNL[i])continue;pl.cds[i]-=dt*sp;if(pl.cds[i]>0)continue;
     if(pl.chan&&i!==4)continue;
-    const sk=skillDef(i),lv=pl.skl[i],s={lv,range:sk.range,dmg:m=>pl.d.atk*atkMul()*m*(1+.12*(lv-1))};
+    const sk=skillDef(i),lv=1,s={lv,range:sk.range,dmg:m=>pl.d.atk*atkMul()*m};
     if(sk.f(s)){pl.cds[i]=cdOf(i);pl.atkT=.28;startAct(i);sfxSkill(pl.cls,i)}else pl.cds[i]=.12}}
 /* 궁수 공격 모션: 1번 기술 5컷 0.2초, 2~5번 기술 16컷 0.6초. 이동 중에는 걷기 모션이 우선 */
 function startAct(i){if(pl.cls!=='archer')return;if(i===0){if(!pl.act||pl.act.k!=='atk')pl.act={k:'atk1',t:0,d:.2}}else pl.act={k:'atk',t:0,d:.6}}
@@ -2301,7 +2316,7 @@ function detailH(it){const g=GRADES[it.g],eqd=isEq(it),st=inStash(it),cur=pl.gea
   <button class="sb" data-act="lock" data-id="${it.id}">${it.lock?'잠금 해제':'잠금'}</button></div>
   ${br||it.enh>=MAX_ENH?'':`<p class="enhinfo">성공 <b>${(c.rate*100).toFixed(1)}%</b>${c.down?` · 실패 시 <span class="neg">하락 ${Math.round(c.down*100)}%</span>`:''}${c.brk?` · <span class="neg">파괴 ${Math.round(c.brk*100)}%</span>`:''}</p>`}</div>`}
 function invxH(){const k=pl.invx||0,cap=invCap();if(cap>=INVMAX)return `<p class="hint">가방 최대 확장 (${INVMAX}칸)</p>`;const c=invxCost(k),ok=pl.gold>=c.gold&&pl.soul>=c.soul;
-  return `<div class="qrow"><div><h5 style="font-size:14px">가방 확장 <small class="num">${cap} → ${Math.min(INVMAX,cap+INVSTEP)}칸</small></h5><p class="num">금화 ${fmt(c.gold)} · 혼석 ${c.soul}</p></div><button class="sb" data-act="invx"${ok?'':' disabled'}>확장</button></div>`}
+  return `<div class="qrow"><div><h5 style="font-size:14px">가방 확장 <small class="num">${cap} → ${Math.min(INVMAX,cap+INVSTEP)}칸</small></h5><p class="num">금화 ${fmt(c.gold)}</p></div><button class="sb" data-act="invx"${ok?'':' disabled'}>확장</button></div>`}
 function bagH(){const sel=G.sel?findItem(G.sel):null,tab=G.bagTab||'bag',sc=setCount();
   return `<div class="tabs"><button class="tab${tab==='bag'?' on':''}" data-act="tab" data-id="bag">가방 <span class="num">${pl.inv.length}/${invCap()}</span></button><button class="tab${tab==='stash'?' on':''}" data-act="tab" data-id="stash">창고 <span class="num">${ROOT.stash.length}/${STASH_CAP}</span></button></div>
   <div class="pw"><span>전투력</span><b class="num">${fmt(myCP())}</b><small class="num">강화석 ${fmt(pl.stone)} · 금화 ${fmt(pl.gold)}${sc?` · ${SETN[pl.cls]} ${sc}/6`:''}</small></div>
@@ -2325,11 +2340,11 @@ function statH(){const d=pl.d,m=CLS[pl.cls].main,eg=d.g;
   <p class="sec">전투 능력</p>
   <dl class="dl">${[['공격력',fmt(d.atk*atkMul())],['최대 체력',fmt(d.mhp)],['방어력',`${fmt(d.armor)} (피해 ${Math.round(d.dr*100)}% 감소)`],['체력재생',f1(d.regen)+' / 초'],['치명타 확률',f1(d.crit)+'%'],['치명타 피해',f1(d.critd)+'%'],['이동속도',fmt(d.spd)],['재사용 감소',Math.round(d.cdr*100)+'%'],['세트',`${SETN[pl.cls]} ${d.setN||0}/6`],['무한 심연 최고',pl.abyss+'단계'],['전투력',fmt(myCP())]].map(([a,b])=>`<div><dt>${a}</dt><dd class="num" style="margin:0">${b}</dd></div>`).join('')}</dl>`}
 function skillH(){const C=CLS[pl.cls],set6=setCount()>=6;
-  return `<p class="hint">기술은 재사용 대기시간이 돌아오면 가장 알맞은 대상에게 자동으로 발동한다. 강화마다 피해 +12%, 재사용 1.5% 감소. 혼석은 정예·보스·의뢰·해체에서 얻는다.</p>`+
-  [0,1,2,3,4].map(i=>{const s=skillDef(i),lock=pl.lv<UNL[i],lv=pl.skl[i],c=skCost(lv);
+  return `<p class="hint">기술은 재사용 대기시간이 돌아오면 가장 알맞은 대상에게 자동으로 발동한다. 기술은 강화하지 않는다 — 장비와 능력치로 강해진다.</p>`+
+  [0,1,2,3,4].map(i=>{const s=skillDef(i),lock=pl.lv<UNL[i],lv=1;
     const setNote=i===4?(set6?`<span class="tag" style="color:${C.col};border-color:${C.col}">${SETN[pl.cls]} 6세트</span>`:''):'';
     const hint=i===4&&!set6?`<p class="hint">${SETN[pl.cls]} 세트 6부위를 모두 착용하면 「${SETSK[pl.cls].n}」(으)로 바뀐다. 세트 장비는 에픽 이상에서만 나온다.</p>`:'';
-    return `<div class="skrow${lock?' lock':''}" style="--cc:${C.col}"><div class="ic">${(im=>im?`<img src="${im}" alt="">`:s.g)(skIcon(i,s))}</div><div><h5>${s.n}${setNote}<small>${lock?`Lv.${UNL[i]}에 해금`:`기술 Lv.${lv} · 재사용 ${f1(cdOf(i))}초`}</small></h5><p>${s.desc}</p>${hint}${lock?'':lv>=30?'<button class="sb" disabled>최대 강화</button>':`<button class="sb" data-act="skup" data-i="${i}" ${pl.soul>=c.soul&&pl.gold>=c.gold?'':'disabled'}>강화 Lv.${lv+1} · 혼석 ${c.soul} · 금화 ${fmt(c.gold)}</button>`}</div></div>`}).join('')+
+    return `<div class="skrow${lock?' lock':''}" style="--cc:${C.col}"><div class="ic">${(im=>im?`<img src="${im}" alt="">`:s.g)(skIcon(i,s))}</div><div><h5>${s.n}${setNote}<small>${lock?`Lv.${UNL[i]}에 해금`:`재사용 ${f1(cdOf(i))}초`}</small></h5><p>${s.desc}</p>${hint}</div></div>`}).join('')+
   `<div class="skrow" style="--cc:var(--jade)"><div class="ic"><img src="${A('img/sk_dash.webp')}" alt=""></div><div><h5>축지 <small>이동기 · 대쉬</small></h5><p>짧은 거리를 순식간에 이동하며 그동안 피해를 받지 않는다. Space · Shift · 대쉬 버튼. 민첩이 높을수록 자주 쓸 수 있다.</p></div></div>`}
 function mapH(){const my=myCP();return `<div class="pw"><span>내 전투력</span><b class="num">${fmt(my)}</b><small>던전 몬스터는 내 레벨을 따라 강해진다(던전마다 정해진 범위 안) · 심연은 Lv.100 고정</small></div><p class="hint">던전에서 적 ${GAUGE}마리를 쓰러뜨리면 보스가 나타난다(해당 보스 임무를 받은 뒤부터). 에픽·태초 장비는 보스만 떨어뜨린다.</p>`+
   Object.entries(MAPS).filter(([id,M])=>!M.hidden).map(([id,M])=>{const ml=mobLvOf(id),rc=recCP(id),q=qCur(),qm=qMap(q)===id,open=mapOpen(id),lt=mapLockTxt(id);
@@ -2398,7 +2413,6 @@ function setH(){const s=pl.set,ts=ROOT.ts?new Date(ROOT.ts).toLocaleString('ko-K
 const SHOP=[
   {n:'강화석 꾸러미',d:'장비 강화 재료 · 강화석 10개',p:()=>100+pl.lv*20,buy(){pl.stone+=10;toast('강화석 10개를 샀다')}},
   {n:'강화석 상자',d:'장비 강화 재료 · 강화석 100개',p:()=>(100+pl.lv*20)*9,buy(){pl.stone+=100;toast('강화석 100개를 샀다')}},
-  {n:'혼석',d:'기술 강화 재료 · 혼석 1개',p:()=>300+pl.lv*40,buy(){pl.soul+=1;toast('혼석 1개를 샀다')}},
   {n:'봉인된 함',d:()=>`${CLS[pl.cls].n} 전용 장비 하나 (현재 레벨 · 레전더리 이하). 매직 이상이 잘 나온다.`,p:()=>400+pl.lv*70,buy(){collect({it:makeItem(pick(SLOTS),rollGrade(.7,SHOP_MAXG),pl.lv,pl.cls,null)})}},
   {n:'혈인 봉인함',d:()=>`${CLS[pl.cls].n} 전용 장비 하나, 레어~레전더리 확정. (에픽·태초는 보스에게서만 나온다)`,p:()=>2500+pl.lv*250,buy(){collect({it:makeItem(pick(SLOTS),Math.max(3,rollGrade(1.4,SHOP_MAXG)),pl.lv,pl.cls,null)})}}];
 function shopH(){const tot=potTotal();return `<div class="pw"><span>보유 금화</span><b class="num">${fmt(pl.gold)}</b><small>회복약 소지 <b class="num">${tot}/${POT_MAX}</b> · 재사용 ${POT_CD}초 · 단축키 Q</small></div>
@@ -2406,8 +2420,8 @@ function shopH(){const tot=potTotal();return `<div class="pw"><span>보유 금�
   `<p class="sec">물품</p>`+SHOP.map((s,i)=>{const p=s.p();return `<div class="mrow"><div><h5>${s.n}</h5><p>${typeof s.d==='function'?s.d():s.d}</p></div><button class="sb pri" data-act="buy" data-i="${i}" ${pl.gold>=p?'':'disabled'}>금화 ${fmt(p)}</button></div>`}).join('')}
 function boardH(){if(!pl.board||!pl.board.length)pl.board=makeOffers();const bs=bnts(),full=bs.length>=BOUNTY_MAX;
   return `<p class="hint">의뢰는 동시에 ${BOUNTY_MAX}개까지 맡을 수 있다 (${bs.length}/${BOUNTY_MAX}). 완료하면 어디서든 바로 보상을 받는다.</p>`+
-  bs.map((b,i)=>`<div class="det" style="--gc:var(--jade)"><div><b style="font-family:var(--f-disp);font-size:17px">진행 중 · ${MAPS[b.map].n}</b><p class="hint" style="margin-top:4px">적 ${b.k}/${b.n} 처치 · 금화 ${fmt(b.rw.gold)} · 강화석 ${b.rw.stone} · 혼석 ${b.rw.soul}</p></div><div class="acts"><button class="sb" data-act="bgo" data-i="${i}">그곳으로 이동</button><button class="sb" data-act="bdrop" data-i="${i}">포기</button></div></div>`).join('')+
-  pl.board.map((o,i)=>`<div class="mrow"><div><h5>${MAPS[o.map].n}<span class="tag${MAPS[o.map].dg?' dg':''}">${MAPS[o.map].kind}</span></h5><p>그곳의 적 ${o.n}마리 처치</p><div class="meta num">금화 ${fmt(o.rw.gold)} · 강화석 ${o.rw.stone} · 혼석 ${o.rw.soul} · 경험치 ${fmt(o.rw.exp)}</div></div><button class="sb pri" data-act="bacc" data-i="${i}" ${full?'disabled':''}>맡기</button></div>`).join('')}
+  bs.map((b,i)=>`<div class="det" style="--gc:var(--jade)"><div><b style="font-family:var(--f-disp);font-size:17px">진행 중 · ${MAPS[b.map].n}</b><p class="hint" style="margin-top:4px">적 ${b.k}/${b.n} 처치 · 금화 ${fmt(b.rw.gold)} · 강화석 ${b.rw.stone}</p></div><div class="acts"><button class="sb" data-act="bgo" data-i="${i}">그곳으로 이동</button><button class="sb" data-act="bdrop" data-i="${i}">포기</button></div></div>`).join('')+
+  pl.board.map((o,i)=>`<div class="mrow"><div><h5>${MAPS[o.map].n}<span class="tag${MAPS[o.map].dg?' dg':''}">${MAPS[o.map].kind}</span></h5><p>그곳의 적 ${o.n}마리 처치</p><div class="meta num">금화 ${fmt(o.rw.gold)} · 강화석 ${o.rw.stone} · 경험치 ${fmt(o.rw.exp)}</div></div><button class="sb pri" data-act="bacc" data-i="${i}" ${full?'disabled':''}>맡기</button></div>`).join('')}
 function petH(){return `<div class="pw"><span>동반자 정수</span><b class="num">${fmt(pl.ess)}</b><small>보스를 쓰러뜨리면 낮은 확률로 떨어진다 · 한 번에 하나만 데리고 다닌다</small></div>`+
   Object.entries(PETS).map(([k,P])=>{const lv=petLv(k),c=petCost(lv),on=pl.pet===k;
     return `<div class="petrow${on?' on':''}" style="--pc:${P.col}"><img src="${A(`img/${k}_L.webp`)}" alt="${P.n}"><div><h5>${P.n} <span class="tag">${P.role}</span> <small class="num">Lv.${lv}</small></h5><p>${P.desc}</p><p class="eff">${P.eff(lv)}</p>
@@ -2435,7 +2449,7 @@ function cheatH(){const o=GRADES.map((g,i)=>`<option value="${i}">${g.n}</option
   <div class="acts"><button class="sb pri" data-act="chitem">가방에 넣기</button><button class="sb" data-act="chset6">내 직업 6세트 한 벌 (에픽)</button></div>
   <p class="sec">재화</p><div class="cgrid">
    <label>금화<input type="number" id="cGo" min="0" value="${pl.gold}"></label><label>강화석<input type="number" id="cSt" min="0" value="${pl.stone}"></label>
-   <label>혼석<input type="number" id="cSo" min="0" value="${pl.soul}"></label><label>동반자 정수<input type="number" id="cEs" min="0" value="${pl.ess}"></label>
+   <label>동반자 정수<input type="number" id="cEs" min="0" value="${pl.ess}"></label>
    ${POT.map((p,i)=>`<label>${p.n}<input type="number" id="cP${i}" min="0" max="10" value="${pl.pots[i]}"></label>`).join('')}</div>
   <div class="acts"><button class="sb pri" data-act="chcur">재화 적용</button><button class="sb" data-act="chmend">복원의 혼 +10</button></div>
   <p class="sec">유물 · 레이드</p><div class="acts"><button class="sb" data-act="chskin">스킨 전부 받기</button><button class="sb" data-act="chrelic">유물 30종 모두 받기</button><button class="sb" data-act="chraid">레이드 해금</button><button class="sb" data-act="chq50">메인 임무 끝으로</button></div>`}
@@ -2467,7 +2481,6 @@ $('#modal').addEventListener('click',e=>{
    case'sort':pl.inv.sort((x,y)=>SLOTS.indexOf(x.slot)-SLOTS.indexOf(y.slot)||y.g-x.g||power(y)-power(x));break;
    case'pt':{const k=el.dataset.k,n=Math.min(+el.dataset.n,pl.pts);if(n>0){pl.stats[k]+=n;pl.pts-=n;recalc()}break}
    case'resetpt':{const base={str:2,agi:2,int:2};base[CLS[pl.cls].main]+=5;const inv=pl.stats.str+pl.stats.agi+pl.stats.int-11;pl.stats=base;pl.pts+=Math.max(0,inv);recalc();break}
-   case'skup':{const i=+el.dataset.i,c=skCost(pl.skl[i]);if(pl.soul>=c.soul&&pl.gold>=c.gold){pl.soul-=c.soul;pl.gold-=c.gold;pl.skl[i]++;toast(`${skillDef(i).n} Lv.${pl.skl[i]}`)}break}
    case'go':{if(!mapOpen(id)){travel(id);break}const t=MAPS[id].endless&&$('#abyT')?clamp(parseInt($('#abyT').value,10)||1,1,pl.abyss+1):0;closeModal();travel(id,null,t?{tier:t}:{});return}
    case'buy':{const s=SHOP[+el.dataset.i],p=s.p();if(pl.gold>=p){pl.gold-=p;s.buy()}break}
    case'buypot':{const i=+el.dataset.i,n=+el.dataset.n,pr=POT[i].price(pl.lv)*n;if(pl.gold>=pr&&potTotal()+n<=POT_MAX){pl.gold-=pr;pl.pots[i]+=n;toast(`${POT[i].n} ${n}개를 샀다`)}break}
@@ -2510,7 +2523,7 @@ $('#modal').addEventListener('click',e=>{
    case'chboss':closeModal();spawnBoss();return;
    case'chitem':{if(pl.inv.length>=invCap()){toast('가방이 가득 찼다');break}const g=+$('#ciG').value,sc=$('#ciSet').value||null;const x=makeItem($('#ciS').value,g,Math.max(1,numv('ciL')),pl.cls,sc);x.enh=clamp(numv('ciE'),0,40);if(sc)x.name=`[${SETN[sc]}] `+x.name.replace(/^\[[^\]]+\] /,'');pl.inv.unshift(x);pl.st.gotG=Math.max(pl.st.gotG,g);recalc();toast(`만들었다 · <b style="color:${GRADES[g].c}">${esc(x.name)}</b>`);break}
    case'chset6':{if(pl.inv.length+6>invCap()){toast('가방 자리가 6칸 필요하다');break}SLOTS.forEach(sl=>pl.inv.unshift(makeItem(sl,6,pl.lv,pl.cls,pl.cls)));pl.st.gotG=Math.max(pl.st.gotG,6);toast(`${SETN[pl.cls]} 6부위를 가방에 넣었다 · 「최적 장비 자동 착용」으로 입어 보자`);break}
-   case'chcur':pl.gold=Math.max(0,numv('cGo'));pl.stone=Math.max(0,numv('cSt'));pl.soul=Math.max(0,numv('cSo'));pl.ess=Math.max(0,numv('cEs'));{let left=POT_MAX;for(let i=0;i<4;i++){const v=clamp(numv('cP'+i),0,left);pl.pots[i]=v;left-=v}}toast('재화를 적용했다 (회복약은 합계 10개까지)');break;
+   case'chcur':pl.gold=Math.max(0,numv('cGo'));pl.stone=Math.max(0,numv('cSt'));pl.ess=Math.max(0,numv('cEs'));{let left=POT_MAX;for(let i=0;i<4;i++){const v=clamp(numv('cP'+i),0,left);pl.pots[i]=v;left-=v}}toast('재화를 적용했다 (회복약은 합계 10개까지)');break;
    case'title':closeModal();save();toTitle();return;
    case'reset':if(!G.confirmReset){G.confirmReset=true}else{try{localStorage.removeItem(SAVEK);localStorage.removeItem(SAVEK1)}catch(_){}ROOT={v:2,active:null,chars:{},stash:[],ts:0,relics:{},raidUnlocked:false};G.confirmReset=false;G.modal=null;$('#modal').hidden=true;toTitle();return}break}
   renderPanel()});
@@ -2563,7 +2576,7 @@ function hudTick(dt){hudAcc+=dt;if(hudAcc<GFX.hud||G.scene!=='play')return;hudAc
   const my=cpCache(),rc=recCP(G.map);hT(H.hCP,fmt(my));hI(H.hRec,rc?`권장 <span class="${my>=rc?'pos':'neg'}">${fmt(rc)}</span>`:'');
   SKEL.forEach((el,i)=>{const lock=pl.lv<UNL[i];el.classList.toggle('lock',lock);const lv=el.querySelector('.lv');
     if(lock){hT(lv,'Lv'+UNL[i]);hP(el,'--p',0);el.classList.remove('ready')}
-    else{hT(lv,pl.skl[i]>1?pl.skl[i]:'');const cd=pl.cds[i]>.13?pl.cds[i]:0,p=clamp(cd/cdOf(i),0,1);hP(el,'--p',p);el.classList.toggle('ready',p===0&&!M.safe)}});
+    else{hT(lv,'');const cd=pl.cds[i]>.13?pl.cds[i]:0,p=clamp(cd/cdOf(i),0,1);hP(el,'--p',p);el.classList.toggle('ready',p===0&&!M.safe)}});
   hP(H.dashB,'--p',pl.dashCd>0?clamp(pl.dashCd/(pl.dashCdMax||2.4),0,1):0);
   if(G.boss){hH(H.bossBar,false);hH(H.gauge,true);hT(H.bossN,G.boss.n+(G.boss.fury?' · 광폭':G.boss.enr?' · 격노':''));hW(H.bossF,clamp(G.boss.hp/G.boss.mhp*100,0,100)+'%')}
   else{hH(H.bossBar,true);if(M.dg&&!M.raid&&bossAllowed(M)){hH(H.gauge,false);hT(H.gaugeT,`보스 출현까지 ${G.gauge}/${GAUGE}`);hW(H.gaugeF,G.gauge/GAUGE*100+'%')}else hH(H.gauge,true)}
@@ -2584,14 +2597,17 @@ function serial(){const o={};for(const k of PKEYS)o[k]=pl[k];return o}
 function writeRoot(){try{localStorage.setItem(SAVEK,JSON.stringify(ROOT));return true}catch(_){return false}}
 function save(manual){if(G.scene!=='play')return false;ROOT.chars[pl.cls]=serial();ROOT.active=pl.cls;ROOT.ts=Date.now();const ok=writeRoot();
   if(manual)toast(ok?`<b style="color:#7fd88f">저장했다</b> · ${new Date(ROOT.ts).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`:'<b class="neg">저장하지 못했다</b> · 이 브라우저가 저장을 막고 있다 (사생활 보호 모드 등)');return ok}
-function loadRoot(){try{const s=localStorage.getItem(SAVEK);if(s){const r=JSON.parse(s);if(r&&r.v===2){ROOT=Object.assign({v:2,active:null,chars:{},stash:[],ts:0},r);return}}}catch(_){}
+/* V015: 예전 수치 곡선으로 만들어진 장비는 같은 부위·등급·레벨로 능력치를 새로 뽑는다 (강화·잠금·세트·이름은 그대로) */
+function migItem(it,cls){if(!it||it.v>=15)return;const x=makeItem(it.slot,it.g,it.ilv||1,it.cls||cls,null);it.st=x.st;it.v=15}
+function migChar(o){if(!o)return;SLOTS.forEach(s=>migItem(o.gear&&o.gear[s],o.cls));(o.inv||[]).forEach(it=>migItem(it,o.cls));o.skl=[1,1,1,1,1];if(o.soul){o.stone=(o.stone||0)+o.soul*10;o.soul=0}}
+function loadRoot(){try{const s=localStorage.getItem(SAVEK);if(s){const r=JSON.parse(s);if(r&&r.v===2){ROOT=Object.assign({v:2,active:null,chars:{},stash:[],ts:0},r);if(!(ROOT.mig>=15)){Object.values(ROOT.chars).forEach(migChar);(ROOT.stash||[]).forEach(it=>migItem(it,it.cls||'warrior'));ROOT.mig=15;writeRoot()}return}}}catch(_){}
   try{const s1=localStorage.getItem(SAVEK1);if(s1){const o=JSON.parse(s1);if(o&&o.cls){ROOT={v:2,active:o.cls,chars:{[o.cls]:o},stash:[],ts:Date.now()};writeRoot()}}}catch(_){}}
 const hasChar=c=>!!(ROOT.chars&&ROOT.chars[c]);
 addEventListener('visibilitychange',()=>{if(document.hidden)save()});
 addEventListener('pagehide',()=>save());
 function startPlay(){G.scene='play';$('#title').hidden=true;$('#classSel').hidden=true;$('#hud').hidden=false;buildSkillBar();lastTrk='';lastTalk='__';pl.cds=[0,0,0,0,0];pl.buffs={};pl.shield=0;pl.chan=null;pl.potCd=0;G.dead=0;G.pet=null}
 const DEFSET={autoEquip:true,autoDis:0,autoLoot:true,dmgNum:true,lootNum:true,target:'near',autoPot:false,menu:innerWidth>=700&&innerHeight>=520};
-function loadFrom(o){Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});pl.ach=o.ach||{};pl.set=Object.assign({},DEFSET,o.set||{});
+function loadFrom(o){migChar(o);Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});pl.ach=o.ach||{};pl.set=Object.assign({},DEFSET,o.set||{});
   pl.pots=Array.isArray(o.pots)?o.pots.slice(0,4):[3,0,0,0];while(pl.pots.length<4)pl.pots.push(0);
   pl.pets=Object.assign({tiger:1,fairy:1,coin:1},o.pets||{});pl.pet=o.pet||'tiger';pl.ess=o.ess||0;pl.god=false;
   pl.mend=o.mend||0;pl.sq=o.sq||{};pl.relic=o.relic||null;pl.relCd=0;pl.pearlCd=0;pl.mind=0;pl.lv=Math.min(pl.lv,MAXLV);
@@ -2602,7 +2618,7 @@ function loadFrom(o){Object.assign(pl,o);pl.st=Object.assign(newSt(),o.st||{});p
   SLOTS.forEach(s=>{if(!pl.gear[s])pl.gear[s]=null;else if(pl.gear[s].broken){pl.inv.unshift(pl.gear[s]);pl.gear[s]=null}});pl.d={};recalc();pl.hp=pl.d.mhp;startPlay();setMenu(menuOpen());
   const m=MAPS[pl.map]&&!MAPS[pl.map].raid?pl.map:'village';if(!travel(m))travel('village');later(.3,()=>qEvent('check'))}
 /* 새 캐릭터 기본값 (진행 초기화에도 쓴다) */
-function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:2,skl:[1,1,1,1,1],q:0,qk:0,qv:5,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
+function freshChar(cls,name){const o={name:name||'무명',cls,lv:1,exp:0,pts:0,stats:{str:2,agi:2,int:2},gear:{},inv:[],gold:120,stone:10,soul:0,skl:[1,1,1,1,1],q:0,qk:0,qv:5,bounty:null,bounties:[],invx:0,skin:"",abyss:0,set:Object.assign({},DEFSET),map:'village',board:null,st:newSt(),ach:{},
     pots:[3,0,0,0],pets:{tiger:1,fairy:1,coin:1},pet:'tiger',ess:0,mend:0,sq:{},relic:null};
   o.stats[CLS[cls].main]+=5;SLOTS.forEach(s=>o.gear[s]=null);o.gear.weapon=makeItem('weapon',1,1,cls,null);o.gear.armor=makeItem('armor',0,1,cls,null);return o}
 function newGame(cls,name){
