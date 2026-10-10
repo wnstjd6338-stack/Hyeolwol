@@ -50,6 +50,14 @@ button:disabled{opacity:.38;cursor:not-allowed}
 #cv{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* title & class select */
+.tart{position:absolute;left:50%;top:50%;width:max(100vw,177.69vh);height:max(100vh,56.28vw);transform:translate(-50%,-50%);background:#0c0d12 url(img/bg_title.jpg) center/100% 100% no-repeat}
+#title{padding:0;overflow:hidden}
+.thot{position:absolute;padding:0;border:1px solid transparent;border-radius:3px;background:transparent;cursor:pointer;transition:box-shadow .15s,background .15s,border-color .15s;-webkit-tap-highlight-color:transparent}
+.thot:hover,.thot:focus-visible{border-color:rgba(255,190,170,.55);box-shadow:0 0 22px rgba(220,60,70,.45),inset 0 0 18px rgba(255,120,110,.18);outline:none}
+.thot:active{background:rgba(255,255,255,.08)}
+.thot.off{background:rgba(8,8,12,.62);cursor:default;box-shadow:none;border-color:transparent}
+.tver{position:absolute;left:50%;top:54.5%;transform:translate(-50%,-50%);font-size:max(10px,.8vw);color:#bfb6a6;padding:.15em .7em;border-radius:8px;background:rgba(28,24,26,.92);box-shadow:0 0 10px 6px rgba(28,24,26,.92);letter-spacing:.06em}
+.trot{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));text-align:center;text-shadow:0 1px 4px #000}
 .screen{position:fixed;inset:0;display:grid;place-items:center;padding:24px 16px;overflow:auto;z-index:20;touch-action:pan-y}
 .ttl{text-align:center;display:grid;gap:16px;justify-items:center;max-width:560px}
 .seal{font-family:var(--f-disp);color:#fff2ea;background:var(--blood);width:58px;padding:8px 0;line-height:1.1;font-size:21px;border-radius:3px;box-shadow:0 0 0 3px rgba(0,0,0,.35) inset,0 0 50px rgba(184,40,60,.45)}
@@ -436,16 +444,14 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   </div>
 
   <div class="screen" id="title">
-    <div class="ttl">
-      <div class="seal">血月<br>夜行</div>
-      <h1>혈월야행</h1>
-      <p class="sub">핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥</p>
-      <p class="sub num" style="font-size:11px;opacity:.55;margin-top:2px">V009</p>
-      <div class="row"><button class="btn pri" id="bNew">새로 깨어나기</button><button class="btn" id="bCont" hidden>이어하기</button></div>
-      <button class="btn fsT" id="fsTitle" hidden>⛶ 전체화면으로</button>
-      <p class="rot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
-      <p class="hint">이동 · WASD / 방향키 / 클릭 / 터치 패드 &nbsp;·&nbsp; 대쉬 · Space<br>기술은 재사용 대기시간이 돌아오면 저절로 발동한다</p>
+    <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
+    <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
+      <span class="tver num" id="tVer">V010</span>
+      <button class="thot" id="bNew" style="left:37.68%;top:58.34%;width:13.46%;height:6.7%" aria-label="새로 깨어나기"></button>
+      <button class="thot" id="bCont" style="left:52.09%;top:58.34%;width:10.29%;height:6.7%" aria-label="이어하기"></button>
+      <button class="thot" id="fsTitle" style="left:42.94%;top:67.38%;width:14.17%;height:6.48%" aria-label="전체화면으로"></button>
     </div>
+    <p class="rot trot">휴대폰은 가로로 돌리면 더 넓게 보입니다</p>
   </div>
 
   <div class="screen" id="classSel" hidden>
@@ -2484,7 +2490,7 @@ function newGame(cls,name){
   later(.9,()=>vn([{w:'n',t:'혈월(血月)이 뜬 지 사흘째 밤.'},{w:'n',t:'청등마을의 등불은 바람 한 점 없이 푸르게 타오르고 있었다.'},{w:'me',t:'…여긴, 어디지.'},{w:'n',t:'발치에서 작은 것들이 셋, 꼬리를 흔들며 올려다보고 있었다. 동반자 — 백호, 요정, 돈깨비.'},{w:'n',t:'신당 앞에서 누군가 이쪽을 바라보고 있다.'}],
     ()=>{toast('이동 · WASD / 클릭 / 화면 드래그 &nbsp; 대쉬 · Space &nbsp; 회복약 · Q');setTimeout(()=>toast('<b style="color:#f3cf45">!</b> 표시된 무녀 설화에게 다가가 대화하자'),900);setTimeout(()=>toast('동반자는 伴(동반) 메뉴에서 바꾸고 강화한다'),1800)}))}
 function switchChar(cls){if(!hasChar(cls))return;save();closeModal();loadFrom(ROOT.chars[cls]);toast(`${CLS[cls].n} ${esc(ROOT.chars[cls].name)}(으)로 전환했다`)}
-function toTitle(){G.scene='title';$('#hud').hidden=true;$('#title').hidden=false;$('#classSel').hidden=true;$('#bCont').hidden=!(ROOT.active&&hasChar(ROOT.active))}
+function toTitle(){G.scene='title';$('#hud').hidden=true;$('#title').hidden=false;$('#classSel').hidden=true;$('#bCont').classList.toggle('off',!(ROOT.active&&hasChar(ROOT.active)))}
 let chosen=null;
 function buildCards(){$('#cards').innerHTML=Object.values(CLS).map(c=>`<button class="card" data-cls="${c.id}" style="--cc:${c.col}"><div class="pv"><img src="${A(`img/por_${c.id}.webp`)}" alt="${c.n}"></div><h4>${c.n}<small>${c.role}</small></h4><div class="ms">주스탯 · ${MAINN[c.main]}${hasChar(c.id)?` · <span style="color:var(--jade)">보유 중 · ${esc(ROOT.chars[c.id].name)} Lv.${ROOT.chars[c.id].lv}</span>`:''}</div><p>${c.d}</p><div class="gls">${SK[c.id].map(s=>s.g).join('')}</div></button>`).join('')}
 $('#cards').addEventListener('click',e=>{const b=e.target.closest('[data-cls]');if(!b)return;chosen=b.dataset.cls;document.querySelectorAll('.card').forEach(x=>x.classList.toggle('on',x===b));$('#bStart').disabled=false;$('#bStart').textContent=hasChar(chosen)?'이 캐릭터로 이어하기':'이 길로 깨어난다';$('#pname').disabled=hasChar(chosen)});
@@ -2501,6 +2507,8 @@ const fsOK=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
 const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
 function toggleFS(){try{if(isFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else{const el=document.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;const p=rq&&rq.call(el,{navigationUI:'hide'});const lock=()=>{try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{})}catch(_){}};if(p&&p.then)p.then(lock).catch(()=>toast('이 화면에서는 전체화면을 쓸 수 없다'));else lock()}}catch(_){toast('이 화면에서는 전체화면을 쓸 수 없다')}}
 document.querySelectorAll('.fsT').forEach(b=>{b.hidden=!fsOK;b.addEventListener('click',toggleFS)});
+$('#fsTitle').classList.toggle('off',!fsOK);$('#fsTitle').addEventListener('click',()=>{if(fsOK)toggleFS()});
+{const t=$('.tart');t.style.backgroundImage=`url("${A('img/bg_title.jpg')}")`}
 ['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{resize();const s=$('#fsHud span');if(s)s.textContent=isFS()?'⇲':'⛶'}));
 addEventListener('orientationchange',()=>setTimeout(resize,200));
 document.addEventListener('gesturestart',e=>e.preventDefault());
@@ -2672,7 +2680,7 @@ function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
   try{sndTick()}catch(_){}
   try{if(G.scene==='play'){if(!G.modal&&!G.vn&&!G.ctlEdit)update(dt);if(G.vn)vnTick(dt);drawWorld();hudTick(dt)}
-  else{G.t+=dt;drawTitle(dt)}}
+  else{G.t+=dt;if($('#title').hidden)drawTitle(dt)}}
   catch(err){if(errN++<5)console.error(err);cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=1;cx.globalCompositeOperation='source-over'}}
 function boot(data){
   try{window.claude?.hot?.snapshot?.(()=>{if(G.scene==='play')save();return {inGame:G.scene==='play'}})}catch(_){}
