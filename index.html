@@ -497,7 +497,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V020</span>
+      <span class="tver num" id="tVer">V021</span>
       <button class="thot" id="bNew" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" aria-label="전체화면으로"></button>
@@ -1354,7 +1354,7 @@ function updAxes(dt){const A=G.axes;if(!A||!A.length)return;if(MAPS[G.map].safe)
   if(G.axeT<=0){for(const ax of G.axes){const bs=G.boss&&!G.boss.dead&&Math.hypot(G.boss.x-ax.x,G.boss.y-ax.y)<1400?G.boss:null,t=bs||nearest(ax.x,ax.y,900);
       if(!t){KX.axeBoom(ax.x,ax.y,.5);continue}const a=Math.atan2(t.y-ax.y,t.x-ax.x);
       shoot({x:ax.x,y:ax.y,vx:Math.cos(a)*780,vy:Math.sin(a)*780,r:20,pierce:0,dmg:0,st:'axe',c:'#ff9a5c',l:2.4,home:10,tgt:t,onHit:(p,e)=>axeBoom(p.x,p.y,ax)})}G.axes=[]}}
-function axeShape(c,x,y,rot,S,al){c.save();c.translate(x,y);c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#ff6a2a',0,0,74*S,0,.45*al);kdraw(c,'twirl_01','#ffb070',0,0,70*S,rot*.5,.35*al);
+function axeShapeV19(c,x,y,rot,S,al){c.save();c.translate(x,y);c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#ff6a2a',0,0,74*S,0,.45*al);kdraw(c,'twirl_01','#ffb070',0,0,70*S,rot*.5,.35*al);
   c.globalCompositeOperation='source-over';c.globalAlpha=al;c.rotate(rot);c.lineCap='round';c.strokeStyle='#2a1a10';c.lineWidth=5*S;c.beginPath();c.moveTo(0,20*S);c.lineTo(0,-22*S);c.stroke();c.strokeStyle='#7a5234';c.lineWidth=2.4*S;c.beginPath();c.moveTo(0,18*S);c.lineTo(0,-20*S);c.stroke();
   c.fillStyle='#8a8f9a';c.beginPath();c.moveTo(2*S,-19*S);c.quadraticCurveTo(28*S,-26*S,25*S,-6*S);c.quadraticCurveTo(28*S,12*S,2*S,5*S);c.closePath();c.fill();
   c.fillStyle='#d9dde4';c.beginPath();c.moveTo(14*S,-21*S);c.quadraticCurveTo(28*S,-26*S,25*S,-6*S);c.quadraticCurveTo(28*S,12*S,14*S,8*S);c.quadraticCurveTo(21*S,-6*S,14*S,-21*S);c.fill();
@@ -1399,7 +1399,7 @@ function hit(e,dmg,o,sx,sy){if(e.dead)return;o=o||{};const mine=!o.src,S=o.src||
   /* V018 패시브 「꿰뚫는 일격」: 방어·저항을 무시하는 관통 피해 */
   const pen=mine?pasV('pen'):0,td=pen>0?d*pen:0;
   if(e.dr)d*=1-e.dr;
-  e.hp-=d+td;e.flash=.08;if(mine)sfx(cr?'crit':'hit',cr?.7:.5);if(mine)kp(cr?'star_09':'star_06',e.x+rnd(-6,6),e.y-Math.min(e.r,40)*.8,{c:cr?'#ffd34d':'#ffffff',s:cr?60:34,s1:cr?110:54,l:cr?.2:.12,r:rnd(0,TAU),fi:.05});
+  e.hp-=d+td;e.flash=.08;if(mine)sfx(cr?'crit':'hit',cr?.7:.5);const fxOk=!e._fxT||G.t-e._fxT>.08;if(fxOk)e._fxT=G.t;if(mine&&fxOk)kp(cr?'star_09':'star_06',e.x+rnd(-6,6),e.y-Math.min(e.r,40)*.8,{c:cr?'#ffd34d':'#ffffff',s:cr?60:34,s1:cr?110:54,l:cr?.2:.12,r:rnd(0,TAU),fi:.05});
   if(G.raid){const k=mine?'me':o.who||'?';G.raid.dmg[k]=(G.raid.dmg[k]||0)+d+td}
   if(mine&&pl.buffs.blade>0&&pl.cls==='warrior')pl.hp=Math.min(pl.d.mhp,pl.hp+(d+td)*.02*healMul());
   if(mine){if(hasRel('fang'))pl.hp=Math.min(pl.d.mhp,pl.hp+d*.015*healMul());
@@ -1408,7 +1408,7 @@ function hit(e,dmg,o,sx,sy){if(e.dead)return;o=o||{};const mine=!o.src,S=o.src||
   if(o.slow)e.slow=Math.max(e.slow,o.slow);
   if(o.stun&&!e.boss)e.stun=Math.max(e.stun,o.stun);
   if(pl.set.dmgNum&&(mine||Math.random()<.35)){const tx=e.x+rnd(-10,10),ty=e.y-(e.raid?260:e.r)-8;addText(tx,ty,fmt(d),!mine?'#bfe3ff':cr?'#ffd34d':'#f1ead8',cr?17:12,cr);if(td>=1)addText(tx,ty-(cr?18:14),fmt(td),'#d6b8ff',9)}
-  if(cr)burst(e.x,e.y,'#ffd34d',4,160,2);
+  if(cr&&fxOk)burst(e.x,e.y,'#ffd34d',4,160,2);
   if(e.hp<=0)killEnemy(e)}
 function hitCircle(x,y,r,dmg,o){let n=0;for(const e of G.ents){if(e.dead)continue;if((e.x-x)**2+(e.y-y)**2<(r+e.r)**2){hit(e,dmg,o,x,y);n++}}return n}
 function hitArc(x,y,a,r,w,dmg,o){for(const e of G.ents){if(e.dead)continue;const dx=e.x-x,dy=e.y-y,d=Math.hypot(dx,dy);if(d>r+e.r)continue;let da=Math.atan2(dy,dx)-a;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)<=w/2||d<e.r+12)hit(e,dmg,o,x,y)}}
@@ -2301,7 +2301,7 @@ function updProjs(dt){
     else if(p.st==='light'){if(Math.random()<.6)kp('star_06',p.x+rnd(-5,5),p.y+rnd(-5,5),{c:'#fff3c4',s:24,s1:8,l:.35,r:rnd(0,TAU)})}
     else if(p.st==='thunder'){if(Math.random()<.8)kp('spark_07',p.x,p.y,{c:'#8fc7ff',s:80,s1:40,r:rnd(0,TAU),l:.15,fi:.02})}
     else if(p.st==='pierce'){if(Math.random()<.7)kp('trace_01',p.x,p.y,{c:'#ffe9a0',s:70,sx:.3,r:Math.atan2(p.vy,p.vx)+Math.PI/2,l:.2})}
-    else if(p.st==='wave'){if(Math.random()<.35)kp('slash_01',p.x,p.y,{c:'#ff2a45',s:p.r*3.4,s1:p.r*3.8,r:Math.atan2(p.vy,p.vx)-Math.PI/2,l:.14,al:.5})}
+    else if(p.st==='wave'){if(Math.random()<.15)kp('slash_01',p.x,p.y,{c:'#ff2a45',s:p.r*3.4,s1:p.r*3.8,r:Math.atan2(p.vy,p.vx)-Math.PI/2,l:.14,al:.5})}
     else if(p.st==='hwave'){if(Math.random()<.5)kp('slash_01',p.x,p.y,{c:'#ff8a4c',s:p.r*2.6,s1:p.r*3,r:Math.atan2(p.vy,p.vx)-Math.PI/2,l:.12,al:.45})}
     else if(p.st==='axe'){p.rot=(p.rot||0)+dt*20;if(Math.random()<.6)kp('trace_01',p.x,p.y-16,{c:'#ff9a5c',vx:-p.vx*.3,vy:-p.vy*.3,av:1,s:44,sx:.45,l:.16})}
     else if(p.st==='tal'){if(Math.random()<.5)kp('flame_05',p.x,p.y,{c:'#ff9a3c',s:24,s1:8,vy:-40,l:.3})}
@@ -2619,11 +2619,12 @@ function drawProj(c,p){c.save();c.translate(p.x,p.y);const a=Math.atan2(p.vy,p.v
      c.rotate(a);c.globalCompositeOperation='lighter';c.strokeStyle=p.c;c.lineWidth=3;c.shadowColor='#8fc7ff';c.shadowBlur=18;c.beginPath();c.moveTo(-40,0);for(let i=1;i<6;i++)c.lineTo(-40+i*9,rnd(-6,6));c.lineTo(12,0);c.stroke();c.fillStyle='#fff';circ(c,10,0,6);c.shadowBlur=0;break;
    case'light':if(IMG.k_circle_05){c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#ffe9a0',0,0,p.r*7,0,.7);kdraw(c,'star_04','#fff8dc',0,0,p.r*5.5,G.t*5,.9);kdraw(c,'circle_05','#ffffff',0,0,p.r*2.6,0,1);break}
    case'orb':{c.globalCompositeOperation='lighter';glow(c,0,0,p.r*2.2,p.c,1,.35);break}
-   case'hwave':{c.rotate(a);c.globalCompositeOperation='lighter';kdraw(c,'slash_01','#ff7a3c',0,0,p.r*3.6,-Math.PI/2,.95);kdraw(c,'slash_01','#ffe8d0',4,0,p.r*2.7,-Math.PI/2,.75);kdraw(c,'circle_05','#ff8a4c',p.r*.8,0,p.r*2.2,0,.35);break}
+   case'hwave':{c.globalCompositeOperation='lighter';c.globalCompositeOperation='source-over';kdraw(c,'w002','#6a1c06',0,0,p.r*3.2,wr('w002',a),.45);c.globalCompositeOperation='lighter';if(!kdraw(c,'w002','#ff7a3c',0,0,p.r*3.4,wr('w002',a),.75)){c.rotate(a);kdraw(c,'slash_01','#ff7a3c',0,0,p.r*3.6,-Math.PI/2,.95);break}kdraw(c,'w002','#ffc890',Math.cos(a)*3,Math.sin(a)*3,p.r*2.5,wr('w002',a),.45);kdraw(c,'w112','#ffb070',-Math.cos(a)*p.r*1.2,-Math.sin(a)*p.r*1.2,p.r*2.6,wr('w112',a),.45);break}
    case'axe':{c.restore();axeShape(c,p.x,p.y-16,p.rot||0,1.15,1);return}
    case'cross':if(IMG.fx_h_cross){c.globalCompositeOperation='lighter';kdraw(c,'light_01','#fff3c4',0,0,110,0,.6);kdraw(c,'star_09','#fff8dc',0,0,90,G.t*6,.7);c.globalAlpha=1;c.rotate(G.t*12);c.drawImage(IMG.fx_h_cross,-22,-25,44,50);break}
      {c.rotate(G.t*16);c.globalCompositeOperation='lighter';c.shadowColor='#fff3c4';c.shadowBlur=18;c.fillStyle='#fff8dc';c.fillRect(-4,-18,8,36);c.fillRect(-13,-9,26,8);c.shadowBlur=0;break}
-   case'wave':if(IMG.k_slash_01){c.rotate(a);c.globalCompositeOperation='lighter';kdraw(c,'slash_01','#ff2a45',0,0,p.r*4.2,-Math.PI/2,.95);kdraw(c,'slash_01','#ffd0d6',4,0,p.r*3.3,-Math.PI/2,.8);kdraw(c,'circle_05','#ff2a45',p.r*.9,0,p.r*2.6,0,.4);break}
+   case'wave':if(IMG.k_w102){c.globalCompositeOperation='lighter';c.globalCompositeOperation='source-over';kdraw(c,'w102','#7a0a1a',0,0,p.r*3.6,wr('w102',a),.5);c.globalCompositeOperation='lighter';kdraw(c,'w102','#ff2a45',0,0,p.r*3.8,wr('w102',a),.55);kdraw(c,'w102','#ff8a9a',Math.cos(a)*3,Math.sin(a)*3,p.r*2.6,wr('w102',a),.3);kdraw(c,'w112','#ff4a5a',-Math.cos(a)*p.r*1.3,-Math.sin(a)*p.r*1.3,p.r*2.8,wr('w112',a),.5);break}
+   if(IMG.k_slash_01){c.rotate(a);c.globalCompositeOperation='lighter';kdraw(c,'slash_01','#ff2a45',0,0,p.r*4.2,-Math.PI/2,.95);kdraw(c,'slash_01','#ffd0d6',4,0,p.r*3.3,-Math.PI/2,.8);kdraw(c,'circle_05','#ff2a45',p.r*.9,0,p.r*2.6,0,.4);break}
      {c.rotate(a);c.globalCompositeOperation='lighter';c.strokeStyle='#ff2a45';c.lineWidth=8;c.shadowColor='#ff2a45';c.shadowBlur=20;c.beginPath();c.arc(-20,0,p.r*1.3,-1.1,1.1);c.stroke();c.strokeStyle='#ffd0d6';c.lineWidth=2.5;c.beginPath();c.arc(-20,0,p.r*1.15,-.9,.9);c.stroke();c.shadowBlur=0;break}
    case'fox':{const im=IMG.fx_m_fox;c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#5ff0d0',0,0,p.r*7,0,.6);kdraw(c,'flame_05','#7ff7e4',-Math.cos(a)*10,-Math.sin(a)*10,p.r*6,a-Math.PI/2,.55);c.globalAlpha=1;if(im){const S=p.r*5.6;for(let i=2;i>=1;i--){c.globalAlpha=.25/i;c.drawImage(im,-Math.cos(a)*i*14-S*.4,-Math.sin(a)*i*14-S*.4,S*.8,S*.8)}c.globalAlpha=1;c.globalCompositeOperation='source-over';c.rotate(Math.sin(G.t*9+p.x)*.15);c.drawImage(im,-S/2,-S/2,S,S)}break}
    case'tal':if(IMG.fx_m_tal&&p.c==='#f3cf45'){c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#ff9a3c',0,0,80,0,.6);kdraw(c,'star_06','#ffd28a',0,0,60,G.t*8,.7);c.globalAlpha=1;c.rotate(G.t*10);c.globalCompositeOperation='source-over';c.drawImage(IMG.fx_m_tal,-12,-21,24,42);break}
@@ -2638,7 +2639,8 @@ function fxImg(k,x,y,size,l,o){G.fx.push(Object.assign({k:'img',im:k,x,y,size,l,
    흰색 조각 그림 32장에 색을 입혀(색마다 한 번만 만들어 캐시) 크기·회전·속도·페이드로 겹쳐 스킬 이펙트를 만든다.
    gnd=1 조각은 몬스터 아래(바닥)에, 나머지는 위에 '빛 더하기'로 그린다. 화질 설정에 따라 최대 개수·발생량이 줄어든다. */
 const KTEX=['magic_01','magic_02','magic_03','twirl_01','twirl_03','circle_02','circle_03','smoke_10','scorch_01','light_01','spark_02','dirt_01','smoke_04','smoke_07',
-  'circle_05','flare_01','muzzle_02','scorch_03','scratch_01','slash_01','slash_03','slash_04','spark_05','spark_07','star_06','star_08','star_09','trace_01','trace_04','fire_01','flame_05','star_04'];
+  'circle_05','flare_01','muzzle_02','scorch_03','scratch_01','slash_01','slash_03','slash_04','spark_05','spark_07','star_06','star_08','star_09','trace_01','trace_04','fire_01','flame_05','star_04',
+  /* V021 전사 전용 */'w000','w001','w002','w003','w010','w011','w012','w013','w020','w021','w022','w023','w030','w031','w032','w033','w100','w101','w102','w103','w110','w111','w112','w113','w120','w121','w122','w123','w130','w131','w132','w133','w200','w201','w202','w203','w210','w211','w212','w213','w220','w221','w222','w223','w230','w231','w232','w233'];
 KTEX.forEach(n=>loadImg('k_'+n,A(`img/k_${n}.webp`)));
 const KTC=new Map();
 function ktex(n,col){const im=IMG['k_'+n];if(!im)return null;if(!col)return im;const key=n+col;let t=KTC.get(key);if(t)return t;
@@ -2655,7 +2657,9 @@ function drawKp(c,gnd){const a=G.kp;if(!a||!a.length)return;c.save();c.globalCom
     const k=1-p.l/p.ml,e=1-(1-k)*(1-k),s=p.s+(p.s1-p.s)*e,al=k<p.fi?k/p.fi:Math.pow(Math.max(0,(1-k)/(1-p.fi)),p.pw);
     if(p.src!==src){src=p.src;c.globalCompositeOperation=src?'source-over':'lighter'}
     c.globalAlpha=Math.max(0,Math.min(1,al*p.al));const w=s*p.sx,h=s*p.sy;
-    c.save();c.translate(p.fol?pl.x+p.x:p.x,p.fol?pl.y+p.y:p.y);if(p.r)c.rotate(p.r);c.drawImage(im,-w/2,-h/2,w,h);c.restore()}
+    c.save();c.translate(p.fol?pl.x+p.x:p.x,p.fol?pl.y+p.y:p.y);
+    /* V021: 바닥 그림은 먼저 납작하게 누른 뒤 돌린다 (돌아도 원근이 유지된다) */
+    if(p.gnd&&p.sy<1&&p.vr){c.scale(1,p.sy);if(p.r)c.rotate(p.r);c.drawImage(im,-w/2,-s/2,w,s)}else{if(p.r)c.rotate(p.r);c.drawImage(im,-w/2,-h/2,w,h)}c.restore()}
   c.restore()}
 /* 바닥/공중 고정 그림 한 장 (구역·투사체용: 파티클이 아니라 매 프레임 직접 그림) */
 function kdraw(c,n,col,x,y,s,r,al,sx,sy){const im=ktex(n,col);if(!im)return 0;c.save();c.globalAlpha=Math.max(0,Math.min(1,al));c.translate(x,y);if(r)c.rotate(r);const w=s*(sx||1),h=s*(sy||1);c.drawImage(im,-w/2,-h/2,w,h);c.restore();return 1}
@@ -2782,6 +2786,66 @@ function drawFx(c){c.globalCompositeOperation='lighter';
      {const p=1-a,yy=f.y-420*(1-p*p);c.globalAlpha=.9;c.save();c.translate(f.x,yy);c.fillStyle='#ffd9cc';c.shadowColor='#ff3e5d';c.shadowBlur=24;c.beginPath();c.moveTo(-16,-200);c.lineTo(16,-200);c.lineTo(10,-10);c.lineTo(0,10);c.lineTo(-10,-10);c.closePath();c.fill();c.fillStyle='#b8283c';c.fillRect(-36,-212,72,12);c.fillStyle='#3a1e1e';c.fillRect(-6,-260,12,48);c.shadowBlur=0;c.restore();break}}}
   c.globalAlpha=1;c.globalCompositeOperation='source-over'}
 function drawParts(c){c.globalCompositeOperation='lighter';for(const p of G.parts){const a=p.l/p.ml;c.globalAlpha=a;c.fillStyle=p.c;c.beginPath();c.arc(p.x,p.y,p.s*(.4+a*.6),0,TAU);c.fill()}c.globalAlpha=1;c.globalCompositeOperation='source-over'}
+/* ================= V021 전사 이펙트 (전용 에셋 48장 · img/k_w###.webp) =================
+   w0## 낫·초승달·별·고리·법진·부적·구름·불꽃 / w1## 검기·회오리·폭발·충격파·도끼·방패 / w2## 균열·바위·가시·기둥·속도선·사슬·파편
+   방향이 있는 그림은 그림 속 기준 방향(B)을 빼서 돌린다 */
+const WB={w002:-Math.PI/2,w102:-Math.PI/2,w010:-Math.PI/4,w112:-.38,w113:-Math.PI/3,w210:0,w220:0,w230:-.45,w212:Math.PI/2,w231:Math.PI/2,w130:-Math.PI/4,w221:-Math.PI*3/4,w213:-Math.PI/2};
+const wr=(n,a)=>a-(WB[n]||0);
+/* 밝은 바닥에서도 보이도록: 진한 색 몸통(덮어 그리기) + 빛(더하기) 두 겹 */
+function kp2(n,x,y,body,o){kp(n,x,y,Object.assign({},o,{c:body,src:1,al:(o.al??1)*.62}));return kp(n,x,y,o)}
+Object.assign(KX,{
+ /* 횡참: 초승달 검기 + 세 갈래 잔영 + 별빛 불티 */
+ w0(a,sc){sc=sc||1;const ca=Math.cos(a),sa=Math.sin(a),x=pl.x+ca*58*sc,y=pl.y-22+sa*58*sc;
+   kp2('w102',x,y,'#6a1c06',{c:'#ff7a2a',s:170*sc,s1:260*sc,r:wr('w102',a),l:.28,fi:.03,pw:1.5});kp('w102',x,y,{c:'#ffb070',s:120*sc,s1:200*sc,r:wr('w102',a),l:.2,fi:.03,al:.7});kp('w102',x,y,{c:'#ffc890',s:100*sc,s1:170*sc,r:wr('w102',a),l:.16,fi:.04,al:.8});
+   for(const k of[-.3,0,.3]){const b=a+k;kp2('w010',pl.x+Math.cos(b)*86*sc,pl.y-20+Math.sin(b)*86*sc,'#6a1c06',{c:'#ff9a5c',s:70*sc,s1:110*sc,r:wr('w010',b+Math.PI/2),l:.18,fi:.05,al:.85})}
+   kp('w211',pl.x+ca*100*sc,pl.y+sa*100*sc*.6,{c:'#ff8a4c',s:110*sc,s1:130*sc,r:wr('w211',a),l:.4,gnd:1,al:.55,fi:.03});
+   const hx=pl.x+ca*110*sc,hy=pl.y-18+sa*110*sc;ksparks(hx,hy,'#ffc080',9,560,{a,w:.8,s:36});kp('w133',hx,hy,{c:'#ffe0b0',s:40,s1:90,l:.16,r:rnd(0,TAU),fi:.05})},
+ /* 혈검 횡참 */
+ w0b(a,sc){sc=sc||1;const x=pl.x+Math.cos(a)*76*sc,y=pl.y-22+Math.sin(a)*76*sc;
+   kp2('w102',x,y,'#8a0f22',{c:'#ff2a45',s:190*sc,s1:300*sc,r:wr('w102',a),l:.28,fi:.04,pw:1.3,al:.85});kp('w102',x,y,{c:'#ff9aa8',s:140*sc,s1:220*sc,r:wr('w102',a),l:.16,fi:.04,al:.6});
+   kp('w103',x+Math.cos(a)*30,y+Math.sin(a)*30,{c:'#ff4a5a',s:60,s1:150,l:.22,r:rnd(-.3,.3),fi:.05});ksparks(x,y,'#ff4a5a',8,560,{a,w:.6,s:40})},
+ /* 폭난섬 돌진: 속도선 + 갈매기 화살표 + 발자국 */
+ w1go(a){const ca=Math.cos(a),sa=Math.sin(a),x=pl.x,y=pl.y;kp('w213',x,y,{c:'#c8a259',s:60,s1:64,r:wr('w213',a),l:.9,gnd:1,sy:.7,al:.55,fi:.02});
+   kp2('w210',x+ca*30,y-24+sa*30,'#8a4a1c',{c:'#ff9a4c',s:150,s1:230,r:wr('w210',a),l:.24,fi:.04,vx:ca*400,vy:sa*400});kp2('w220',x+ca*120,y-24+sa*120,'#a0501c',{c:'#ffb070',s:80,s1:150,r:wr('w220',a),l:.22,fi:.04,vx:ca*900,vy:sa*900});
+   ksmoke(x,y,'#8a6a4a',3,40,{s:80,sp:60,al:.3})},
+ /* 폭난섬 끌어당김: 바닥 소용돌이 + 안으로 날아드는 갈고리 사슬 */
+ w1pull(x,y,P){kp2('w110',x,y,'#7a3a14',{c:'#ff9a4c',s:P*2.3,s1:P*.5,l:.26,gnd:1,sy:.6,vr:-10,al:.85,fi:.02});kring(x,y,'#fff1d6',P,40,.2,{al:.6});
+   for(let i=0;i<6;i++){const g=i/6*TAU+rnd(-.2,.2),cx=Math.cos(g),cy=Math.sin(g);kp2('w221',x+cx*P*.85,y-20+cy*P*.6,'#5a4630',{c:'#e8c890',s:90,s1:70,r:wr('w221',g+Math.PI),vx:-cx*P*3.4,vy:-cy*P*2.4,l:.2,fi:.05,al:.9})}},
+ /* 폭난섬 충격파: 균열 + 충격 고리 + 솟는 바위 가시 + 바위 파편 */
+ w1(sc){sc=sc||1;const x=pl.x,y=pl.y;kp2('w200',x,y,'#5a2e12',{c:'#ff8a3c',s:220*sc,s1:250*sc,l:1,gnd:1,sy:.6,r:rnd(0,TAU),al:.75,fi:.02});
+   kp('w121',x,y+4,{c:'#ffb070',s:160*sc,s1:520*sc,l:.45,gnd:1,fi:.03,al:.6});kp('w121',x,y+4,{c:'#ff7a2a',s:120*sc,s1:360*sc,l:.38,gnd:1,fi:.03,del:.05,al:.5});
+   kp2('w202',x,y-44*sc,'#6a3a18',{c:'#e08a4a',s:160*sc,s1:250*sc,l:.45,fi:.05,al:.8});kp('w120',x,y-26,{c:'#ff9a4c',s:100*sc,s1:200*sc,l:.24,fi:.04,r:rnd(0,TAU),al:.55});
+   for(let i=0;i<kn(6);i++){const g=rnd(Math.PI*1.1,Math.PI*1.9),v=rnd(300,620)*sc;kp('w201',x+rnd(-30,30),y-10,{c:'#c8a259',vx:Math.cos(g)*v,vy:Math.sin(g)*v,g:1500,s:rnd(30,52),vr:rnd(-6,6),r:rnd(0,TAU),l:rnd(.5,.75),fi:.02,src:1,al:.9})}
+   ksmoke(x,y-10,'#8a6a4a',5,80*sc,{s:120,sp:120,al:.3});kflash(x,y-20,'#ffb070',110,.16)},
+ /* 철갑포효: 솟는 방패 + 바닥 법진 + 고리 */
+ w2(){const x=pl.x,y=pl.y;kp2('w020',x,y,'#7a5a10',{c:'#f3cf45',s:140,s1:260,l:1.1,gnd:1,sy:.55,vr:1.4,fol:1,al:.9,fi:.08});kp('w013',x,y-30,{c:'#f3cf45',s:80,s1:220,l:.4,fol:1,al:.45});
+   kp2('w132',x,y-56,'#8a6a10',{c:'#f3cf45',s:50,s1:118,l:.8,fol:1,fi:.12,vy:-20});kp('w132',x,y-56,{c:'#fff8dc',s:40,s1:90,l:.5,fol:1,fi:.12});
+   kp('w003',x,y-50,{c:'#ffcf5a',s:70,s1:170,l:.25,r:rnd(0,TAU),fi:.04,al:.7});ksparks(x,y-30,'#ffe08a',10,380,{s:36})},
+ /* 철갑포효 종료: 방패가 깨져 흩어지며 쌓인 피해 방출 */
+ w2burst(r){const x=pl.x,y=pl.y;kp2('w232',x,y-50,'#7a5a10',{c:'#ffc04a',s:90,s1:190,l:.45,fi:.03});
+   for(let i=0;i<kn(6);i++){const g=rnd(0,TAU),v=rnd(380,640);kp('w232',x,y-50,{c:'#c8a030',src:1,vx:Math.cos(g)*v,vy:Math.sin(g)*v-200,g:900,s:rnd(30,50),vr:rnd(-8,8),r:rnd(0,TAU),l:rnd(.5,.8),fi:.02})}
+   kp('w121',x,y+4,{c:'#ffc04a',s:r*.5,s1:r*2.2,l:.5,gnd:1,fi:.03,al:.6});kp2('w200',x,y,'#5a3a10',{c:'#ff9a2a',s:r*1.2,s1:r*1.4,l:.9,gnd:1,sy:.6,r:rnd(0,TAU),al:.7,fi:.02});
+   kp('w120',x,y-40,{c:'#ffb040',s:100,s1:r*1.2,l:.3,r:rnd(0,TAU),fi:.03,al:.6});ksparks(x,y-30,'#ffd27a',16,680,{s:42});kflash(x,y-40,'#ffc870',150,.22)},
+ /* 혈검난무 */
+ wset(){const x=pl.x,y=pl.y;kp('w020',x,y,{c:'#ff2a45',s:120,s1:340,l:.9,vr:2.5,gnd:1,sy:.55,fol:1,fi:.06});kp2('w103',x,y-50,'#7a0a1a',{c:'#ff4a5a',s:80,s1:260,l:.42,fi:.04});
+   kp('w123',x,y-40,{c:'#ff3a4a',s:120,s1:220,l:.6,fol:1,al:.85});for(let i=0;i<3;i++)kp2('w231',x+(i-1)*70,y-260,'#7a0a1a',{c:'#ff5a6a',s:110,s1:120,vy:1400,l:.18,del:i*.05,fi:.05});
+   kbeam(x,y,'#ff2a45',90,380,.7);kflash(x,y-40,'#ff2a45',200,.3)},
+ /* 회오리참 소환 · 도끼 폭발 */
+ axeIn(){const x=pl.x,y=pl.y;kp('w110',x,y,{c:'#ff8a4c',s:120,s1:300,l:.45,gnd:1,sy:.6,vr:-8,fol:1,al:.8});kring(x,y,'#ffb070',20,AXE_ORB+40,.35);ksparks(x,y-20,'#ffc080',10,420,{s:34})},
+ axeBoom(x,y,sc){sc=sc||1;kp('w120',x,y-14,{c:'#ff8a2a',s:70*sc,s1:190*sc,l:.3,r:rnd(0,TAU),fi:.03,al:.65});kp2('w123',x,y-36*sc,'#8a2a0a',{c:'#ff7a2a',s:80*sc,s1:160*sc,l:.45,al:.85});
+   kp('w121',x,y+6,{c:'#ffd27a',s:60*sc,s1:240*sc,l:.4,gnd:1,fi:.03});for(let i=0;i<kn(2);i++)kp('w201',x,y-10,{c:'#a06a40',vx:rnd(-260,260),vy:rnd(-520,-280),g:1500,s:rnd(22,34),vr:rnd(-6,6),l:.6,src:1,fi:.02});
+   ksparks(x,y-10,'#ffd27a',8,480*sc,{s:32});kflash(x,y-10,'#ffb070',80*sc,.16)},
+ /* 귀신 무사 등장·퇴장·베기 */
+ ghostIn(x,y){kp('w020',x,y,{c:'#3fd8c0',s:140,s1:320,l:.9,gnd:1,sy:.55,vr:1.5,al:.85});kp2('w203',x-30,y-100,'#0f5a52',{c:'#5fe8d6',s:200,s1:250,l:.6,fi:.08,al:.8});
+   kp('w021',x-30,y-130,{c:'#bffff4',s:70,s1:110,l:.8,vy:-50,fi:.1});kflash(x,y-60,'#bffff4',180,.25);shake(6)},
+ ghostOut(x,y){kp('w011',x,y-90,{c:'#5fe8d6',s:110,s1:170,vy:-120,l:.8,al:.7});kp('w022',x,y-70,{c:'#2a8a80',s:120,s1:220,l:.9,al:.4});kstars(x,y-80,'#9ffff0',6,60,{s:22})},
+ ghostSlash(x,y,a,sc){sc=sc||1;const ca=Math.cos(a),sa=Math.sin(a),hx=x+ca*110*sc,hy=y-50+sa*110*sc;
+   kp2('w102',hx,hy,'#0f5a52',{c:'#3fd8c0',s:220*sc,s1:320*sc,r:wr('w102',a),l:.26,fi:.04,pw:1.3,al:.85});kp('w102',hx,hy,{c:'#a8fff2',s:150*sc,s1:220*sc,r:wr('w102',a),l:.16,fi:.04,al:.55});
+   kp('w113',x+ca*170*sc,y-30+sa*170*sc,{c:'#9ffff0',s:90*sc,s1:140*sc,r:wr('w113',a+Math.PI/2),l:.24,fi:.05});
+   kp('w211',x+ca*150*sc,y+sa*150*sc*.6,{c:'#5fe8d6',s:150*sc,s1:180*sc,r:a,l:.4,gnd:1,al:.5,fi:.03});ksparks(hx,hy,'#bffff4',6,500,{a,w:.9,s:32})}});
+/* 회오리참 도끼: 전용 도끼 그림을 빛나게 돌린다 */
+function axeShape(c,x,y,rot,S,al){c.save();c.globalCompositeOperation='lighter';kdraw(c,'circle_05','#ff6a2a',x,y,70*S,0,.4*al);
+  c.globalCompositeOperation='source-over';if(!kdraw(c,'w130','#4a2410',x,y,64*S,rot,.8*al)){c.fillStyle='#ffb070';c.globalAlpha=al;circ(c,x,y,10*S)}else{c.globalCompositeOperation='lighter';kdraw(c,'w130','#ff7a2a',x,y,66*S,rot,.8*al);kdraw(c,'w130','#ffd0a0',x,y,50*S,rot,.3*al)}c.restore()}
 function drawWorld(){
   const c=cx,M=MAPS[G.map],Z=ZOOM;let sx=0,sy=0;if(G.shake>0){sx=rnd(-G.shake,G.shake);sy=rnd(-G.shake,G.shake)}
   c.setTransform(DPR,0,0,DPR,0,0);c.fillStyle='#060609';c.fillRect(0,0,VW,VH);
