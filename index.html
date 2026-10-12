@@ -332,7 +332,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
 
 /* visual novel · V019: 가운데 둥근 말풍선 + 양옆 스탠딩 일러스트 (서로 겹치지 않도록 JS가 배치한다) */
 #vn{position:fixed;inset:0;z-index:40;display:block;background:radial-gradient(ellipse at 50% 42%,rgba(0,0,0,.22),rgba(0,0,0,.74));cursor:pointer;overflow:hidden}
-#vn .por{position:absolute;bottom:0;height:min(80vh,660px);aspect-ratio:.76;max-width:none;transform-origin:50% 100%;transition:filter .4s,transform .4s,opacity .4s;filter:drop-shadow(0 0 24px rgba(0,0,0,.8));will-change:transform,filter}
+#vn .por{position:absolute;bottom:0;height:min(80vh,660px);aspect-ratio:.76;margin:0;padding:0;line-height:0;max-width:none;transform-origin:50% 100%;transition:filter .4s,transform .4s,opacity .4s;filter:drop-shadow(0 0 24px rgba(0,0,0,.8));will-change:transform,filter}
 #vn .por svg,#vn .por img{width:100%;height:100%;display:block}
 #vn .por img{object-fit:contain;object-position:50% 100%}
 #vn .por.L{left:0}#vn .por.R{right:0}
@@ -360,6 +360,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
 #vn .skip{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top,0px));font-size:12px;background:rgba(0,0,0,.55);border:1px solid var(--line);padding:6px 12px;z-index:3;border-radius:2px}
 #vn.pm #vnT{font-size:calc(15.5px*var(--vnS,1));line-height:1.66}
 
+#trans{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30;display:none}
 #death{position:fixed;inset:0;display:grid;place-content:center;gap:8px;text-align:center;background:radial-gradient(circle,rgba(60,0,10,.35),rgba(0,0,0,.85));z-index:25;padding:16px}
 #death b{font-family:var(--f-disp);font-weight:400;font-size:clamp(34px,8vw,56px);color:#ff5a6a;letter-spacing:.14em}
 #death.raid{background:radial-gradient(circle,rgba(30,10,50,.45),rgba(0,0,0,.92))}#death.raid b{color:#b99aff;text-shadow:0 0 24px rgba(120,80,220,.6)}#death.raid #deathS{color:#e8d6a0}
@@ -455,6 +456,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
 
 <div id="game">
   <canvas id="cv"></canvas>
+  <canvas id="trans" aria-hidden="true"></canvas>
 
   <div id="hud" hidden>
     <div class="tl">
@@ -496,7 +498,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V023</span>
+      <span class="tver num" id="tVer">V024</span>
       <button class="thot" id="bNew" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" aria-label="전체화면으로"></button>
@@ -620,6 +622,7 @@ const CH={
   guardian:{n:'사찰 수호귀',p:{skin:'#d8d2c4',hair:'#e8e4da',hs:'long',robe:'#2a2f3e',robe2:'#151821',trim:'#b08a4a',eye:'#7fe0c8',acc:['horns']}},
   king:{n:'혈월왕',p:{skin:'#d9c7c0',hair:'#250810',hs:'long',robe:'#5a0c19',robe2:'#2a050b',trim:'#c8a259',eye:'#ff3a4a',acc:['aura','crown']}},
   smith:{n:'대장장이 강쇠',p:{skin:'#c3a07f',hair:'#34281f',hs:'top',robe:'#4a3a2b',robe2:'#2a2018',trim:'#8a6a40',eye:'#2b1d14',acc:['band']}},
+  dark:{n:'어둑시니',p:{skin:'#1a1822',hair:'#0b0a10',hs:'long',robe:'#16141c',robe2:'#08070b',trim:'#3a3546',eye:'#e8e0ff',acc:['aura']}},
   yeon:{n:'등불 속 아이 · 연이',p:{skin:'#e8f0f2',hair:'#2a2f3a',hs:'short',robe:'#a8c8d8',robe2:'#5a7888',trim:'#5ed4b9',eye:'#7ff7e4',acc:['aura']}},
   merch:{n:'떠돌이 상인 묘',p:{skin:'#e1cdb4',hair:'#1d1d22',hs:'short',robe:'#34465a',robe2:'#1c2733',trim:'#c8a259',eye:'#3b2a1a',acc:['gat']}}};
 const MEP={warrior:{robe:'#2f2a2a',robe2:'#151313',trim:'#b03a2e',hs:'top'},archer:{robe:'#283a2b',robe2:'#121c14',trim:'#8bc06a',hs:'pony'},
@@ -634,9 +637,9 @@ function meP(cls){return Object.assign({skin:'#d9cbb8',hair:'#121014',eye:'#5ed4
    lv: 이 레벨이 되어야 완료된다 */
 const MAINQ=[
   {t:'푸른 등불 아래',type:'talk',npc:'seol',hint:'오른쪽 위 지도(또는 마을 아래 산길 다리)로 「버려진 논두렁」에 가자',end:()=>[
-    {w:'seol',t:'…눈을 떴구나. 몸은 좀 어때?'},
+    {w:'seol',e:'기쁨',t:'…눈을 떴구나. 몸은 좀 어때?'},
     {w:'me',t:'차가워. 숨을 쉬는데도, 숨이 없는 것처럼.'},
-    {w:'seol',t:`기억이 안 나도 괜찮아. 네 이름은 ${pl.name}. 내가 기억하고 있으니까.`},
+    {w:'seol',e:'기쁨',t:`기억이 안 나도 괜찮아. 네 이름은 ${pl.name}. 내가 기억하고 있으니까.`},
     {w:'seol',t:'혈월이 뜬 뒤로 죽은 자들이 땅 위를 걸어. 마을 밖 논두렁부터 원혼이 넘쳐흘러.'},
     {w:'seol',t:'청등마을의 푸른 등불 곁에 있는 한, 넌 안전해. …적어도 지금은.'}]},
   {t:'첫 사냥',type:'kill',map:'field',n:10,hint:'기술은 재사용 대기시간이 돌아오면 저절로 발동한다 · 이동만 신경 쓰자',end:()=>[
@@ -647,7 +650,7 @@ const MAINQ=[
     {w:'seol',t:'망자의 걸음이야. 땅이 너를 붙잡지 못하는 거지. 다시 해 봐. 몸이 익을 때까지.'}],end:()=>[
     {w:'n',t:'발밑의 흙이 접히듯 줄어들었다. 눈을 깜빡이는 사이, 몸은 이미 다섯 걸음 앞에 있었다.'},
     {w:'me',t:'…살아 있을 때는 이렇게 걷지 못했을 거다.'},
-    {w:'seol',t:'응. 살아 있을 때 너는 늘 느긋하게 걸었어. 내가 뒤처지지 않게.'}]},
+    {w:'seol',e:'기쁨',t:'응. 살아 있을 때 너는 늘 느긋하게 걸었어. 내가 뒤처지지 않게.'}]},
   {t:'논두렁의 원혼',type:'kill',map:'field',n:25,hint:'붉은 표시가 뜨면 대쉬(Space · 步 버튼)로 피하자 · 대쉬 중에는 피해를 받지 않는다',end:()=>[
     {w:'n',t:'원혼들은 쓰러지며 하나같이 같은 말을 중얼거렸다.'},
     {w:'n',t:'"돌아왔구나. 돌아와서는 안 되는 것이, 돌아왔구나."'},
@@ -660,7 +663,7 @@ const MAINQ=[
     {w:'seol',t:'버티는 법, 베는 법, 빠르게 움직이는 법. 하나씩 떠올려 봐. 레벨이 오를 때마다 하나씩 돌아올 거야.'}],end:()=>[
     {w:'n',t:'손끝에 낯익은 감각이 돌아왔다. 굳은살이 박였던 자리, 몸을 틀던 습관, 숨을 고르던 박자.'},
     {w:'me',t:'누군가에게 배운 거다. …누구였더라.'},
-    {w:'seol',t:'……아버지. 우리 둘 다, 아버지한테 배웠어.'}]},
+    {w:'seol',e:'슬픔',t:'……아버지. 우리 둘 다, 아버지한테 배웠어.'}]},
   {t:'원혼의 우두머리',type:'elite',map:'field',n:3,hint:'금테를 두른 정예 원혼은 강하지만 좋은 장비를 떨어뜨린다',end:()=>[
     {w:'n',t:'금빛 테를 두른 원혼은 쓰러지면서도 웃고 있었다.'},
     {w:'n',t:'"등불 아래서 따뜻하더냐? 우리는 그 불 속에서 사흘째 타고 있다."'},
@@ -695,9 +698,9 @@ const MAINQ=[
   {t:'논두렁 끝의 동굴',type:'lv',lv:5,hint:'레벨 5가 되면 여우골 동굴이 열린다',end:()=>[
     {w:'seol',t:`논두렁 끝 산자락에 여우골이 있어. 거기서 아홉 갈래 웃음소리가 들린대.`},
     {w:'seol',t:`동굴의 적은 네가 강해지는 만큼 같이 강해져. 서두르지 말고, 하지만 멈추지도 말고.`}]},
-  {t:'여우골 입구',type:'kill',map:'fox',n:50,lv:6,st:()=>[{w:'seol',t:'여우골에 들어가면 웃음소리를 따라가지 마. 구미호는 듣고 싶은 말만 골라서 해.'},{w:'me',t:'듣고 싶은 말이 뭔지 나도 모르는데.'},{w:'seol',t:'……그러니까 더 위험해.'}],end:()=>[
+  {t:'여우골 입구',type:'kill',map:'fox',n:50,lv:6,st:()=>[{w:'seol',t:'여우골에 들어가면 웃음소리를 따라가지 마. 구미호는 듣고 싶은 말만 골라서 해.'},{w:'me',t:'듣고 싶은 말이 뭔지 나도 모르는데.'},{w:'seol',e:'슬픔',t:'……그러니까 더 위험해.'}],end:()=>[
     {w:'n',t:'동굴 깊은 곳에서 아홉 갈래의 웃음소리가 메아리쳤다.'},
-    {w:'gumiho',t:'어머, 손님이네. 등불 냄새를 묻히고 오다니… 그 무녀의 개구나?'}]},
+    {w:'gumiho',e:'도발',t:'어머, 손님이네. 등불 냄새를 묻히고 오다니… 그 무녀의 개구나?'}]},
   {t:'여우불 꺼뜨리기',type:'mob',map:'fox',mob:'wisp',n:20,lv:8,hint:'여우골 동굴의 도깨비불을 쓰러뜨리자',end:()=>[
     {w:'n',t:'도깨비불이 꺼질 때마다 동굴 안이 한 뼘씩 어두워졌다. 그런데도 앞은 잘 보였다.'},
     {w:'me',t:'어둠이 편하다. …망자라서인가.'},
@@ -710,18 +713,18 @@ const MAINQ=[
   {t:'동굴 속 목소리',type:'talk',npc:'seol',lv:11,hint:'청등마을의 무녀 설화에게 여우 방울 이야기를 하자',end:()=>[
     {w:'me',t:'여우 방울에 「약속은 지켜야지, 무녀야」라고 새겨져 있었다.'},
     {w:'seol',t:'…구미호는 원래 이 산의 수호령이었어. 할머니 때부터 마을과 약조를 맺고 살았지.'},
-    {w:'seol',t:'혈월이 뜨던 밤, 나는 그 약조를 어겼어. 여우골에 바칠 등불을 다른 데 썼거든.'},
+    {w:'seol',e:'슬픔',t:'혈월이 뜨던 밤, 나는 그 약조를 어겼어. 여우골에 바칠 등불을 다른 데 썼거든.'},
     {w:'me',t:'어디에.'},
-    {w:'seol',t:'……너한테.'}]},
+    {w:'seol',e:'슬픔',t:'……너한테.'}]},
   {t:'정리하는 손',type:'dis',n:10,lv:12,hint:'가방에서 쓰지 않는 장비를 10개 해체하자 (해체하면 강화석이 나온다)',st:()=>[
     {w:'smith',t:'가방이 고물상이구먼. 쓰지 않는 쇠는 녹여서 강화석으로 바꿔. 가방에서 해체하면 돼.'}],end:()=>[
     {w:'smith',t:'좋아. 쇠는 미련 없이 녹여야 다시 태어나지. 사람도 그렇고.'},
     {w:'smith',t:'…무녀도 그걸 알았으면 좋았을 텐데.'}]},
   {t:'더 깊은 굴',type:'lv',lv:14,end:()=>[
-    {w:'gumiho',t:`어머, 아직도 여기 있네? 좀 더 단단해지면 안쪽까지 와 봐. 놀아 줄게.`}]},
+    {w:'gumiho',e:'도발',t:`어머, 아직도 여기 있네? 좀 더 단단해지면 안쪽까지 와 봐. 놀아 줄게.`}]},
   {t:'여우령 사냥',type:'mob',map:'fox',mob:'fox',n:25,lv:15,end:()=>[
     {w:'n',t:'여우령들은 쓰러지면서도 꼬리로 동굴 안쪽을 가리켰다. 마치 길을 안내하듯이.'},
-    {w:'gumiho',t:'착하지? 내 아이들이야. 너한테 나쁜 마음은 없어. 그 무녀한테만 있지.'}]},
+    {w:'gumiho',e:'도발',t:'착하지? 내 아이들이야. 너한테 나쁜 마음은 없어. 그 무녀한테만 있지.'}]},
   {t:'여우골의 원혼',type:'kill',map:'fox',n:120,lv:16,end:()=>[
     {w:'n',t:`동굴 벽에 걸린 등잔들이 하나둘 꺼졌다. 남은 것은 가장 안쪽의 붉은 빛 하나뿐.`}]},
   {t:'등잔 틀 백서른두 개',type:'talk',npc:'smith',lv:17,hint:'대장장이 강쇠에게 무녀가 주문했던 등잔 틀 이야기를 묻자',end:()=>[
@@ -730,10 +733,10 @@ const MAINQ=[
     {w:'me',t:'당신 아내의 이름도?'},
     {w:'smith',t:'내 손으로 새겼다. 굿에 쓴다길래, 복 비는 굿인 줄 알았지. …망치가 무거운 날이 있어. 오늘이 그래.'}]},
   {t:'아홉 꼬리의 거짓말',type:'boss',map:'fox',boss:'gumiho',lv:18,hint:'여우골 동굴에서 적을 쓰러뜨려 보스 게이지를 채우면 구미호가 나타난다',end:()=>[
-    {w:'gumiho',t:'후후… 아홉 번째 꼬리까지 잘라 가다니. 그런데 너, 냄새가 이상하네.'},
+    {w:'gumiho',e:'도발',t:'후후… 아홉 번째 꼬리까지 잘라 가다니. 그런데 너, 냄새가 이상하네.'},
     {w:'gumiho',t:'산 놈한테선 이런 냄새가 안 나거든. 갓 덮은 무덤 흙 냄새.'},
     {w:'me',t:'헛소리 마라.'},
-    {w:'gumiho',t:'그 무녀한테 물어봐. 사흘 전 혈월이 뜨던 밤, 마을 한가운데서 무슨 굿을 했는지.'}]},
+    {w:'gumiho',e:'도발',t:'그 무녀한테 물어봐. 사흘 전 혈월이 뜨던 밤, 마을 한가운데서 무슨 굿을 했는지.'}]},
   {t:'무녀의 손목',lv:19,type:'talk',npc:'seol',end:()=>[
     {w:'me',t:'구미호가 네 이야기를 했다. 사흘 전 밤의 굿에 대해.'},
     {w:'seol',t:'…여우는 원래 거짓말을 해. 신경 쓰지 마.'},
@@ -744,9 +747,9 @@ const MAINQ=[
     {w:'gumiho',t:'(동굴 깊은 곳의 메아리) …저승 나루터에 가거든, 사공한테 내 안부나 전해 줘. 그 늙은이는 아직 노를 젓고 있을 테니.'}]},
   {t:'저승으로 가는 길',type:'lv',lv:21,end:()=>[
     {w:'seol',t:'이걸 가져가. 내 머리카락으로 엮은 부적이야.'},
-    {w:'seol',t:'저승의 물은 망자를 붙잡아. 너를 놓치면… 다시는 못 불러와.'},
+    {w:'seol',e:'슬픔',t:'저승의 물은 망자를 붙잡아. 너를 놓치면… 다시는 못 불러와.'},
     {w:'me',t:'"다시는"? 전에도 불러온 적이 있다는 말처럼 들리는데.'},
-    {w:'seol',t:'……가.'}]},
+    {w:'seol',e:'슬픔',t:'……가.'}]},
   {t:'검은 강의 망자',type:'kill',map:'river',n:80,lv:21,st:()=>[{w:'n',t:'나루터에 닿자 강물이 발목을 붙잡았다. 차갑지 않았다. 오히려 익숙했다.'},{w:'n',t:'설화가 엮어 준 머리카락 부적이 손목에서 희미하게 데워졌다.'}],end:()=>[
     {w:'n',t:'강물 위로 떠내려가는 등잔 하나하나에 사람의 얼굴이 비쳤다.'},
     {w:'n',t:'누군가 강가에 명부를 찢어 흩뿌려 놓았다. 젖은 종이 조각들이 물살에 휩쓸려 가고 있었다.'}]},
@@ -766,7 +769,7 @@ const MAINQ=[
   {t:'강을 건너는 등불',type:'lv',lv:28,end:()=>[
     {w:'seol',t:`강 위로 떠내려가던 등잔, 기억나? 그건 내가 띄운 거야. 길 잃은 혼이 마을로 돌아오라고.`},
     {w:'me',t:`돌아온 혼은 어디로 가지.`},
-    {w:'seol',t:`…등불 속으로.`}]},
+    {w:'seol',e:'슬픔',t:`…등불 속으로.`}]},
   {t:'저승의 쇠',lv:28,type:'talk',npc:'smith',end:()=>[
     {w:'smith',t:'명부에 제물이라고 적혀 있었다고? ……'},
     {w:'smith',t:'솔직히 말하마. 그 등잔 틀, 쇠에 피를 먹여 달라고 했어. 굿에 쓸 거라면서.'},
@@ -801,18 +804,18 @@ const MAINQ=[
     {w:'reaper',t:'마을 백서른두 명의 혼을 값으로 치른 자. 네가 가장 잘 아는 얼굴이다.'}]},
   {t:'등불은 무엇으로 타는가',lv:38,type:'talk',npc:'seol',end:()=>[
     {w:'me',t:'마을 사람들은 어디 있지, 설화.'},
-    {w:'seol',t:'……'},
-    {w:'seol',t:'저 푸른 등불. 다 무엇으로 타고 있는지, 정말 몰랐어?'},
+    {w:'seol',e:'슬픔',t:'……'},
+    {w:'seol',e:'슬픔',t:'저 푸른 등불. 다 무엇으로 타고 있는지, 정말 몰랐어?'},
     {w:'n',t:'등불 속에서 낯익은 얼굴들이 소리 없이 비명을 지르고 있었다.'},
-    {w:'seol',t:'넌 내 오라비야. 사흘 전 밤에 죽었지. 그래서 다시 불렀어. 백서른두 개의 혼을 태워서.'},
-    {w:'seol',t:'원망해도 좋아. 대신 늪의 이무기를 죽여 줘. 그게 혈월의 문을 지키고 있어. 그것만 없애면 다 끝낼 수 있어.'}]},
+    {w:'seol',e:'슬픔',t:'넌 내 오라비야. 사흘 전 밤에 죽었지. 그래서 다시 불렀어. 백서른두 개의 혼을 태워서.'},
+    {w:'seol',e:'슬픔',t:'원망해도 좋아. 대신 늪의 이무기를 죽여 줘. 그게 혈월의 문을 지키고 있어. 그것만 없애면 다 끝낼 수 있어.'}]},
   {t:'꺼지지 않는 분노',type:'kill',map:'river',n:100,lv:39,end:()=>[
     {w:'n',t:'칼을 휘두를 때마다 등불 속 얼굴들이 떠올랐다. 대장장이의 아내, 방앗간 집 아이들.'},
     {w:'me',t:'설화를 미워해야 하는데. …미워지지가 않는다.'},
     {w:'n',t:'분노는 갈 곳을 잃고 강물 위의 원혼들에게로 쏟아졌다. 검은 강이 조용해질 때까지.'}]},
   {t:'타오르는 등불 아래',type:'lv',lv:41,end:()=>[
     {w:'n',t:'밤마다 등불이 조금씩 어두워졌다. 그 안의 얼굴들이 하나둘 사라지고 있었다.'},
-    {w:'seol',t:'시간이 없어. 등불이 다 꺼지면… 너도 같이 꺼져.'}]},
+    {w:'seol',e:'슬픔',t:'시간이 없어. 등불이 다 꺼지면… 너도 같이 꺼져.'}]},
   {t:'늪의 독기',type:'kill',map:'swamp',n:100,lv:41,st:()=>[{w:'merch',t:'늪에 간다고? 숨은 참지 마. 망자는 숨을 안 쉬어도 독은 들어오거든. 회복약 넉넉히 챙겨.'}],end:()=>[
     {w:'n',t:'늪 바닥에서 거대한 무언가가 숨을 쉬었다. 물거품이 터질 때마다 비린 피 냄새가 올라왔다.'}]},
   {t:'독사의 둥지',type:'mob',map:'swamp',mob:'snake',n:30,lv:43,end:()=>[
@@ -838,7 +841,7 @@ const MAINQ=[
     {w:'n',t:'마을 어귀의 등불 하나가 유난히 흔들렸다. 그 안에서 작은 손이 유리를 두드리고 있었다.'}],end:()=>[
     {w:'yeon',t:'아저씨… 아니, 오라버니. 나 연이야. 방앗간 집 연이.'},
     {w:'yeon',t:'등불 안은 따뜻해. 근데 너무 밝아서 잠을 못 자. 다들 그래.'},
-    {w:'seol',t:'……연아. 조금만 더 참아. 금방 끝나.'},
+    {w:'seol',e:'슬픔',t:'……연아. 조금만 더 참아. 금방 끝나.'},
     {w:'yeon',t:'설화 언니는 맨날 그 말만 해. 근데 언니 손이 맨날 떨려.'},
     {w:'me',t:'끝내겠다. 반드시. 그때까지 버텨, 연아.'}]},
   {t:'도깨비 장터',type:'mob',map:'swamp',mob:'goblin',n:30,lv:52,end:()=>[
@@ -864,28 +867,28 @@ const MAINQ=[
     {w:'n',t:'늪이 갈라지고 하늘의 달이 한층 더 붉어졌다. 멀리서 궁궐 문이 열리는 소리가 들렸다.'}]},
   {t:'그릇',lv:58,type:'talk',npc:'seol',end:()=>[
     {w:'me',t:'백서른셋 번째 혼. 그게 나였나.'},
-    {w:'seol',t:'아니야! 처음엔… 처음엔 정말 오라버니를 돌려받고 싶었을 뿐이야.'},
-    {w:'seol',t:'그런데 굿이 끝나지 않았어. 달이 대답했어. "그릇을 바치면 오라비를 돌려주마."'},
-    {w:'seol',t:'…미안해. 궁궐로 가. 혈월왕을 죽여 줘. 그러면 내가 마지막 혼이 될게.'}]},
+    {w:'seol',e:'슬픔',t:'아니야! 처음엔… 처음엔 정말 오라버니를 돌려받고 싶었을 뿐이야.'},
+    {w:'seol',e:'슬픔',t:'그런데 굿이 끝나지 않았어. 달이 대답했어. "그릇을 바치면 오라비를 돌려주마."'},
+    {w:'seol',e:'슬픔',t:'…미안해. 궁궐로 가. 혈월왕을 죽여 줘. 그러면 내가 마지막 혼이 될게.'}]},
   {t:'붉어지는 달',type:'kill',map:'swamp',n:120,lv:59,end:()=>[
     {w:'n',t:'이무기가 사라진 늪 위로 달이 한층 더 붉어졌다. 늪물이 핏빛으로 물들며 궁궐 쪽으로 흘러갔다.'},
-    {w:'king',t:'(바람 속의 목소리) 빗장이 하나 빠졌구나. 고맙다, 나의 그릇.'}]},
+    {w:'king',e:'여유',t:'(바람 속의 목소리) 빗장이 하나 빠졌구나. 고맙다, 나의 그릇.'}]},
   {t:'핏빛 궁궐의 문',type:'lv',lv:61,end:()=>[
     {w:'n',t:'궁궐로 가는 길 위에 붉은 비가 내렸다. 빗방울 하나하나가 따뜻했다.'}]},
-  {t:'궁궐의 혈귀',type:'kill',map:'palace',n:150,lv:61,st:()=>[{w:'n',t:'궁궐 정문에 걸린 현판의 글씨는 피로 쓰여 있었다. 「혈월궁(血月宮)」.'},{w:'king',t:'(어디선가) 들어오너라. 문은 처음부터 너를 위해 열어 두었다.'}],end:()=>[
+  {t:'궁궐의 혈귀',type:'kill',map:'palace',n:150,lv:61,st:()=>[{w:'n',t:'궁궐 정문에 걸린 현판의 글씨는 피로 쓰여 있었다. 「혈월궁(血月宮)」.'},{w:'king',e:'여유',t:'(어디선가) 들어오너라. 문은 처음부터 너를 위해 열어 두었다.'}],end:()=>[
     {w:'n',t:'혈귀들은 모두 같은 옷을 입고 있었다. 사흘 전 굿판에 섰던 마을 사람들의 옷이었다.'}]},
   {t:'혈귀 사냥',type:'mob',map:'palace',mob:'blood',n:30,lv:63,end:()=>[
     {w:'n',t:'혈귀들은 마을 사람들의 옷을 입고 있었지만 얼굴은 모두 같았다. 혈월왕의 얼굴이었다.'}]},
   {t:'달의 파편',lv:64,type:'collect',map:'palace',n:25,item:'혈월의 파편',p:.12,end:()=>[
     {w:'n',t:'모은 파편을 손에 쥐자 귓가에 목소리가 울렸다.'},
-    {w:'king',t:'왔구나, 나의 그릇. 그 몸은 처음부터 내 것이었다.'}]},
+    {w:'king',e:'여유',t:'왔구나, 나의 그릇. 그 몸은 처음부터 내 것이었다.'}]},
   {t:'혈위대',lv:65,type:'elite',map:'palace',n:12,end:()=>[
     {w:'n',t:'호위들이 무너지자 옥좌로 가는 계단이 핏물에 잠긴 채 드러났다.'}]},
   {t:'궁녀의 혼',type:'talk',npc:'seol',lv:66,hint:'청등마을의 무녀 설화에게 궁궐 이야기를 하자',end:()=>[
     {w:'me',t:'궁궐에서 궁녀의 혼을 만났다. 이백 년 전에도 누군가 같은 굿을 했다더군. 오라비를 살리려고.'},
-    {w:'seol',t:'……그 사람은 어떻게 됐어?'},
+    {w:'seol',e:'슬픔',t:'……그 사람은 어떻게 됐어?'},
     {w:'me',t:'오라비는 돌아왔다. 혈월왕의 그릇이 되어서. 그리고 나라 하나가 사라졌다.'},
-    {w:'seol',t:'알고 있었어. 할머니가 말해 줬거든. 그래도… 그래도 했어. 오라버니가 없는 세상은 등불이 다 켜져 있어도 깜깜했으니까.'}]},
+    {w:'seol',e:'슬픔',t:'알고 있었어. 할머니가 말해 줬거든. 그래도… 그래도 했어. 오라버니가 없는 세상은 등불이 다 켜져 있어도 깜깜했으니까.'}]},
   {t:'명장의 칼날',lv:67,type:'enh',n:12,end:()=>[
     {w:'smith',t:'열두 번을 버틴 쇠다. 이 정도면 달도 벨 수 있겠어.'},
     {w:'smith',t:'돌아오면 술 한잔하자. 산 사람이든 죽은 사람이든.'}]},
@@ -893,7 +896,7 @@ const MAINQ=[
     {w:'n',t:'성벽 위의 백골 궁수들이 하나둘 무너졌다. 그들이 지키던 것은 바깥이 아니라 안쪽이었다.'}]},
   {t:'피의 연회',type:'lv',lv:70,end:()=>[
     {w:'n',t:`궁궐 연회장에는 차려진 음식이 썩지도 않고 그대로였다. 의자마다 혈귀가 앉아 같은 잔을 들고 있었다.`},
-    {w:'king',t:`손님이 왔구나. 앉아라, 그릇아. 네 자리는 늘 비워 두었다.`}]},
+    {w:'king',e:'여유',t:`손님이 왔구나. 앉아라, 그릇아. 네 자리는 늘 비워 두었다.`}]},
   {t:'유니크의 무게',type:'eqg',g:4,n:6,lv:71,hint:'유니크 이상 장비 6부위를 착용하자',end:()=>[
     {w:'smith',t:'보랏빛 쇠. 유니크로군. 이 정도면 왕의 옷자락쯤은 벨 수 있겠어.'}]},
   {t:'다섯 번의 토벌',lv:72,type:'bossAny',n:5,end:()=>[
@@ -917,8 +920,8 @@ const MAINQ=[
     {w:'me',t:'당신은 대체 뭐지.'},
     {w:'merch',t:'떠돌이 상인. 이 산에서 거래가 있는 곳엔 늘 내가 있어. 이백 년 전에도 그랬고.'}]},
   {t:'핏빛 달 아래',type:'boss',map:'palace',boss:'bloodking',lv:77,end:()=>[
-    {w:'king',t:'그릇이 주인을 거부하는구나. 재미있다.'},
-    {w:'seol',t:'오라버니! …이건, 이건 내가 원한 게 아니었어!'},
+    {w:'king',e:'여유',t:'그릇이 주인을 거부하는구나. 재미있다.'},
+    {w:'seol',e:'슬픔',t:'오라버니! …이건, 이건 내가 원한 게 아니었어!'},
     {w:'king',t:'원했지. 오라비를 돌려 달라 빌던 네 목소리를 아직 기억한다. 대가는 받아야겠다… 이번엔 영원히.'},
     {w:'n',t:'혈월왕의 형체가 무너져 내리며 땅 아래, 바닥 없는 심연으로 스며들었다.'},
     {w:'n',t:'그가 사라진 자리, 무너진 옥좌 뒤로 차가운 바람이 새어 나오는 좁은 통로가 드러났다.'},
@@ -965,15 +968,15 @@ const MAINQ=[
     {w:'smith',t:`열다섯 번. 내가 두드려 본 쇠 중에 가장 무거운 쇠야.`},
     {w:'smith',t:`저 아래 것이 무엇이든… 이 쇠는 너보다 먼저 부러지지 않을 거다.`}]},
   {t:'설화의 등잔',type:'talk',npc:'seol',lv:95,hint:'청등마을의 무녀 설화에게 돌아가자',end:()=>[
-    {w:'seol',t:'이거, 기억나? 어릴 때 네가 만들어 준 등잔이야. 비뚤어져서 기름이 샜지.'},
-    {w:'seol',t:'혈월 첫날 밤, 백서른두 개 등불 한가운데에 이걸 놓았어. 너를 부를 등불.'},
+    {w:'seol',e:'기쁨',t:'이거, 기억나? 어릴 때 네가 만들어 준 등잔이야. 비뚤어져서 기름이 샜지.'},
+    {w:'seol',e:'슬픔',t:'혈월 첫날 밤, 백서른두 개 등불 한가운데에 이걸 놓았어. 너를 부를 등불.'},
     {w:'me',t:'아직 켜져 있군.'},
-    {w:'seol',t:'응. 이게 꺼지면 너도 가. 그러니까… 그러니까 가기 전에, 한 번만 이름을 불러 줘. 내 이름.'},
+    {w:'seol',e:'슬픔',t:'응. 이게 꺼지면 너도 가. 그러니까… 그러니까 가기 전에, 한 번만 이름을 불러 줘. 내 이름.'},
     {w:'me',t:'…설화.'},
     {w:'n',t:'비뚤어진 등잔의 불꽃이 아주 잠깐, 따뜻한 주황빛으로 흔들렸다.'}]},
   {t:'사찰 수호귀',type:'boss',map:'sealed',boss:'guardian',lv:97,end:()=>[
     {w:'guardian',t:'…천 년이다. 천 년을 이 종 아래에서 지켰다.'},
-    {w:'guardian',t:'어리석은 망자여. 나를 쓰러뜨려 무엇을 얻었느냐. 이 종이 마지막 빗장이었거늘.'},
+    {w:'guardian',e:'도발',t:'어리석은 망자여. 나를 쓰러뜨려 무엇을 얻었느냐. 이 종이 마지막 빗장이었거늘.'},
     {w:'me',t:'무엇을 지키고 있었지.'},
     {w:'guardian',t:'어둑시니. 사람이 어둠을 두려워하는 만큼 커지는 그림자… 빛이란 빛을 모조리 삼키는 것.'},
     {w:'guardian',t:'혈월이 떠오른 뒤로 놈은 매일 밤 조금씩 자라났다. 이제 남은 것은… 등불 몇 개뿐이로구나.'},
@@ -982,14 +985,14 @@ const MAINQ=[
     {w:'seol',t:'…어둑시니. 할머니가 들려주던 옛이야기 속 괴물인 줄 알았어.'},
     {w:'seol',t:'청등마을의 푸른 등불은 원래 그것을 막으려고 켜 둔 거래. 혼을 태워서라도 빛을 꺼뜨리지 말라고.'},
     {w:'me',t:'그럼 네가 등불에 사람들을 가둔 것도.'},
-    {w:'seol',t:'……봉인이 버티는 동안은 아직 시간이 있어. 혈월왕이 심연에서 다시 올라오기 전에, 먼저 그쪽을 끝내야 해.'},
+    {w:'seol',e:'슬픔',t:'……봉인이 버티는 동안은 아직 시간이 있어. 혈월왕이 심연에서 다시 올라오기 전에, 먼저 그쪽을 끝내야 해.'},
     {w:'seol',t:'하지만 잊지 마. 언젠가 저 아래 그림자와 마주해야 할 날이 와. 그때까지… 강해져.'}]},
   {t:'마지막 준비',type:'kill',map:'sealed',n:150,lv:99,end:()=>[
     {w:'n',t:'깨진 범종 아래에서 그림자가 숨을 쉬었다. 들숨마다 등불 하나가 흐려지고, 날숨마다 바람이 불었다.'},
     {w:'me',t:'준비는 끝났다. 남은 건 내려가는 것뿐이다.'}]},
   {t:'심연으로',type:'talk',npc:'seol',lv:100,hint:'레벨 100이 되면 무한 심연이 열린다 · 심연에서 어둑시니에 맞설 장비를 모으자',st:()=>[{w:'n',t:'범종이 완전히 무너졌다. 마을의 등불들이 한꺼번에 흔들렸고, 그중 몇 개는 다시 켜지지 않았다.'}],end:()=>[
     {w:'seol',t:'달이 지지 않는 한 저건 다시 올라와. 심연 끝까지 쫓아가야 해.'},
-    {w:'seol',t:'그리고… 다 끝나면, 등불 속 사람들을 놓아줄게. 나도 같이.'},
+    {w:'seol',e:'슬픔',t:'그리고… 다 끝나면, 등불 속 사람들을 놓아줄게. 나도 같이.'},
     {w:'me',t:'그럼 내려가지. 몇 번이고.'}]},
   {t:'바닥 없는 밤 · 첫째',type:'abyss',n:3,st:()=>[{w:'n',t:'심연의 입구는 우물처럼 생겼다. 들여다보면, 아래에서도 누군가 이쪽을 들여다보고 있었다.'},{w:'me',t:'내 얼굴이다. …아니, 놈의 얼굴이다.'}],end:()=>[
     {w:'n',t:'다섯 번째 문을 지나자 위아래가 사라졌다. 떨어지는 것인지 오르는 것인지 알 수 없었다.'}]},
@@ -997,7 +1000,7 @@ const MAINQ=[
     {w:'smith',t:`보스 놈들이 떨군 쇠로군. 여섯 부위를 다 맞추니 그림자가 다 무거워 보여.`},
     {w:'seol',t:`심연이 깊어질수록 좋은 장비가 더 많이 나와. 너무 서두르지는 마.`}]},
   {t:'깊어지는 그림자',type:'abyss',n:6,end:()=>[
-    {w:'king',t:'깊이 올수록 너는 나를 닮아 간다. 거울을 보아라, 그릇아.'}]},
+    {w:'king',e:'여유',t:'깊이 올수록 너는 나를 닮아 간다. 거울을 보아라, 그릇아.'}]},
   {t:'바닥 없는 밤 · 둘째',type:'abyss',n:8,end:()=>[
     {w:'seol',t:'열 번째 문… 달빛이 아주 조금 옅어졌어.'},
     {w:'me',t:'아직이다. 저 아래에서 아직 웃고 있어.'}]},
@@ -1011,11 +1014,20 @@ const MAINQ=[
     {w:'seol',t:`어둑시니야. 사람이 두려워하는 만큼 커지는 그림자. 수호귀가 지키던 봉인이 깨지면서 깨어났어.`},
     {w:'me',t:`혼자서는 무리라는 얼굴이군.`},
     {w:'seol',t:`응. 모험단 모두를 데려가. 그리고… 그게 손을 들면 등불 아래로 숨어. 한 사람에 등불 하나씩. 하나라도 비면 모두 삼켜져.`},
+    {w:'n',t:`그때, 무녀의 등불 그림자가 제 혼자 길게 늘어났다. 그 끝에서 목소리가 스며 나왔다.`},
+    {w:'dark',t:`…두렵구나. 네 등불이 떨리는 소리가 여기까지 들린다.`},
+    {w:'dark',t:`백서른두 개의 혼을 태운 빛. 그 빛이 밝을수록, 그 뒤에 드리운 나도 길어지지.`},
+    {w:'me',t:`네가 어둑시니인가.`},
+    {w:'dark',t:`나는 이름이 없다. 너희가 어둠 앞에서 눈을 감을 때마다, 너희가 붙여 준 이름이 하나씩 늘어날 뿐.`},
+    {w:'dark',t:`내려오너라, 그릇이 되다 만 망자여. 등불을 들고 오너라. 빛이 꺼지는 순간을… 함께 보자꾸나.`},
+    {w:'seol',e:'슬픔',t:`……들었어? 저건 우리가 두려워하는 만큼 커져. 그러니까… 겁먹지 마.`},
     {w:'n',t:`지도에 새 길이 열렸다 — 어둑시니의 굴.`}]},
   {t:'어둠을 삼키는 것',type:'raid',diff:0,hint:'지도에서 「어둑시니의 굴」 → 쉬움 난이도에 도전하자 · 모험단 동료가 함께 싸운다',end:()=>[
+    {w:'dark',t:`…빛이… 아직도… 꺼지지 않는구나.`},
+    {w:'dark',t:`기억해 두어라. 너희가 두려워하는 한, 나는 다시 자란다. 등불 뒤에서… 언제까지나.`},
     {w:'n',t:`마지막 그림자가 흩어지자 굴 안의 등불이 하나둘 다시 켜졌다.`},
-    {w:'seol',t:`${pl.name}… 아니, 오라버니. 달이 기울기 시작했어.`},
-    {w:'seol',t:`등불 속 사람들도 하나둘 잠들고 있어. 이제야 편해 보여.`},
+    {w:'seol',e:'기쁨',t:`${pl.name}… 아니, 오라버니. 달이 기울기 시작했어.`},
+    {w:'seol',e:'기쁨',t:`등불 속 사람들도 하나둘 잠들고 있어. 이제야 편해 보여.`},
     {w:'me',t:`끝난 건가.`},
     {w:'seol',t:`아니. 심연에는 바닥이 없고, 어둠은 사람이 두려워하는 한 다시 자라. 하지만 이제 혼자 내려가진 않아도 돼.`},
     {w:'n',t:`망자의 칼끝에는 끝이 없었다. 그리고 그 곁엔, 언제나 푸른 등불 하나가 따라왔다.`}]},
@@ -1769,7 +1781,9 @@ const RAID_DIFF=[
  {n:'어려움',lv:500,g:7,e:30,T:280,pt:.8,mend:3,relic:.1,skin:.025,items:[4,5],gb:2,pri:.3,wave:.28,tag:'평균 Lv.500 · 태초 +30 풀세트'}];
 const RAID_GROGGY=4; /* 등불 성공 시 그로기 시간(초) */
 const RAID_HPX=1; /* V018: 체력 절반 (V002의 2배 → 1배) */
-const RAID_SETP=[.02,.03,.04]; /* V018: 클리어마다 세트 장비(조종 중인 직업) 확률 · 난이도별 10회마다 1개 확정 */
+const RAID_SETP=[.06,.09,.12]; /* V024: 세트 장비 확률 3배 */
+const RAID_TOK=[1,3,5],RELBOX_COST=25,RELBOX_DUP=200000,RAID_SKIN_N=30; /* V024 유물 상자 조각 · 유물 상자 · 직업 전용 스킨(클리어 30회) */
+const relTok=()=>ROOT.relTok||0; /* V018: 클리어마다 세트 장비(조종 중인 직업) 확률 · 난이도별 10회마다 1개 확정 */
 const RAID_SPD=230; /* 보스 이동 속도 = 플레이어 기본 이동 속도(스탯 미적용) */
 const ALLY_REV=5,ALLY_REVT=5; /* AI 동료 부활 횟수·부활 시간 */
 const RAID_DPSU=2.5; /* V015: 새 수치 곡선에서 다시 잰 값 (치명타 비중 감소) — 쉬움 기준 파티로 약 5분 */ /* 기준 캐릭터 1명의 초당 피해(공격력 배수) — 4직업을 실제로 돌려 측정한 평균 */
@@ -1788,7 +1802,18 @@ function raidStart(opt){opt=opt||{diff:0,allies:[]};const D=RAID_DIFF[opt.diff],
   G.boss=e;G.ents=[e];
   G.raid={diff:opt.diff,D,ref,n,lives:3,t:0,blackT:0,mind:0,mindBreak:0,wave:14,field:3,hands:5,darkCd:18,mindCd:24,wipeAt:[.66,.33],pre:null,wipe:null,over:false,dmg:{},ring:0,dying:null};
   banner('어둑시니','모든 빛을 삼키는 그림자 · '+D.n);shake(14);
+  /* V024: 난이도마다 처음 들어갈 때 어둑시니가 말을 건다 */
+  const seen=pl.st.raidIntro||(pl.st.raidIntro={});if(!seen[opt.diff]){seen[opt.diff]=1;later(.9,()=>vnSafe(RAID_TALK[opt.diff]()))}
   toast(`동료 ${G.allies.length}명과 함께 · 내 부활 3번 · 동료 부활 ${ALLY_REV}번(${ALLY_REVT}초)`)}
+const RAID_TALK=[
+ ()=>[{w:'n',t:'굴 안의 공기가 얼음처럼 식었다. 등불의 불꽃이 일제히 한쪽으로 기울었다.'},
+  {w:'dark',t:'왔구나. 등불을 든 망자들.'},{w:'dark',t:'너희 발밑을 보아라. 빛을 들수록 그림자가 짙어지지. 그 그림자가 다 나다.'},
+  {w:'me',t:'그렇다면 그림자째로 베어 주지.'},{w:'dark',t:'좋다. 베어 보아라. 너희의 두려움이 다할 때까지.'}],
+ ()=>[{w:'dark',t:'또 왔구나. 지난번보다 등불이 더 밝아. …그만큼 나도 더 깊어졌다.'},
+  {w:'dark',t:'너희는 이길 때마다 조금씩 덜 두려워하지. 그러면서도 매번 다시 이 굴로 내려온다.'},{w:'dark',t:'두렵지 않다면… 왜 등불을 놓지 못하느냐.'}],
+ ()=>[{w:'n',t:'어둠이 숨을 쉬었다. 굴 전체가 하나의 커다란 눈처럼 이쪽을 바라보았다.'},
+  {w:'dark',t:'마침내 바닥까지 내려왔구나, 그릇이 되다 만 자여.'},{w:'dark',t:'여기엔 등불이 닿지 않는다. 여기서 너희가 든 빛은… 너희 자신뿐이다.'},
+  {w:'seol',e:'슬픔',t:'(머리카락 부적에서 들리는 목소리) …오라버니. 대답하지 마. 그냥… 살아서 돌아와.'}]];
 function raidCleanup(){G.allies=null;G.raid=null;pl.mind=0}
 function members(){const m=[];if(G.dead<=0&&pl.hp>0)m.push(pl);if(G.allies)for(const a of G.allies)if(!a.dead)m.push(a);return m}
 /* AI 동료는 사람만큼 피하지 못하므로 받는 피해 35% */
@@ -1806,7 +1831,7 @@ function raidRevivePlayer(){$('#death').hidden=true;const b=mbound(MAPS.raid);pl
 function raidFail(why){const R=G.raid;if(!R||R.over)return;R.over='fail';G.teles=[];G.eprojs=[];
   const lost=Math.floor(pl.exp*.5);pl.exp-=lost;pl.st.deaths++;
   G.dead=0;$('#death').hidden=true;banner('레이드 실패',why);
-  later(2.2,()=>{vnSafe([{w:'n',t:`어둠이 모두를 삼켰다. (${why})`},{w:'n',t:lost>0?`경험치 ${fmt(lost)}을 잃었다.`:'청등마을의 등불 곁에서 다시 눈을 뜬다.'}],()=>{travel('village',null,{force:1});pl.hp=pl.d.mhp})})}
+  later(2.2,()=>{vnSafe([{w:'dark',t:pick(['보아라. 빛은 이렇게 쉽게 꺼진다.','두려움이 이겼구나. 다시 오너라… 더 큰 등불을 들고.','쉬어라. 어둠 속은 조용하다.'])},{w:'n',t:`어둠이 모두를 삼켰다. (${why})`},{w:'n',t:lost>0?`경험치 ${fmt(lost)}을 잃었다.`:'청등마을의 등불 곁에서 다시 눈을 뜬다.'}],()=>{travel('village',null,{force:1});pl.hp=pl.d.mhp})})}
 function vnSafe(lines,done){if(G.vn){done&&done();return}vn(lines,done)}
 function raidWin(e){const R=G.raid;if(R.over)return;sfx('bossDie');R.over='win';e.dead=true;R.dying={x:e.x,y:e.y,t:0,face:e.face};G.teles=[];G.eprojs=[];G.zones=G.zones.filter(z=>!z.enemy);R.blackT=0;pl.mind=0;R.wipe=null;
   banner('어둑시니 토벌','그림자가 흩어진다');shake(20);
@@ -1821,9 +1846,10 @@ function raidWin(e){const R=G.raid;if(R.over)return;sfx('bossDie');R.over='win';
   if(Math.random()<Math.min(.9,RAID_SETP[R.diff]*DIF('drop')))sets.push(makeSetItem(pick(SLOTS),pl.cls,sL()));
   if(cnt%10===0)sets.push(makeSetItem(pick(SLOTS),pl.cls,sL()));
   sets.forEach(it=>{got.push(it);G.drops.push({x:e.x+rnd(-60,60),y:e.y+rnd(0,60),it,t:0});later(.5,()=>KX.drop(e.x,e.y,7))});
-  let rel=null;if(Math.random()<D.relic)rel=grantRelic();
-  let skin=null;if(Math.random()<D.skin)skin=grantSkin();if(skin)later(1.5,()=>banner('스킨 획득',`${SKINS[skin].g} · ${SKINS[skin].n}`));
-  R.reward={mend:D.mend,items:got,rel,skin,sets:sets.length,cnt};
+  /* V024: 유물 대신 유물 상자 조각 (모험단 공용) · 조종 캐릭터가 이 레이드를 30번 클리어하면 그 직업 전용 스킨 */
+  const tok=RAID_TOK[R.diff];ROOT.relTok=relTok()+tok;
+  const tot=pl.st.raid,sk=pl.cls+'_myth';let skin=null;if(tot>=RAID_SKIN_N&&SKINS[sk]&&!ownSkin(sk)){(ROOT.skins=ROOT.skins||{})[sk]=1;skin=sk;later(1.5,()=>banner('스킨 획득',`${SKINS[sk].g} · ${SKINS[sk].n}`))}
+  writeRoot();R.reward={mend:D.mend,items:got,tok,skin,sets:sets.length,cnt,tot};
   later(2.8,()=>{openPanel('raidres')});save()}
 function raidAssignLanterns(){const W=G.raid.wipe,mem=members();const al=mem.filter(m=>m!==pl);const used=new Set();
   for(const a of al){let best=-1,bd=1e9;W.lan.forEach((l,i)=>{if(used.has(i))return;const d=Math.hypot(l.x-a.x,l.y-a.y);if(d<bd){bd=d;best=i}});if(best>=0){used.add(best);a.lan=best}}
@@ -2015,9 +2041,32 @@ function buildMap(id){
   for(let i=0;i<900;i++){p.fillStyle=`rgba(${R()<.5?'255,255,255':'0,0,0'},${(R()*.06).toFixed(3)})`;p.fillRect(R()*256,R()*256,R()*3+1,R()*3+1)}
   G.pat=cx.createPattern(pc,'repeat');
 }
+/* ================= V024 화면 전환: 이전 화면이 어두워진 뒤, 가운데에서 빛 입자가 사방으로 퍼지며 새 장소가 펼쳐진다 ================= */
+const TR={on:0,t:0,snap:null,ps:[]};
+function transStart(){const c=$('#trans');if(!c)return;const d=Math.min(DPR||1,1.5),w=Math.ceil(innerWidth*d),h=Math.ceil(innerHeight*d);
+  if(c.width!==w||c.height!==h){c.width=w;c.height=h}const sn=TR.snap||(TR.snap=document.createElement('canvas'));sn.width=w;sn.height=h;
+  if(!TR.on)try{sn.getContext('2d').drawImage(cv,0,0,w,h)}catch(_){}TR.on=1;TR.t=0;TR.ps=[];TR.d=d;c.style.display='block'}
+function transTick(dt){if(!TR.on)return;const c=$('#trans'),x=c.getContext('2d'),w=c.width,h=c.height,d=TR.d,T=TR.t+=Math.min(dt,.05);
+  const F=.24,HOLD=.16,OUT=.85,cx0=w/2,cy0=h/2,diag=Math.hypot(w,h)/2;
+  x.setTransform(1,0,0,1,0,0);x.globalCompositeOperation='source-over';x.clearRect(0,0,w,h);
+  if(T<F){x.globalAlpha=1;x.drawImage(TR.snap,0,0);x.fillStyle=`rgba(3,2,6,${T/F})`;x.fillRect(0,0,w,h);return}
+  x.fillStyle='#030206';x.fillRect(0,0,w,h);
+  if(T<F+HOLD)return;
+  const k=Math.min(1,(T-F-HOLD)/OUT),e=1-Math.pow(1-k,3),r=e*diag*1.08;
+  if(!TR.ps.length&&!RM){for(let i=0;i<90;i++){const a=Math.random()*TAU,v=(320+Math.random()*900)*d;TR.ps.push({x:cx0,y:cy0,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5+Math.random()*.6,s:(1.5+Math.random()*3.5)*d,c:Math.random()<.55?'255,196,120':Math.random()<.5?'255,90,110':'127,247,228'})}}
+  /* 가운데부터 구멍을 넓힌다 (가장자리는 부드럽게) */
+  x.globalCompositeOperation='destination-out';const g=x.createRadialGradient(cx0,cy0,Math.max(0,r*.72),cx0,cy0,Math.max(1,r));g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.globalCompositeOperation='lighter';
+  /* 펼쳐지는 가장자리를 따라 빛 테두리 */
+  if(r>4){x.globalAlpha=.35*(1-k);x.strokeStyle='rgb(255,200,140)';x.lineWidth=3*d;x.beginPath();x.arc(cx0,cy0,r*.86,0,TAU);x.stroke()}
+  for(const p of TR.ps){if(p.l<=0)continue;p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.985;p.vy*=.985;const a=Math.max(0,Math.min(1,p.l*1.6));x.globalAlpha=a;
+    x.fillStyle=`rgba(${p.c},1)`;x.beginPath();x.arc(p.x,p.y,p.s,0,TAU);x.fill();x.globalAlpha=a*.35;x.beginPath();x.arc(p.x,p.y,p.s*3,0,TAU);x.fill()}
+  x.globalAlpha=1;x.globalCompositeOperation='source-over';
+  if(k>=1&&TR.ps.every(p=>p.l<=0)){TR.on=0;c.style.display='none';x.clearRect(0,0,w,h)}}
 function travel(id,at,opt){
   const M=MAPS[id];opt=opt||{};
   if(!opt.force&&!mapOpen(id)){toast(`<b style="color:#ff8f9d">${M.n}</b> · ${mapLockTxt(id)||'아직 갈 수 없다'}`);return false}
+  if(G.scene==='play'&&!opt.noTrans)transStart();
   if(M.endless){const t=opt.tier||G.tier||pl.abyss+1;G.tier=clamp(t|0,1,pl.abyss+1)}
   if(G.map==='raid'&&id!=='raid')raidCleanup();
   if(G.map&&G.map!==id)sfx('warp',.7);G.map=id;pl.map=M.raid?'village':id;
@@ -2946,8 +2995,14 @@ function portrait(k,o){const id='p'+k,acc=o.acc||[];
   if(acc.includes('crown'))s+=`<path d="M106 136 L114 94 L132 118 L150 80 L168 118 L186 94 L194 136 Z" fill="${o.trim}"/><circle cx="150" cy="108" r="6" fill="${o.eye}"/>`;
   if(acc.includes('gat'))s+=`<ellipse cx="150" cy="142" rx="112" ry="16" fill="#09090c" opacity=".92"/><path d="M114 142 L118 82 Q150 70 182 82 L186 142 Z" fill="#09090c" opacity=".95"/><path d="M110 150 L120 300 M190 150 L180 300" stroke="#26262e" stroke-width="2"/>`;
   return s+'</svg>'}
+/* V024 NPC 스탠딩 일러스트 코드 (파일명 = 코드_감정 · img/st/A001_기쁨.webp) · 대사에 e:'기쁨' 처럼 감정을 달면 그 그림을, 없으면 「기본」을 쓴다 */
+const NPCST={seol:'A001',merch:'A002',smith:'A003',yeon:'A004',gumiho:'A005',reaper:'A006',imugi:'A007',king:'A008',guardian:'A009',dark:'A010'};
+const STEMO={A001:['기본','기쁨','슬픔'],A002:['기본'],A003:['기본'],A004:['기본'],A005:['기본','도발'],A006:['기본'],A007:['기본'],A008:['기본','여유'],A009:['기본','도발'],A010:['기본']};
+const stSrc=(code,e)=>A(`img/st/${code}_${(STEMO[code]||[]).includes(e)?e:'기본'}.webp`);
+/* 미리 불러 두어 감정이 바뀔 때 깜빡이지 않게 */
+setTimeout(()=>{for(const c in STEMO)for(const e of STEMO[c]){const im=new Image();im.src=stSrc(c,e)}},1500);
 const PIMG={yeon:'por_yeon',gumiho:'por_gumiho',merch:'por_npc',seol:'por_seol',smith:'por_smith',king:'por_king',imugi:'por_dragon',reaper:'por_reaper',guardian:'por_guardian'};
-function porOf(w){if(w==='me')return `<img src="${A(`img/por_${pl.cls}.webp`)}" alt="">`;if(PIMG[w])return `<img src="${A(`img/${PIMG[w]}.webp`)}" alt="">`;return PCACHE[w]||(PCACHE[w]=portrait(w,CH[w].p))}
+function porOf(w,e){if(NPCST[w])return `<img src="${stSrc(NPCST[w],e)}" alt="">`;if(w==='me')return `<img src="${A(`img/por_${pl.cls}.webp`)}" alt="">`;if(PIMG[w])return `<img src="${A(`img/${PIMG[w]}.webp`)}" alt="">`;return PCACHE[w]||(PCACHE[w]=portrait(w,CH[w].p))}
 
 /* ================= visual novel (V019) =================
    가운데 둥근 말풍선 · 양옆 스탠딩 일러스트. 말하는 쪽은 살짝 커지고, 말하지 않는 쪽은 흑백으로 흐려진다.
@@ -2965,26 +3020,32 @@ function vnSplit(t,max){t=String(t==null?'':t);if(t.length<=max)return[t];const 
   return out.length?out:[t]}
 const vnEmo=(w,t)=>w==='n'?0:/!!|!\?|\?!|！/.test(t)?2:/!/.test(t)?1:0;
 const vnPM=()=>innerHeight>innerWidth*1.05;
-const POR_R=.76; /* V022 스탠딩 일러스트 가로÷세로 */
+const POR_R=.8; /* V024 스탠딩 일러스트 상자 가로÷세로 (그림은 아래 가운데에 맞춘다) */
 function vn(lines,done){const pm=vnPM(),max=pm?50:74,ch=[];
-  lines.forEach((l,li)=>{const ps=vnSplit(l.t,max);ps.forEach((t,k)=>ch.push({w:l.w,t,li,k,n:ps.length,emo:vnEmo(l.w,t)}))});
-  G.vn={lines:ch,src:lines,i:0,done,ty:0,full:'',L:null,R:null};G.keys={};G.joy=null;G.mouse=null;G.target=null;
-  G.vn.L=lines.some(l=>l.w==='me')?'me':null;const f=lines.find(l=>l.w!=='me'&&l.w!=='n');G.vn.R=f?f.w:null;
-  $('#porL').innerHTML=G.vn.L?porOf('me'):'';$('#porR').innerHTML=G.vn.R?porOf(G.vn.R):'';$('#porR').dataset.k=G.vn.R||'';
+  lines.forEach((l,li)=>{const ps=vnSplit(l.t,max);ps.forEach((t,k)=>ch.push({w:l.w,e:l.e,t,li,k,n:ps.length,emo:vnEmo(l.w,t)}))});
+  G.vn={lines:ch,src:lines,i:0,done,ty:0,full:'',L:null,R:null,E:null};G.keys={};G.joy=null;G.mouse=null;G.target=null;
+  /* V024: 플레이어 캐릭터 일러스트는 그리지 않는다 · 대화 상대(NPC)만 */
+  const f=ch.find(l=>l.w!=='me'&&l.w!=='n');G.vn.R=f?f.w:null;G.vn.E=f?f.e||'기본':null;
+  $('#porL').innerHTML='';$('#porR').innerHTML=G.vn.R?porOf(G.vn.R,G.vn.E):'';$('#porR').dataset.k=G.vn.R||'';
   $('#vn').hidden=false;vnLayout();vnShow()}
-/* 스탠딩 일러스트와 말풍선이 서로 겹치지 않게 자리를 잡는다 (세로 모드: 일러스트 75% 크기 · 말풍선은 위쪽 빈 곳 가운데) */
-function vnLayout(){if(!G.vn)return;const W=innerWidth,H=innerHeight,pm=vnPM(),pL=$('#porL'),pR=$('#porR'),bx=$('#vnBox');
-  $('#vn').classList.toggle('pm',pm);let ph,pw,side;
-  if(pm){ph=Math.min(H*.375,W*.5/POR_R);pw=ph*POR_R;side=Math.max(-14,(W-2*pw)/2-pw*.15);
-    const top=58,bot=H-ph*1.07-24,bw=Math.min(W-32,600);bx.style.width=bw+'px';bx.style.left=((W-bw)/2)+'px';bx.style.top=Math.max(top,(top+bot)/2)+'px';bx.style.setProperty('--bk',Math.min(.62,bw/1060*1.05).toFixed(3));bx.style.maxHeight=Math.max(120,bot-top)+'px';bx.style.overflowY='auto'}
-  else{ph=H<=520?H*.84:Math.min(H*.8,660);pw=ph*POR_R;side=Math.max(-30,W/2-540);const minGap=Math.min(520,W*.42);
-    let gap=W-2*(side+pw*1.03)-36;if(gap<minGap){side=Math.max(-pw*.22,side-(minGap-gap)/2);gap=W-2*(side+pw*1.03)-36;if(gap<minGap){pw=Math.max(110,(W-minGap-36)/2/1.03-side);ph=pw*520/300;gap=W-2*(side+pw*1.03)-36}}
-    const bw=Math.min(760,gap);bx.style.width=bw+'px';bx.style.left=((W-bw)/2)+'px';bx.style.top=(H*.56)+'px';bx.style.setProperty('--bk',Math.min(.62,bw/1060*1.05).toFixed(3));bx.style.maxHeight=(H*.7)+'px';bx.style.overflowY='visible'}
-  for(const el of[pL,pR]){el.style.height=ph+'px';el.style.width=pw+'px'}pL.style.left=side+'px';pR.style.right=side+'px'}
+/* V024 대화창 배치 · 세로 모드: NPC 일러스트는 아래 가운데(화면 높이의 약 절반) · 말풍선은 위쪽
+   가로 모드·PC: NPC 일러스트는 오른쪽 · 말풍선은 왼쪽~가운데. 일러스트는 화면 아래 끝에 붙는다 */
+function vnLayout(){if(!G.vn)return;const W=innerWidth,H=innerHeight,pm=vnPM(),pR=$('#porR'),bx=$('#vnBox'),R=POR_R;
+  $('#vn').classList.toggle('pm',pm);let ph,pw;
+  if(pm){ph=H*.5;pw=ph*R;if(pw>W*.98){pw=W*.98;ph=pw/R}pR.style.right=((W-pw)/2)+'px';
+    const top=60,bot=H-ph-14,bw=Math.min(W-24,640);bx.style.width=bw+'px';bx.style.left=((W-bw)/2)+'px';bx.style.top=top+'px';bx.style.transform='none';
+    bx.style.setProperty('--bk',Math.min(.62,bw/1060*1.05).toFixed(3));bx.style.maxHeight=Math.max(120,bot-top)+'px';bx.style.overflowY='auto'}
+  else{ph=H<=520?H*.94:Math.min(H*.92,820);pw=ph*R;const right=Math.max(0,Math.min(W*.04,(W-1500)/2+40));
+    const left=Math.max(18,W*.05);let bw=Math.min(820,W-right-pw-left-28);
+    if(bw<340){pw=Math.max(140,W-right-left-28-340);ph=pw/R;bw=Math.min(820,W-right-pw-left-28)}
+    pR.style.right=right+'px';bx.style.width=bw+'px';bx.style.left=left+'px';bx.style.top=(H*.6)+'px';bx.style.transform='translateY(-50%)';
+    bx.style.setProperty('--bk',Math.min(.62,bw/1060*1.05).toFixed(3));bx.style.maxHeight=(H*.7)+'px';bx.style.overflowY='visible'}
+  pR.style.height=ph+'px';pR.style.width=pw+'px';pR.style.left='auto';$('#porL').style.display='none'}
 addEventListener('resize',()=>vnLayout());
 function vnShow(){const V=G.vn,L=V.lines[V.i],w=L.w,pL=$('#porL'),pR=$('#porR'),bx=$('#vnBox');
-  if(w!=='me'&&w!=='n'&&V.R!==w){V.R=w;pR.innerHTML=porOf(w)}
-  const sp=w==='me'?pL:w==='n'?null:pR;
+  /* 화자가 바뀌거나, 같은 화자의 감정(e)이 바뀌면 그 그림으로 바꾼다 · 플레이어·나레이션 중에는 상대 그림을 흐리게 둔다 */
+  if(w!=='me'&&w!=='n'){const e=L.e||'기본';if(V.R!==w||V.E!==e){V.R=w;V.E=e;pR.innerHTML=porOf(w,e)}}
+  const sp=w==='me'||w==='n'?null:pR;
   pL.classList.toggle('on',sp===pL);pR.classList.toggle('on',sp===pR);pL.classList.toggle('dim',sp!==pL);pR.classList.toggle('dim',sp!==pR);
   for(const el of[pL,pR])el.classList.remove('emo','emo2');
   if(sp&&L.emo){void sp.offsetWidth;sp.classList.add(L.emo>1?'emo2':'emo');if(L.emo>1)shake(4)}
@@ -3095,8 +3156,9 @@ function relicH(){const own=ROOT.relics||{},cur=pl.relic,n=Object.keys(own).filt
     return `<div class="relrow${has?'':' no'}${on?' on':''}"><div class="ri">${has?r.g:'?'}</div><div><h5>${has?r.n:'봉인된 유물'}<span class="tag">${kind}</span>${h&&has?`<span class="tag">${CLS[h].n} 착용 중</span>`:''}</h5><p>${has?r.desc:'어둑시니를 쓰러뜨리면 드물게 모습을 드러낸다.'}</p></div>${has?(on?`<button class="sb" data-act="relun">해제</button>`:`<button class="sb pri" data-act="releq" data-id="${r.id}" ${ok&&!h?'':'disabled'}>${h?'다른 캐릭터 착용 중':ok?'착용':'조건 미달'}</button>`):''}</div>`}).join('')}
 function raidH(){const di=G.raidDiff||0,sel=G.raidAllies||Object.keys(ROOT.chars).filter(c=>c!==pl.cls);G.raidAllies=sel;
   const party=[pl,...sel.filter(hasChar).map(c=>ROOT.chars[c])],avg=Math.round(party.reduce((a,o)=>a+o.lv,0)/party.length);
-  return `<p class="hint">조종하는 캐릭터 외의 동료는 AI가 움직인다. AI는 기믹(등불·위험 지역)을 먼저 처리한다. 부활 기회는 파티 전체 3번이며, 「그림자 심판」 때 비어 있는 등불이 있으면 즉시 전멸한다.</p>
-  <p class="sec">난이도</p><div class="diffs">${RAID_DIFF.map((D,i)=>`<button class="diff${i===di?' on':''}" data-act="rdiff" data-id="${i}"><b>${D.n}</b><small>${D.tag}</small><small>권장 전투력(1인) <b class="num">${fmt(raidRecCP(i))}</b></small><small>보상 · 복원의 혼 ${D.mend} · 에픽 이상 장비 ${D.items[0]}~${D.items[1]}개(태초 ${Math.round(D.pri*100)}%) · 유물 ${Math.round(D.relic*100)}% · 세트 장비 ${Math.round(RAID_SETP[i]*100)}% (10회마다 확정 · 클리어 ${((pl.st.raidW||{})[i]||0)}회)</small></button>`).join('')}</div>
+  const sk=pl.cls+'_myth',skinTxt=SKINS[sk]?(ownSkin(sk)?`${CLS[pl.cls].n} 전용 스킨 「${SKINS[sk].n}」 획득 완료`:`${CLS[pl.cls].n} 전용 스킨 「${SKINS[sk].n}」 · 이 캐릭터로 ${RAID_SKIN_N}회 클리어하면 얻는다 (현재 ${pl.st.raid||0}/${RAID_SKIN_N}회 · 난이도 무관)`):'';
+  return `<div class="pw"><span>유물 상자 조각</span><b class="num">${relTok()}</b><small>모험단 공용 · ${RELBOX_COST}개로 잡화점에서 유물 상자 구매 · ${skinTxt}</small></div><p class="hint">조종하는 캐릭터 외의 동료는 AI가 움직인다. AI는 기믹(등불·위험 지역)을 먼저 처리한다. 부활 기회는 파티 전체 3번이며, 「그림자 심판」 때 비어 있는 등불이 있으면 즉시 전멸한다.</p>
+  <p class="sec">난이도</p><div class="diffs">${RAID_DIFF.map((D,i)=>`<button class="diff${i===di?' on':''}" data-act="rdiff" data-id="${i}"><b>${D.n}</b><small>${D.tag}</small><small>권장 전투력(1인) <b class="num">${fmt(raidRecCP(i))}</b></small><small>보상 · 복원의 혼 ${D.mend} · 에픽 이상 장비 ${D.items[0]}~${D.items[1]}개(태초 ${Math.round(D.pri*100)}%) · 유물 상자 조각 ${RAID_TOK[i]}개 · 세트 장비 ${Math.round(RAID_SETP[i]*100)}% (10회마다 확정 · 클리어 ${((pl.st.raidW||{})[i]||0)}회)</small></button>`).join('')}</div>
   <p class="sec">참여 캐릭터 · 평균 Lv.${avg} <span class="${avg>=RAID_DIFF[di].lv?'pos':'neg'}">(권장 ${RAID_DIFF[di].lv})</span></p>
   <div class="allyrow"><input type="checkbox" checked disabled id="ra_me"><img src="${A(`img/${pl.cls}_L.webp`)}" alt=""><span><b>${esc(pl.name)}</b> · ${CLS[pl.cls].n} Lv.${pl.lv} · 전투력 ${fmt(myCP())} (직접 조종)</span></div>
   ${Object.keys(ROOT.chars).filter(c=>c!==pl.cls).map(c=>{const o=ROOT.chars[c];return `<label class="allyrow" for="ra_${c}"><input type="checkbox" id="ra_${c}" data-ally="${c}" ${sel.includes(c)?'checked':''}><img src="${A(`img/${c}_L.webp`)}" alt=""><span><b>${esc(o.name)}</b> · ${CLS[c].n} Lv.${o.lv} · 전투력 ${fmt(charCP(o))}</span></label>`}).join('')||'<p class="hint">모험단에 다른 캐릭터가 없다. 모험단(團)에서 캐릭터를 더 만들면 함께 데려갈 수 있다.</p>'}
@@ -3105,7 +3167,8 @@ function raidResH(){const R=G.raid,rw=R&&R.reward;if(!rw)return '<p class="hint"
   return `<div class="pw"><span>토벌 성공</span><b>${R.D.n}</b><small>${Math.floor(R.t/60)}분 ${Math.floor(R.t%60)}초</small></div>
   <p class="sec">보상</p><p>복원의 혼 <b class="num">${rw.mend}</b>개 · 장비 ${rw.items.length}개 (바닥에 떨어져 있다)${rw.sets?` · <b style="color:${CLS[pl.cls].col}">세트 장비 ${rw.sets}개!</b>`:''}</p><p class="hint">이 난이도 클리어 ${rw.cnt}회 · 다음 확정 세트 장비까지 ${10-(rw.cnt%10)}회</p>
   <div class="grid">${rw.items.map(it=>cellH(it)).join('')}</div>
-  ${rw.rel?(rw.rel.r?`<div class="relrow on"><div class="ri">${rw.rel.r.g}</div><div><h5>유물 획득 · ${rw.rel.r.n}</h5><p>${rw.rel.r.desc}</p></div></div>`:`<p>유물 「${rw.rel.dup.n}」이 겹쳐 복원의 혼 3개로 바뀌었다.</p>`):'<p class="hint">이번에는 유물이 나오지 않았다.</p>'}
+  <p>유물 상자 조각 <b class="num">+${rw.tok}</b>개 · 보유 <b class="num">${relTok()}</b>개 <span class="hint">(${RELBOX_COST}개로 잡화점에서 유물 상자를 산다)</span></p>
+  ${rw.skin?'':(()=>{const sk=pl.cls+'_myth';return SKINS[sk]&&!ownSkin(sk)?`<p class="hint">${CLS[pl.cls].n} 전용 스킨 「${SKINS[sk].n}」까지 · 이 캐릭터의 클리어 <b class="num">${rw.tot}/${RAID_SKIN_N}</b>회</p>`:''})()}
   ${rw.skin?`<div class="relrow on"><div class="ri" style="color:${SKINS[rw.skin].c}">衣</div><div><h5>스킨 획득 · ${SKINS[rw.skin].g} 「${SKINS[rw.skin].n}」</h5><p>${CLS[SKINS[rw.skin].cls].n} 전용 · 능력치 창에서 바꿔 입을 수 있다</p></div></div>`:''}
   <p class="sec">피해 기여</p>${Object.entries(R.dmg).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="pm"><span>${k==='me'?esc(pl.name):CLS[k]?CLS[k].n:k}</span><i><u style="width:${v/tot*100}%;--pc:${k==='me'?CLS[pl.cls].col:ACLR[k]||'#888'}"></u></i></div>`).join('')}
   <div class="acts"><button class="sb pri" data-act="raidleave">마을로 돌아가기</button></div>`}
@@ -3153,6 +3216,7 @@ const SHOP=[
   {n:'혈인 봉인함',d:()=>`${CLS[pl.cls].n} 전용 장비 하나, 레어~레전더리 확정. (에픽·태초는 보스에게서만 나온다)`,p:()=>2500+pl.lv*250,buy(){collect({it:makeItem(pick(SLOTS),Math.max(3,rollGrade(1.4,SHOP_MAXG)),pl.lv,pl.cls,null)})}}];
 function shopH(){const tot=potTotal();return `<div class="pw"><span>보유 금화</span><b class="num">${fmt(pl.gold)}</b><small>회복약 소지 <b class="num">${tot}/${POT_MAX}</b> · 재사용 ${POT_CD}초 · 단축키 Q</small></div>
   <p class="sec">회복약</p><p class="hint">산 회복약은 가방의 「회복약 · 퀵슬롯」에서 한 종류를 골라 걸어 둔다. 걸어 둔 회복약만 Q · 회복약 버튼으로 마신다.</p>`+POT.map((p,i)=>{const pr=p.price(pl.lv),room=POT_MAX-tot;return `<div class="mrow"><div><h5><img class="potimg" src="${A(`img/pot_${i}.webp`)}" alt="">${p.n} <span class="tag">최대 체력 ${Math.round(p.p*100)}% 회복</span>${pl.potSel===i?'<span class="tag" style="color:#ff6b7d;border-color:#ff6b7d">퀵슬롯</span>':''}</h5><p>보유 <b class="num">${pl.pots[i]}</b>개</p></div><div class="acts"><button class="sb pri" data-act="buypot" data-i="${i}" data-n="1" ${pl.gold>=pr&&room>=1?'':'disabled'}>1개 · 금화 ${fmt(pr)}</button><button class="sb" data-act="buypot" data-i="${i}" data-n="5" ${pl.gold>=pr*5&&room>=5?'':'disabled'}>5개</button></div></div>`}).join('')+
+  `<p class="sec">유물</p><div class="mrow"><div><h5>유물 상자 <span class="tag">레이드 전용</span></h5><p>유물 8종 중 하나가 무작위로 나온다. 이미 가진 유물이 나오면 대신 금화 ${fmt(RELBOX_DUP)}을 받는다.</p><div class="meta num">보유 유물 상자 조각 ${relTok()}개 · 유물 ${Object.keys(ROOT.relics||{}).length}/${RELICS.length}종</div></div><button class="sb pri" data-act="buyrelbox" ${relTok()>=RELBOX_COST?'':'disabled'}>조각 ${RELBOX_COST}개</button></div>`+
   `<p class="sec">물품</p>`+SHOP.map((s,i)=>{const p=s.p();return `<div class="mrow"><div><h5>${s.n}</h5><p>${typeof s.d==='function'?s.d():s.d}</p></div><button class="sb pri" data-act="buy" data-i="${i}" ${pl.gold>=p?'':'disabled'}>금화 ${fmt(p)}</button></div>`}).join('')}
 function boardH(){if(!pl.board||!pl.board.length)pl.board=makeOffers();const bs=bnts(),full=bs.length>=BOUNTY_MAX,r=brfState(),nx=brfLeft();
   return `<p class="hint">의뢰는 한 번에 하나만 맡을 수 있다. 완료하면 어디서든 바로 보상을 받는다. 목록이 마음에 들지 않으면 새로고침 (5분마다 1번씩, 최대 3번까지 모아 둔다).</p>
@@ -3221,6 +3285,8 @@ $('#modal').addEventListener('click',e=>{
    case'go':{if(!mapOpen(id)){travel(id);break}const t=MAPS[id].endless&&$('#abyT')?clamp(parseInt($('#abyT').value,10)||1,1,pl.abyss+1):0;closeModal();travel(id,null,t?{tier:t}:{});return}
    case'buy':{const s=SHOP[+el.dataset.i],p=s.p();if(pl.gold>=p){pl.gold-=p;s.buy()}break}
    case'buypot':{const i=+el.dataset.i,n=+el.dataset.n,pr=POT[i].price(pl.lv)*n;if(pl.gold>=pr&&potTotal()+n<=POT_MAX){pl.gold-=pr;pl.pots[i]+=n;if(potSlot()<0)pl.potSel=i;toast(`${POT[i].n} ${n}개를 샀다`)}break}
+   case'buyrelbox':{if(relTok()<RELBOX_COST)break;ROOT.relTok=relTok()-RELBOX_COST;const own=ROOT.relics||(ROOT.relics={});const r=pick(RELICS);
+     if(own[r.id]){pl.gold+=RELBOX_DUP;toast(`유물 상자 · 「${r.n}」은 이미 있다 → 금화 ${fmt(RELBOX_DUP)}`)}else{own[r.id]=1;banner('유물 획득',`${r.g} · ${r.n}`);sfx('questDone')}writeRoot();save();break}
    case'potsel':{const i=+el.dataset.i;pl.potSel=i;toast(`퀵슬롯 · ${POT[i].n}`);break}
    case'pas':{const n=+(el.dataset.n||1);let k=0;for(let j=0;j<n&&pasCan(id);j++){pl.pas=pl.pas||{};pl.pas[id]=(pl.pas[id]||0)+1;k++}if(k){recalc();sfx('ui');later(.1,()=>qEvent('check'))}break}
    case'pasreset':pl.pas={};recalc();pl.dashC=Math.min(pl.dashC==null?1:pl.dashC,dashMax());toast('패시브 기술을 초기화했다 (무료)');break;
@@ -3572,7 +3638,7 @@ function frame(now){
   if(now-last<1000/cap-3)return;
   const dt=Math.min(.05,(now-last)/1000);last=now;
   try{sndTick()}catch(_){}
-  try{if(G.scene==='play'){if(!G.modal&&!G.vn&&!G.ctlEdit)update(dt);if(G.vn)vnTick(dt);drawWorld();hudTick(dt)}
+  try{if(G.scene==='play'){if(!G.modal&&!G.vn&&!G.ctlEdit)update(dt);if(G.vn)vnTick(dt);drawWorld();hudTick(dt);transTick(dt)}
   else{G.t+=dt;if($('#title').hidden)drawTitle(dt)}}
   catch(err){if(errN++<5)console.error(err);cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=1;cx.globalCompositeOperation='source-over'}}
 function boot(data){
