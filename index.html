@@ -499,7 +499,7 @@ table.st tr+tr{border-top:1px solid rgba(232,224,204,.07)}
   <div class="screen" id="title">
     <!-- V010: 그려진 타이틀 화면. 그림 속 버튼 자리에 투명한 진짜 버튼을 겹쳐 둔다 (위치는 그림 크기 대비 %) -->
     <div class="tart" role="img" aria-label="혈월야행 · 핏빛 달 아래, 이름 잃은 망자의 끝없는 사냥">
-      <span class="tver num" id="tVer">V028</span>
+      <span class="tver num" id="tVer">V029</span>
       <button class="thot" id="bNew" aria-label="새로 깨어나기"></button>
       <button class="thot" id="bCont" aria-label="이어하기"></button>
       <button class="thot" id="fsTitle" aria-label="전체화면으로"></button>
@@ -2601,13 +2601,13 @@ function buildMap(id){
       {npc:1,id:'exit',x:.11*M.w,y:.5*M.h,n:'마을로 나가기',obj:'door'}];
   }
   else if(id==='c2v'){
-    G.npcs=[{npc:1,id:'damyeon',x:.2*M.w,y:.46*M.h,n:'서고지기 담연',ch:'damyeon'},
-      {npc:1,id:'bangul',x:.68*M.w,y:.53*M.h,n:'방울',ch:'bangul'},
+    G.npcs=[{npc:1,id:'damyeon',x:.2*M.w,y:.46*M.h,n:'서고지기 담연',ch:'damyeon',spr:'c2n_damyeon'},
+      {npc:1,id:'bangul',x:.68*M.w,y:.53*M.h,n:'방울',ch:'bangul',spr:'c2n_bangul'},
       {npc:1,id:'board',x:.83*M.w,y:.45*M.h,n:'의뢰 게시판',obj:'board'},
       {npc:1,id:'door',x:.93*M.w,y:.6*M.h,n:'묘의 잡화점',obj:'door'},
       {npc:1,id:'gate',x:.5*M.w,y:.67*M.h,n:'사방성 길목',obj:'gate'}];
     /* 정체를 드러낸 뒤에는 마을에서 사라진다 */
-    if(pl.q<=qIdx('머무르는 자의 정체'))G.npcs.unshift({npc:1,id:'stay',x:.5*M.w,y:.45*M.h,n:'머무르는 자',ch:'stay',spr:'stay'})}
+    if(pl.q<=qIdx('머무르는 자의 정체'))G.npcs.unshift({npc:1,id:'stay',x:.5*M.w,y:.45*M.h,n:'머무르는 자',ch:'stay',spr:'c2n_stay'})}
   else if(id==='field'){put('grass',60);put('grave',6);put('candle',8)}
   /* V005: 그림 배경이 있는 맵은 덧그리는 장식을 줄인다 */
   else if(id==='fox'){put('candle',6);put('bone',6)}
@@ -3133,7 +3133,7 @@ function loadSprKey(n){if(SPRLD[n])return;SPRLD[n]=1;const boss=n.startsWith('c2
   else loadImg(n+'_L',A(`img/${n}_L.webp`),im=>{FLASH[n+'_L']=silh(im,'#ffffff');const r=mirImg(im);IMG[n+'_R']=r;FLASH[n+'_R']=silh(r,'#ffffff')});
   if(boss){const kR=n+'_walkR',kL=n+'_walkL';if(ANIMDEF2[kR])loadImg('a_'+kR,A(`img/${kR}.webp`),im=>{setAnim(kR,im,ANIMDEF2[kR]);if(ANIMDEF2[kL])setAnim(kL,mirStrip(im,ANIMDEF2[kL].n),ANIMDEF2[kL])})}
   else['walkL','walkR'].forEach(w=>{const k=n+'_'+w;if(ANIMDEF2[k])loadAnim(k,ANIMDEF2[k])})}
-function loadMapSpr(id){const M=MAPS[id];if(!M||M.ch!==2)return;if(id==='c2v'||id==='raid2')loadSprKey('stay');if(M.bg&&!SPRLD['bg_'+M.bg]){SPRLD['bg_'+M.bg]=1;loadImg('bg_'+M.bg,A(`img/bg_${M.bg}.jpg`))}
+function loadMapSpr(id){const M=MAPS[id];if(!M||M.ch!==2)return;if(id==='raid2')loadSprKey('stay');if(id==='c2v')['damyeon','stay','bangul'].forEach(n=>{const k='c2n_'+n;if(SPRLD[k])return;SPRLD[k]=1;['L','R'].forEach(sd=>loadImg(k+'_'+sd,A(`img/${k}_${sd}.webp`),im=>{FLASH[k+'_'+sd]=silh(im,'#ffffff')}))});if(M.bg&&!SPRLD['bg_'+M.bg]){SPRLD['bg_'+M.bg]=1;loadImg('bg_'+M.bg,A(`img/bg_${M.bg}.jpg`))}
   for(const m of M.mobs||[]){const D=MOBS[m],ms=D&&MSPR[D.s];if(ms&&ms.k.startsWith('c2'))loadSprKey(ms.k)}
   const bs=M.boss?[M.boss]:M.endless?Object.keys(BOSSES).filter(k=>BOSSES[k].ch===2):[];for(const b of bs){const ms=MSPR[BOSSES[b].s];if(ms)loadSprKey(ms.k)}}
 Object.keys(ANIMDEF).forEach(k=>{const v=ANIMDEF[k];if(typeof v!=='object')return;loadImg('a_'+k,A(`img/${k}.webp`),im=>{const o={im,fl:silh(im,'#ffffff'),n:v.n,ax:v.ax,hs:v.hs,idle:ANIMDEF[k+'_idle']||0};ANIM[k]=o;const m=k.match(/^(\w+)_walk([LR])$/);if(m)WALK[m[1]+'_'+m[2]]=o})});
