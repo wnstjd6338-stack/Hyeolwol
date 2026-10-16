@@ -2,7 +2,7 @@ import sys,json,os
 import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
-import os as _o;SRC=_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__)))+'/incoming/fx_skill/'; OUT=sys.argv[1]  # 사용: python3 tools/cut.py 출력폴더; os.makedirs(OUT,exist_ok=True)
+import os as _o;SRC=_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__)))+'/incoming/fx_skill/'; OUT=sys.argv[1]; os.makedirs(OUT,exist_ok=True)  # 사용: python3 tools/cut.py 출력폴더
 PICK={'마법사3':{0:'mf0',1:'mf1',2:'mf2',3:'mf3',6:'mfox',7:'mf7',8:'mf8',9:'mf9',10:'mdrg',11:'mdb1',12:'mdb2',13:'mdb3',14:'mtail',15:'mclaw',18:'mwing'},
       '마법사2':{0:'mb0',1:'mb1',2:'mb2',3:'mb3',4:'mb4',5:'mb5',10:'mbo',11:'mbs',12:'mc1',13:'mc2',14:'mw',15:'mc3',16:'mb6',18:'mbd',19:'mb7'},
       '마법사1':{0:'mi0',2:'mi2',3:'mi3',5:'mi5',6:'mi6',7:'mi7',8:'mi8',9:'mi9',10:'mi10',12:'mi12',13:'mi13',14:'mi14',15:'mi15',16:'mi16',17:'mi17'}}
