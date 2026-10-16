@@ -4,7 +4,7 @@
 
 ## 사용자 규칙 (반드시 지킬 것)
 - **항상 한국어로 답한다.** 사용자는 코딩 초보자 → 전문 용어는 풀어서 설명.
-- **업데이트마다 버전 표기**: 타이틀 화면 `<span id="tVer">` 값을 올린다. 현재 **V031** (마법사 (신) 이펙트). 다음은 V032.
+- **업데이트마다 버전 표기**: 타이틀 화면 `<span id="tVer">` 값을 올린다. 현재 **V032** (힐러 (신) 이펙트). 다음은 V033.
 - **업데이트 답변 끝에는 항상 📜 패치노트**를 붙인다 (새 맵 이름, NPC 이름, 스토리 요약, 표정 목록 등 포함).
 - 이미지 "사전 입력"만 요청하면 저장·백업만 하고 게임에는 넣지 않는다.
 - 커밋 후 GitHub(main)에 푸시까지 해야 "업데이트 완료".
@@ -53,17 +53,18 @@ python3 tools/smoke_test.py        # Playwright: 4직업 × 전투·패널 열�
 
 ## 배포
 1. **GitHub**: 커밋 → `git push` (main). "repository moved" 안내는 무시해도 됨.
-2. **Claude 아티팩트** (claude.ai 세션에서만): https://claude.ai/artifact/SoeieGnYCsAvpSXnwiiGYZ (현재 V031).
+2. **Claude 아티팩트** (claude.ai 세션에서만): https://claude.ai/artifact/SoeieGnYCsAvpSXnwiiGYZ (현재 V032).
    - 버전당 파일 **511개 한도**, 현재 약 303개 사용.
    - 아틀라스에 들어간 낱장 이미지, 안 쓰는 fx_* 19개, por_* 9개는 아티팩트에서 뺐음 (저장소엔 있음).
 
 ## 기술 이펙트 (구)/(신)
-- `FXNEW`에 (신) 그림이 있는 기술 표시 (전사·마법사 전부). (구)=`KX` 원래 함수, (신)=`KXN` 같은 이름 → `FXC.old`로 자동 선택.
+- `FXNEW`에 (신) 그림이 있는 기술 표시 (전사·마법사 전부, 힐러는 축복 빼고). (구)=`KX` 원래 함수, (신)=`KXN` 같은 이름 → `FXC.old`로 자동 선택.
 - 마법사 (신) (V031): 새 그림만 있는 동작은 `KX`에 빈 함수/옛 코드(`foxFly` `talFly` `drgFly` `cloudHit` `foxHit` `talStick` `frostTick` `drgCast` `drgHit` `drgEnd` `metCast`), 매 프레임 그림은 `MXD`(fox·tal·dragon·frost·cloud·meteor). 성운낙하 운석 fx는 `nm:1`이면 (신).
 - 마법사 그림 `k_m*` 33장: 사용자 제공 `incoming/fx_skill/마법사1~3.png`(흰 그림 시트 · 다른 직업 시트도 함께 보관, 아직 안 씀)를 잘라 밝기→투명도로 바꾼 정사각 흰 그림. `k_msig1/2`는 직접 그린 마법진. 사용자가 함께 보낸 인터넷 참고 이미지는 저작권 때문에 **분위기 참고만** 하고 게임에 넣지 않았다.
+- 힐러 (신) (V032): 그림 `k_h00~h33` 13장 = 사용자 제공 `incoming/fx_skill/힐러_신.png`(4×4 금빛·청록 컬러 시트)를 잘라 **색 그대로**(`c:null`) 씀. 컬러 그림을 `lighter`(더하기)로 그리면 하얗게 타서 `src:1`(보통 겹치기)로 그림. 훅: `KX.lightHit` `crossEnd` `smiteMark`, 매 프레임 그림 `HXD`(light·cross·pull·holy). 아군 힐러 투사체는 `p.fx` 없으면 (구) 유지.
 
 ## 아틀라스 (V030, 파일 수 절약)
-- `img/atlas_fx0.webp`, `atlas_fx1.webp`, `atlas_ui0.webp` (무손실). k_*, 쓰는 fx_*, eq_*, ic_*, sk_*, mi_*, pot_*, hud_* 등 186장.
+- `img/atlas_fx0~2.webp`, `atlas_ui0.webp` (무손실). k_*, 쓰는 fx_*, eq_*, ic_*, sk_*, mi_*, pot_*, hud_* 등 186장.
 - 코드: `const ATLAS=[{f,ui,it:{경로:[x,y,w,h]}}]` → `ATL.ready`가 잘라서 blob URL Image로 만들고 `window.ASSETS[경로]`, `ATL.cv[경로]`에 넣음. 부팅은 `ATL.ready.then(...)` 안. HTML의 고정 이미지는 `<img data-as="img/...">`.
 - **아틀라스 안 이미지를 바꾸려면**: `img/`의 낱장을 교체 → `python3 tools/atlas.py` → 나온 `tools/atlas.json` 내용으로 `index.html`의 `const ATLAS=` 줄을 교체.
 
