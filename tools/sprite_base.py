@@ -4,7 +4,7 @@ from PIL import Image
 from scipy import ndimage
 U=R+'incoming/'
 def load(f,fringe=True,amin=100):
-    a=np.array(Image.open(U+f+'-image.png').convert('RGBA')).copy()
+    a=np.array(Image.open(f if f.endswith('.png') else U+f+'-image.png').convert('RGBA')).copy()
     al=a[...,3].astype(int);r,g,b=[a[...,i].astype(int) for i in range(3)]
     kill=al<amin
     if fringe:
@@ -37,29 +37,30 @@ def frames(a,rows,cols,keep=.02,grow=4,xcuts=None,ycuts=None):
             mb=np.argwhere(main&sm);my0,mx0=mb.min(0);my1,mx1=mb.max(0)
             out.append(dict(im=im.crop(bb),bb=bb,main=(mx0-bb[0],my0-bb[1],mx1-bb[0],my1-bb[1])))
     return out
-def build(fr,name,outH,ref='first',anchor='bottom'):
+def build(fr,name,outH,ref='first',anchor='bottom',refh=None):
     fr=[f for f in fr if f]
     anc=[];base=[]
     for f in fr:
         a=np.array(f['im'])[...,3]>0;mx0,my0,mx1,my1=f['main'];h=my1-my0
         band=a[my0+int(h*.7):my1+1,mx0:mx1+1];xs=np.where(band)[1]+mx0
         anc.append(float(np.median(xs)) if len(xs) else (mx0+mx1)/2);base.append(my1)
-    L=max(anc);R=max(f['im'].size[0]-x for f,x in zip(fr,anc))
+    AL=max(anc);AR=max(f['im'].size[0]-x for f,x in zip(fr,anc))
     up=max(b for b in base);down=max(f['im'].size[1]-1-b for f,b in zip(fr,base))
-    W=int(np.ceil(L+R));Hc=int(up+down+1)
+    W=int(np.ceil(AL+AR));Hc=int(up+down+1)
     hs=[f['main'][3]-f['main'][1] for f in fr]
-    refh=hs[0] if ref=='first' else float(np.median(hs))
+    refh=refh or (hs[0] if ref=='first' else float(np.median(hs)))
     s=outH/Hc;fw=max(1,round(W*s));n=len(fr)
     strip=Image.new('RGBA',(fw*n,outH),(0,0,0,0))
     for i,(f,x,b) in enumerate(zip(fr,anc,base)):
-        c=Image.new('RGBA',(W,Hc),(0,0,0,0));c.alpha_composite(f['im'],(int(round(L-x)),int(up-b)))
+        c=Image.new('RGBA',(W,Hc),(0,0,0,0));c.alpha_composite(f['im'],(int(round(AL-x)),int(up-b)))
         strip.alpha_composite(c.resize((fw,outH),Image.LANCZOS),(i*fw,0))
     strip.save(R+f'img/{name}.webp','WEBP',quality=84,method=6);strip.save(f'{name}.png')
-    meta=dict(n=n,ax=round(L/W,4),ay=round((up+1)/Hc,4),hs=round(Hc/refh,4))
+    meta=dict(n=n,ax=round(AL/W,4),ay=round((up+1)/Hc,4),hs=round(Hc/refh,4))
     print(name,meta,'strip',strip.size);return meta
 META={}
-def walk6(f,cls,fr=True):
+if __name__=='__main__':
+  def walk6(f,cls,fr=True):
     a=load(f,fringe=fr);fs=frames(a,2,6)
     META[cls+'_walkL']=build(fs[:6],cls+'_walkL',240,'median');META[cls+'_walkR']=build(fs[6:],cls+'_walkR',240,'median')
-walk6('7be696a5','archer');walk6('fd94fce2','mage');walk6('177b772d','warrior');walk6('89ac813d','healer')
-json.dump(META,open('meta1.json','w'))
+  walk6('7be696a5','archer');walk6('fd94fce2','mage');walk6('177b772d','warrior');walk6('89ac813d','healer')
+  json.dump(META,open('meta1.json','w'))
