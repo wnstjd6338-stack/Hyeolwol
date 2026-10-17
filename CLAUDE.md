@@ -4,7 +4,7 @@
 
 ## 사용자 규칙 (반드시 지킬 것)
 - **항상 한국어로 답한다.** 사용자는 코딩 초보자 → 전문 용어는 풀어서 설명.
-- **업데이트마다 버전 표기**: 타이틀 화면 `<span id="tVer">` 값을 올린다. 현재 **V033** (4직업 걷기·1번 공격 모션 교체). 다음은 V034.
+- **업데이트마다 버전 표기**: 타이틀 화면 `<span id="tVer">` 값을 올린다. 현재 **V034** (궁수 모든 기술 = 1번 공격 모션). 다음은 V035.
 - **업데이트 답변 끝에는 항상 📜 패치노트**를 붙인다 (새 맵 이름, NPC 이름, 스토리 요약, 표정 목록 등 포함).
 - 이미지 "사전 입력"만 요청하면 저장·백업만 하고 게임에는 넣지 않는다.
 - 커밋 후 GitHub(main)에 푸시까지 해야 "업데이트 완료".
@@ -53,7 +53,7 @@ python3 tools/smoke_test.py        # Playwright: 4직업 × 전투·패널 열�
 
 ## 배포
 1. **GitHub**: 커밋 → `git push` (main). "repository moved" 안내는 무시해도 됨.
-2. **Claude 아티팩트** (claude.ai 세션에서만): https://claude.ai/artifact/SoeieGnYCsAvpSXnwiiGYZ (현재 V033).
+2. **Claude 아티팩트** (claude.ai 세션에서만): https://claude.ai/artifact/SoeieGnYCsAvpSXnwiiGYZ (현재 V034).
    - 버전당 파일 **511개 한도**, 현재 약 303개 사용.
    - 아틀라스에 들어간 낱장 이미지, 안 쓰는 fx_* 19개, por_* 9개는 아티팩트에서 뺐음 (저장소엔 있음).
 
@@ -69,7 +69,7 @@ python3 tools/smoke_test.py        # Playwright: 4직업 × 전투·패널 열�
 - **아틀라스 안 이미지를 바꾸려면**: `img/`의 낱장을 교체 → `python3 tools/atlas.py` → 나온 `tools/atlas.json` 내용으로 `index.html`의 `const ATLAS=` 줄을 교체.
 
 ## 스프라이트 규칙
-- `_L` = 왼쪽을 보는 이미지. 플레이어 걷기 8프레임·공격 4프레임(전사 8, 궁수는 `atk1`) = V033 `tools/sprite_v033.py`로 `incoming/motion/*.png`(왼쪽 보기 1줄 시트)에서 만들고 R은 좌우반전. 나머지 걷기 시트 4프레임, `ANIMDEF`/`ANIMDEF2`(`{n,ax,hs}`)에 정의.
+- `_L` = 왼쪽을 보는 이미지. 플레이어 걷기 8프레임·공격 4프레임(전사 8, 궁수는 `atk1` 하나로 모든 기술: 평타 0.2초·기술 0.36초, 옛 16장 `archer_atk` 삭제 V034) = V033 `tools/sprite_v033.py`로 `incoming/motion/*.png`(왼쪽 보기 1줄 시트)에서 만들고 R은 좌우반전. 나머지 걷기 시트 4프레임, `ANIMDEF`/`ANIMDEF2`(`{n,ax,hs}`)에 정의.
 - 2장 이미지는 맵 들어갈 때 불러옴: `loadMapSpr(id)` → `loadSprKey` (iOS 메모리 절약, V025 최적화 유지할 것).
 - c2_ 몬스터: `_R` 서 있는 이미지는 코드에서 좌우반전(`mirImg`). c2b_ 보스·stay: `walkL`은 `walkR` 반전(`mirStrip`).
 - 마을 NPC: `c2n_damyeon / stay / bangul _L/_R`.
