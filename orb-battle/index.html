@@ -418,7 +418,6 @@ function knockOrbs(n){
 }
 function bossRoar(){
   mon.pendingRoar=false;mon.roarT=ROAR_T;
-  showBanner('포효!!','구슬 10개가 떨어져 다음 공격까지 비어 있다!','#ff6a3a',3);
   blip(80,ROAR_T,'sawtooth',.18,40);noise(ROAR_T,.45,500);
   // 2초 동안 화면·구슬판이 계속 흔들리고, 끝나는 순간 구슬이 떨어짐
   for(let i=0;i<18;i++)later(.1+i*.105,()=>{soundWave(i%4===0);addShake(16);boardShake=Math.max(boardShake,.9);});
@@ -429,8 +428,8 @@ function enemyAttack(){
   state='enemy';curElem=null;const S=mon.st,lv0=mon.lvl,nm=mon.boss?'미노타우로스':'고블린';
   let delay=0;
   if(S.burn>0||S.poison>0){delay=.6;const c={x:monX,y:groundY-monH()*.55};
-    if(S.burn>0){floatText(c.x-20,c.y-monH()*.4-10,`🔥화상 ×${S.burn}`,13,'#ffb070',0,-30);burst(c.x,c.y,10+S.burn,160,[FIRE.hot,FIRE.c1,FIRE.glow],3,0,-200);hitMon(S.burn*4*atkMul(),c.x-14,c.y,false);}
-    if(mon.alive&&mon.lvl===lv0&&S.poison>0){const P=SKILLS.poison;floatText(c.x+20,c.y-monH()*.4+6,`☠중독 ×${S.poison}`,13,P.c1,0,-30);burst(c.x,c.y,10+S.poison,120,[P.c1,P.glow,'#3a7a10'],3,0,200);hitMon(S.poison*5*atkMul(),c.x+14,c.y-12,false);}
+    if(S.burn>0){floatText(c.x-20,c.y-monH()*.4-10,`🔥화상 ×${S.burn}`,13,'#ffb070',0,-30);burst(c.x,c.y,10+S.burn,160,[FIRE.hot,FIRE.c1,FIRE.glow],3,0,-200);hitMon(S.burn*6*atkMul(),c.x-14,c.y,false);}
+    if(mon.alive&&mon.lvl===lv0&&S.poison>0){const P=SKILLS.poison;floatText(c.x+20,c.y-monH()*.4+6,`☠중독 ×${S.poison}`,13,P.c1,0,-30);burst(c.x,c.y,10+S.poison,120,[P.c1,P.glow,'#3a7a10'],3,0,200);hitMon(S.poison*7.5*atkMul(),c.x+14,c.y-12,false);}
     noise(.3,.2,1500);
   }
   mon.atkT=-delay;
@@ -524,13 +523,17 @@ const tierOf=n=>n>=10?4:n>=7?3:n>=4?2:1;
 function monH(){return spriteH*.95*(mon.boss?3:1);}
 function monPoint(){return{x:monX+rand(-.22,.22)*monW,y:groundY-monH()*rand(.3,.72)};}
 function muzzle(){return{x:heroX+hero.off-heroW/2+.97*heroW,y:groundY-spriteH*.6+hero.lift};}
-function applyElem(e,x,y){const S=mon.st;
-  if(e==='burn')S.burn=Math.min(99,S.burn+1);
-  else if(e==='poison')S.poison=Math.min(99,S.poison+1);
-  else if(e==='shock')S.shock=Math.min(200,S.shock+1);
-  else if(e==='dark')S.dark=Math.min(120,S.dark+1);
+let elemMult=1;
+function odHit(d,x,y){elemMult=10;hitMon(d,x,y,true);elemMult=1;} // 오버드라이브 1회 = 기본 타격 10회분 디버프
+function applyElem(e,x,y){const S=mon.st,m=elemMult;
+  if(m>1){const L={burn:['🔥화상 +'+m,'#ffb070'],poison:['☠중독 +'+m,'#c8ff7a'],shock:['⚡감전 +'+m,'#ffe86a'],dark:['🌑어둠 +'+m,'#d8b0ff'],weak:['💧약화','#8fd8ff'],ice:['❄빙결 '+m*3+'%','#bff4ff']}[e];
+    if(L)floatText(x,y-46,L[0],17,L[1],0,-50);}
+  if(e==='burn')S.burn=Math.min(99,S.burn+m);
+  else if(e==='poison')S.poison=Math.min(99,S.poison+m);
+  else if(e==='shock')S.shock=Math.min(200,S.shock+m);
+  else if(e==='dark')S.dark=Math.min(120,S.dark+m);
   else if(e==='weak'){if(!S.weak){S.weak=true;floatText(x,y-28,'공격력 -20%',14,'#8fd8ff');}}
-  else if(e==='ice'&&!S.frozen&&Math.random()<.03){S.frozen=true;const I=SKILLS.ice;
+  else if(e==='ice'&&!S.frozen&&Math.random()<.03*m){S.frozen=true;const I=SKILLS.ice;
     floatText(monX,groundY-monH()-34,'빙결!',26,'#bff4ff');burst(monX,groundY-monH()*.5,30,260,[I.hot,I.c1,I.glow],4);ring(monX,groundY-monH()*.5,monW,I.glow,6,.5);blip(1600,.3,'triangle',.1,2400);}
 }
 function hitMon(d,x,y,big){
@@ -633,14 +636,14 @@ function cast(type,n){
           slash(p.x,p.y,R,.7,T,16*pw,.45,2.4);slash(p.x,p.y,R,-.7,T,16*pw,.45,2.4);
           later(.1,()=>{lineSlash(p.x,p.y,W*pw,rand(-.3,.3),T,10+6*j,.55);ring(p.x,p.y,W*.6*pw,T.hot,12,.6);});
           burst(p.x,p.y,60+j*20,460+j*80,[T.hot,T.c1,T.glow],5+j);doFlash(.5,'#ffffff');addShake(18+j*4);noise(.6,.5,4000);
-          hitMon(each,p.x,p.y-monH()*.3,true);});
+          odHit(each,p.x,p.y-monH()*.3);});
       }else{
         later(t1,()=>{liftHero(-spriteH*(1+j*.3),.14);moveHero(dashTo()+monW*.1,.14,type);});
         later(t1+.17,()=>liftHero(0,.08));
         later(t1+.25,()=>{const p=c();lineSlash(p.x,p.y,monH()*.7*pw,Math.PI/2,FIRE,18*pw,.5);
           explode(p.x,groundY-10,10+j*3,FIRE);firePillar(p.x,(40+j*12)*Math.max(1,monW/60),200+j*60,.6);
           for(let q=0;q<2+j;q++)later(.1+q*.08,()=>{const z=monPoint();explode(z.x,z.y,7,FIRE);});
-          doFlash(.5,'#ff9a40');addShake(18+j*4);noise(.9,.55,900);hitMon(each,p.x,p.y-monH()*.3,true);});
+          doFlash(.5,'#ff9a40');addShake(18+j*4);noise(.9,.55,900);odHit(each,p.x,p.y-monH()*.3);});
       }
     }
     tEnd+=.15+od*step+.2;
