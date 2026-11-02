@@ -289,12 +289,12 @@ function groupFrom(r,c){
   const t=grid[r][c].t,seen=new Uint8Array(ROWS*COLS),out=[{r,c}];seen[r*COLS+c]=1;
   for(let i=0;i<out.length;i++){const k=out[i];
     for(const [dr,dc] of DIRS){const nr=k.r+dr,nc=k.c+dc;if(nr<0||nc<0||nr>=ROWS||nc>=COLS)continue;
-      const j=nr*COLS+nc;if(seen[j]||grid[nr][nc].t!==t)continue;seen[j]=1;out.push({r:nr,c:nc});}}
+      const j=nr*COLS+nc;if(seen[j]||!grid[nr][nc]||grid[nr][nc].t!==t)continue;seen[j]=1;out.push({r:nr,c:nc});}}
   return out; // 누른 구슬부터 가까운 순서(BFS)
 }
 function largestGroup(){
   let best=[];const done=new Uint8Array(ROWS*COLS);
-  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(done[r*COLS+c])continue;const g=groupFrom(r,c);g.forEach(k=>done[k.r*COLS+k.c]=1);if(g.length>best.length)best=g;}
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(done[r*COLS+c]||!grid[r][c])continue;const g=groupFrom(r,c);g.forEach(k=>done[k.r*COLS+k.c]=1);if(g.length>best.length)best=g;}
   return best;
 }
 function updateStat(){
@@ -314,7 +314,7 @@ cv.addEventListener('pointerdown',e=>{
   ensureAudio();e.preventDefault();
   document.getElementById('spPick').classList.remove('on');document.getElementById('prPick').classList.remove('on');
   if(state!=='idle'||scene!=='battle'||stageOver)return;
-  const k=cellAt(pt(e),.5);if(!k)return;
+  const k=cellAt(pt(e),.5);if(!k||!grid[k.r][k.c])return;
   const g=groupFrom(k.r,k.c);
   if(g.length<2){grid[k.r][k.c].wig=.3;blip(140,.1,'square',.06);return;}
   hintPath=[];chain=g;popType=grid[k.r][k.c].t;popN=g.length;popIdx=0;popTimer=0;state='pop';
@@ -339,7 +339,7 @@ function doSpecial(t){
   if(state!=='idle'||spGauge<SP_MAX)return;
   spGauge=0;updateSp();state='settle';
   const T=TYPES[t];
-  const cand=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c].t!==t)cand.push({r,c});
+  const cand=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c]&&grid[r][c].t!==t)cand.push({r,c});
   for(let i=cand.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[cand[i],cand[j]]=[cand[j],cand[i]];}
   const pickN=cand.slice(0,SP_COUNT);
   showBanner('구슬 변환!',T.name+' 구슬로',T.glow,2);
@@ -348,7 +348,7 @@ function doSpecial(t){
   pickN.forEach((k,i)=>{
     const x=ocx(k.c),y=ocy(k.r);
     shoot({from:M,to:{x,y},dur:.3+i*.06,size:4,T,kind:'spark',arc:60,block:true,L:1,onHit:()=>{
-      grid[k.r][k.c].t=t;grid[k.r][k.c].wig=.25;
+      if(!grid[k.r][k.c])return;grid[k.r][k.c].t=t;grid[k.r][k.c].wig=.25;
       burst(x,y,14,160,[T.hot,T.c1,T.glow],3,1);ring(x,y,cell*.9,T.glow,4,.35,1);core(x,y,cell*.6,T.hot,.25,1);
       blip(600+i*80,.12,'triangle',.12);}});
   });
@@ -356,7 +356,7 @@ function doSpecial(t){
 function priestPos(){return{x:heroX-heroW*1.25,y:groundY};}
 function doPriest(t){
   if(state!=='idle'||prGauge<PR_MAX)return;
-  const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c].t===t)cells.push({r,c});
+  const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c]&&grid[r][c].t===t)cells.push({r,c});
   if(!cells.length){blip(140,.1,'square',.06);return;}
   prGauge=0;updateSp();state='settle';priest.cast=1;
   const T=TYPES[3],P=priestPos(),from={x:P.x,y:P.y-spriteH*.9};
@@ -365,14 +365,14 @@ function doPriest(t){
   blip(520,.5,'sine',.12,1040);later(.15,()=>blip(780,.5,'sine',.1,1560));
   cells.forEach((k,i)=>{const x=ocx(k.c),y=ocy(k.r);
     shoot({from,to:{x,y},dur:.35+i*.03,size:3.5,T,kind:'spark',arc:90,block:true,L:1,onHit:()=>{
-      const o=grid[k.r][k.c];o.orig=o.t;o.t=3;o.wig=.25;
+      const o=grid[k.r][k.c];if(!o)return;o.orig=o.t;o.t=3;o.wig=.25;
       burst(x,y,12,150,[T.hot,T.c1,'#fff6a0'],3,1);ring(x,y,cell*.8,T.glow,3,.35,1);core(x,y,cell*.55,T.hot,.25,1);
       blip(900+i*30,.08,'triangle',.07);}});});
 }
 const healFor=n=>Math.round(20*n*(1+(n-2)*.2)*hero.max/BASE_HP);
 function revertHeal(){
   let i=0;
-  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(o.t!==3||o.dead)continue;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(!o||o.t!==3||o.dead)continue;
     const d=i++*.04;later(.1+d,()=>{if(o.t!==3)return;o.t=o.orig!=null?o.orig:(Math.random()*numTypes)|0;o.wig=.2;
       const T=TYPES[o.t];let rr=-1,cc=-1;for(let a=0;a<ROWS;a++)for(let b=0;b<COLS;b++)if(grid[a][b]===o){rr=a;cc=b;}
       if(rr>=0){const x=ocx(cc),y=ocy(rr);burst(x,y,8,110,['#ffc0e0',T.c1,'#fff'],2.5,1);ring(x,y,cell*.6,'#ff7ac0',2,.3,1);}
@@ -412,13 +412,13 @@ function soundWave(big){
 function knockOrbs(n){
   const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r]&&grid[r][c]&&!grid[r][c].dead)cells.push({r,c});
   for(let i=cells.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[cells[i],cells[j]]=[cells[j],cells[i]];}
-  cells.slice(0,n).forEach((k,i)=>later(i*.05,()=>{const o=grid[k.r][k.c];
+  cells.slice(0,n).forEach((k,i)=>later(i*.05,()=>{const o=grid[k.r][k.c];if(!o)return;
     falling.push({t:o.t,x:ocx(k.c),y:ocy(k.r),vx:rand(-120,120),vy:rand(-260,-80),rot:0,vr:rand(-9,9)});
-    const no=newOrb();no.grow=1;grid[k.r][k.c]=no;burst(ocx(k.c),ocy(k.r),8,140,['#ffffff',TYPES[no.t].c1],2.5,1);blip(300-i*12,.08,'triangle',.06);}));
+    grid[k.r][k.c]=null;burst(ocx(k.c),ocy(k.r),8,140,['#fff',TYPES[o.t].c1,'#5a3a2a'],2.5,1);blip(300-i*12,.08,'triangle',.06);}));
 }
 function bossRoar(){
   mon.pendingRoar=false;mon.roarT=ROAR_T;
-  showBanner('포효!!','대지가 뒤흔들린다!','#ff6a3a',3);
+  showBanner('포효!!','구슬 10개가 떨어져 다음 공격까지 비어 있다!','#ff6a3a',3);
   blip(80,1.2,'sawtooth',.18,40);noise(1.3,.5,500);
   for(let i=0;i<9;i++)later(.32+i*.09,()=>soundWave(i%3===0));
   later(.4,()=>{addShake(24);boardShake=1.3;doFlash(.25,'#ff6a3a');knockOrbs(10);if(navigator.vibrate)try{navigator.vibrate([80,40,120])}catch(e){}});
@@ -692,7 +692,7 @@ function popOne(i){
 }
 function collapse(){
   for(let c=0;c<COLS;c++){
-    const keep=[];for(let r=ROWS-1;r>=0;r--){const o=grid[r][c];if(!o.dead)keep.push({o,r});}
+    const keep=[];for(let r=ROWS-1;r>=0;r--){const o=grid[r][c];if(o&&!o.dead)keep.push({o,r});}
     let r=ROWS-1;
     for(const k of keep){k.o.off+=(k.r-r)*cell;grid[r][c]=k.o;r--;}
     const removed=ROWS-keep.length;
@@ -940,7 +940,7 @@ function update(dt){
     if(o.pop>0){o.pop+=dt/.25;if(o.pop>1)o.pop=1;}
     if(o.off<0){moving=true;o.vy+=3000*dt;o.off+=o.vy*dt;if(o.off>=0){o.off=0;o.vy=0;}}}
   if(state==='settle'){
-    const busy=timers.length>0||fx.some(f=>f.block)||grid.some(row=>row.some(o=>o.dead));
+    const busy=timers.length>0||fx.some(f=>f.block)||grid.some(row=>row.some(o=>o&&o.dead));
     if(!moving&&!busy){boardMax=largestGroup().length;updateStat();
       if(boardMax<2){fillBoard();return;}
       if(mon.alive&&mon.pendingRoar){if(alertT<=0){state='enemy';bossRoar();later(ROAR_T+.7,()=>{if(state==='enemy')state='settle';});}}
@@ -967,7 +967,7 @@ function update(dt){
   if(hero.lw){const w=hero.lw;w.t+=dt;const q=Math.min(1,w.t/w.dur);hero.lift=w.from+(w.to-w.from)*ease(q);if(q>=1)hero.lw=null;}
   for(let i=ghosts.length-1;i>=0;i--){ghosts[i].a-=dt*2.5;if(ghosts[i].a<=0)ghosts.splice(i,1);}
   if(state==='enemy')mon.atkT+=dt;
-  for(const row of grid)for(const o of row){if(o.wig>0)o.wig=Math.max(0,o.wig-dt);if(o.grow>0)o.grow=Math.max(0,o.grow-dt*3);}
+  for(const row of grid)for(const o of row){if(!o)continue;if(o.wig>0)o.wig=Math.max(0,o.wig-dt);if(o.grow>0)o.grow=Math.max(0,o.grow-dt*3);}
 }
 
 // ---------- draw ----------
@@ -1070,7 +1070,7 @@ function drawBoard(){
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if((r+c)%2===0){ctx.fillStyle='rgba(255,255,255,.025)';ctx.fillRect(bx+c*cell,by+r*cell,cell,cell);}}
   const sel=new Set(chain.map(k=>k.r*COLS+k.c)),hint=hintT>0?new Set(hintPath.map(k=>k.r*COLS+k.c)):null;
   const S=cell*1.4;
-  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(!o)continue;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(!o){const x=ocx(c),y=ocy(r);ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.arc(x,y,cell*.36,0,7);ctx.fill();ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,120,80,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);continue;}
     let sc=.92,a=1;const x=ocx(c)+(o.wig>0?Math.sin(o.wig*60)*4:0),y=ocy(r)+o.off;
     if(o.dead){if(o.pop>=1)continue;sc=.92+o.pop*.8;a=1-o.pop;}
     if(o.grow>0)sc*=1-o.grow;
