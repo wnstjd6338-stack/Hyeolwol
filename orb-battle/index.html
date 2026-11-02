@@ -393,6 +393,8 @@ function healSkill(n,tier){
     ring(hx,groundY-spriteH*.5,spriteH*(.8+tier*.4),T.glow,3+tier,.6);
     if(tier>=4){doFlash(.35,'#ffb0d8');ring(hx,groundY-spriteH*.5,W*.6,T.hot,8,.8);}
     hero.hp+=amt;floatText(hx,groundY-spriteH-30,'+'+amt,20+tier*4,'#7dffa0');
+    const od=odCount(n);if(od>0){const up=100*od;hero.max+=up;hero.hp+=up; // 이번 전투에서만 (스테이지 시작 시 cur.hp로 초기화)
+      later(.35,()=>{floatText(hx,groundY-spriteH-58,`최대 HP +${up}`,18+od*2,'#ffd0ec',0,-40);ring(hx,groundY-spriteH*.5,spriteH*2.2,'#ff9ad0',6,.6);blip(1040,.3,'triangle',.1,1560);});}
   });
 }
 const ROAR_T=2,ALERT_T=2.4;let alertT=0,boardShake=0;const falling=[];
