@@ -395,7 +395,7 @@ function healSkill(n,tier){
     hero.hp+=amt;floatText(hx,groundY-spriteH-30,'+'+amt,20+tier*4,'#7dffa0');
   });
 }
-const ROAR_T=1.5,ALERT_T=2.4;let alertT=0,boardShake=0;const falling=[];
+const ROAR_T=2,ALERT_T=2.4;let alertT=0,boardShake=0;const falling=[];
 function siren(dur){if(!AC)return;const t=AC.currentTime,o=AC.createOscillator(),l=AC.createOscillator(),lg=AC.createGain(),g=AC.createGain();
   o.type='sawtooth';o.frequency.value=520;l.frequency.value=2.5;lg.gain.value=180;l.connect(lg).connect(o.frequency);
   g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.07,t+.15);g.gain.setValueAtTime(.07,t+dur-.3);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
@@ -419,9 +419,11 @@ function knockOrbs(n){
 function bossRoar(){
   mon.pendingRoar=false;mon.roarT=ROAR_T;
   showBanner('포효!!','구슬 10개가 떨어져 다음 공격까지 비어 있다!','#ff6a3a',3);
-  blip(80,1.2,'sawtooth',.18,40);noise(1.3,.5,500);
-  for(let i=0;i<9;i++)later(.32+i*.09,()=>soundWave(i%3===0));
-  later(.4,()=>{addShake(24);boardShake=1.3;doFlash(.25,'#ff6a3a');knockOrbs(10);if(navigator.vibrate)try{navigator.vibrate([80,40,120])}catch(e){}});
+  blip(80,ROAR_T,'sawtooth',.18,40);noise(ROAR_T,.45,500);
+  // 2초 동안 화면·구슬판이 계속 흔들리고, 끝나는 순간 구슬이 떨어짐
+  for(let i=0;i<18;i++)later(.1+i*.105,()=>{soundWave(i%4===0);addShake(16);boardShake=Math.max(boardShake,.9);});
+  if(navigator.vibrate)try{navigator.vibrate(ROAR_T*1000)}catch(e){}
+  later(ROAR_T,()=>{addShake(26);boardShake=1.3;doFlash(.3,'#ff6a3a');noise(.6,.5,400);knockOrbs(10);});
 }
 function enemyAttack(){
   state='enemy';curElem=null;const S=mon.st,lv0=mon.lvl,nm=mon.boss?'미노타우로스':'고블린';
@@ -436,7 +438,7 @@ function enemyAttack(){
   if(mon.lvl!==lv0||!mon.alive){finish(.9);return;}
   if(S.frozen){mon.atkT=-99;later(delay,()=>{S.frozen=false;const I=SKILLS.ice;showBanner('빙결!',`${nm}이(가) 얼어서 공격하지 못했다`,I.glow,2);
       burst(monX,groundY-monH()*.5,40,300,['#ffffff',I.c1,I.glow],4);blip(1800,.3,'triangle',.1,900);});finish(delay+1);return;}
-  if(mon.boss&&++mon.atkN>=3){mon.atkN=0;mon.atkT=-99;later(delay,bossRoar);finish(delay+ROAR_T+.7);return;}
+  if(mon.boss&&++mon.atkN>=3){mon.atkN=0;mon.atkT=-99;later(delay,bossRoar);finish(delay+ROAR_T+1.1);return;}
   later(delay,()=>{showBanner(nm+'의 공격!','','#ff4a4a',2);blip(90,.5,'sawtooth',.12,50);});
   later(delay+.45,()=>{
     const p={x:heroX,y:groundY-spriteH*.5};
@@ -943,7 +945,7 @@ function update(dt){
     const busy=timers.length>0||fx.some(f=>f.block)||grid.some(row=>row.some(o=>o&&o.dead));
     if(!moving&&!busy){boardMax=largestGroup().length;updateStat();
       if(boardMax<2){fillBoard();return;}
-      if(mon.alive&&mon.pendingRoar){if(alertT<=0){state='enemy';bossRoar();later(ROAR_T+.7,()=>{if(state==='enemy')state='settle';});}}
+      if(mon.alive&&mon.pendingRoar){if(alertT<=0){state='enemy';bossRoar();later(ROAR_T+1.1,()=>{if(state==='enemy')state='settle';});}}
       else if(attacksLeft<=0&&mon.alive)enemyAttack();else{if(attacksLeft<=0)attacksLeft=ATK_EVERY;state='idle';}}
   }
   for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life-=dt;if(p.life<=0){parts.splice(i,1);continue;}p.vy+=p.g*dt;const dr=Math.pow(p.drag,dt*60);p.vx*=dr;p.vy*=dr;p.x+=p.vx*dt;p.y+=p.vy*dt;}
