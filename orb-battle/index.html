@@ -276,7 +276,7 @@ const mon={st:{burn:0,poison:0,shock:0,dark:0,frozen:false,weak:false},hp:0,max:
 function later(d,f){timers.push({t:d,f});}
 
 function newOrb(){return{t:rollOrb(),off:0,vy:0,pop:0,dead:false};}
-let nextQ=[];
+let nextQ=[],pOff=[],pVy=[];
 function takeNext(c){const q=nextQ[c]||(nextQ[c]=[]);while(q.length<6)q.push(rollOrb());const t=q.shift();q.push(rollOrb());return t;}
 function fillBoard(){nextQ=[];for(let c=0;c<COLS;c++)takeNext(c);grid=[];for(let r=0;r<ROWS;r++){grid.push([]);for(let c=0;c<COLS;c++){const o=newOrb();o.off=-(ROWS-r)*cell-rand(0,cell*.5)-cell*2;grid[r].push(o);}}state='settle';}
 
@@ -708,6 +708,7 @@ function collapse(){
     let r=ROWS-1;
     for(const k of keep){k.o.off+=(k.r-r)*cell;grid[r][c]=k.o;r--;}
     const removed=ROWS-keep.length;
+    if(removed>0){pOff[c]=(pOff[c]||0)-removed*cell;pVy[c]=0;} // 미리보기 줄도 같은 만큼 내려옴
     while(r>=0){const o=newOrb();o.t=takeNext(c);o.off=-removed*cell-cell*.6;grid[r][c]=o;r--;} // 미리보기 줄 맨 아래부터 내려옴
   }
 }
@@ -972,6 +973,7 @@ function update(dt){
   if(banner){banner.t+=dt;if(banner.t>1.6)banner=null;}
   heroCast=Math.max(0,heroCast-dt);heroCharge=Math.max(0,heroCharge-dt*.15);
   mon.roarT=Math.max(0,mon.roarT-dt);alertT=Math.max(0,alertT-dt);boardShake=Math.max(0,boardShake-dt);
+  for(let c=0;c<COLS;c++)if(pOff[c]<0){pVy[c]+=3000*dt;pOff[c]+=pVy[c]*dt;if(pOff[c]>=0){pOff[c]=0;pVy[c]=0;}}
   for(let i=falling.length-1;i>=0;i--){const f=falling[i];f.vy+=1800*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.rot+=f.vr*dt;if(f.y>H+60)falling.splice(i,1);}
   mon.flash=Math.max(0,mon.flash-dt);mon.knock*=Math.pow(.004,dt);
   if(mon.enter>0)mon.enter=Math.max(0,mon.enter-dt*3.5);
@@ -1086,10 +1088,11 @@ function drawBoard(){
   ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,by-pad,bw+pad*2,bh+pad*2,12):ctx.rect(bx-pad,by-pad,bw+pad*2,bh+pad*2);ctx.fill();ctx.stroke();
   // 다음에 내려올 구슬 미리보기 2줄 (반투명)
   {const ph=cell*2,py=by-pad-ph-4;ctx.fillStyle='rgba(20,12,8,.45)';ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,py,bw+pad*2,ph+2,10):ctx.rect(bx-pad,py,bw+pad*2,ph+2);ctx.fill();
-   const S2=cell*1.4*.6;
-   for(let c=0;c<COLS;c++){const q=nextQ[c];if(!q)continue;for(let k=0;k<2;k++){const t=q[k];if(t==null||!orbImg[t]||!orbImg[t].complete)continue;
-     const x=ocx(c),y=py+ph-cell*(k+.5)+1;ctx.globalAlpha=k?.28:.48;ctx.drawImage(orbImg[t],x-S2/2,y-S2/2,S2,S2);}}
-   ctx.globalAlpha=1;}
+   const S2=cell*1.4*.6;ctx.save();ctx.beginPath();ctx.rect(bx-pad,py,bw+pad*2,ph+2);ctx.clip();
+   for(let c=0;c<COLS;c++){const q=nextQ[c];if(!q)continue;const off=pOff[c]||0,extra=Math.ceil(-off/cell);
+     for(let k=0;k<2+extra;k++){const t=q[k];if(t==null||!orbImg[t]||!orbImg[t].complete)continue;
+       const x=ocx(c),y=py+ph-cell*(k+.5)+1+off;ctx.globalAlpha=k?.28:.48;ctx.drawImage(orbImg[t],x-S2/2,y-S2/2,S2,S2);}}
+   ctx.restore();ctx.globalAlpha=1;}
   ctx.save();ctx.beginPath();ctx.rect(bx-pad,by-pad,bw+pad*2,bh+pad*2);ctx.clip();
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if((r+c)%2===0){ctx.fillStyle='rgba(255,255,255,.025)';ctx.fillRect(bx+c*cell,by+r*cell,cell,cell);}}
   const sel=new Set(chain.map(k=>k.r*COLS+k.c)),hint=hintT>0?new Set(hintPath.map(k=>k.r*COLS+k.c)):null;
