@@ -435,8 +435,8 @@ function enemyAttack(){
   state='enemy';curElem=null;const S=mon.st,lv0=mon.lvl,nm=mon.boss?'미노타우로스':'고블린';
   let delay=0;
   if(S.burn>0||S.poison>0){delay=.6;const c={x:monX,y:groundY-monH()*.55};
-    if(S.burn>0){floatText(c.x-20,c.y-monH()*.4-10,`🔥화상 ×${S.burn}`,13,'#ffb070',0,-30);burst(c.x,c.y,10+S.burn,160,[FIRE.hot,FIRE.c1,FIRE.glow],3,0,-200);hitMon(S.burn*6*atkMul(),c.x-14,c.y,false);}
-    if(mon.alive&&mon.lvl===lv0&&S.poison>0){const P=SKILLS.poison;floatText(c.x+20,c.y-monH()*.4+6,`☠중독 ×${S.poison}`,13,P.c1,0,-30);burst(c.x,c.y,10+S.poison,120,[P.c1,P.glow,'#3a7a10'],3,0,200);hitMon(S.poison*7.5*atkMul(),c.x+14,c.y-12,false);}
+    if(S.burn>0){floatText(c.x-20,c.y-monH()*.4-10,`🔥화상 ×${S.burn}`,13,'#ffb070',0,-30);burst(c.x,c.y,10+S.burn,160,[FIRE.hot,FIRE.c1,FIRE.glow],3,0,-200);hitMon(S.burn*12*atkMul(),c.x-14,c.y,false);}
+    if(mon.alive&&mon.lvl===lv0&&S.poison>0){const P=SKILLS.poison;floatText(c.x+20,c.y-monH()*.4+6,`☠중독 ×${S.poison}`,13,P.c1,0,-30);burst(c.x,c.y,10+S.poison,120,[P.c1,P.glow,'#3a7a10'],3,0,200);hitMon(S.poison*15*atkMul(),c.x+14,c.y-12,false);}
     noise(.3,.2,1500);
   }
   mon.atkT=-delay;
@@ -1105,6 +1105,10 @@ function drawBoard(){
     if(hint&&hint.has(r*COLS+c)){ctx.strokeStyle='rgba(255,240,160,'+(.5+.5*Math.sin(time*10))+')';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(x,y,cell*.46,0,7);ctx.stroke();}
     ctx.globalAlpha=a;const s=S*sc*.68;if(orbImg[o.t].complete)ctx.drawImage(orbImg[o.t],x-s/2,y-s/2,s,s);ctx.globalAlpha=1;
   }
+  ctx.restore();
+  // 실제 구슬판(아래 4줄) 경계선
+  ctx.strokeStyle='rgba(255,210,140,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-pad+2,by-1);ctx.lineTo(bx+bw+pad-2,by-1);ctx.stroke();
+  ctx.save();
   ctx.restore();
 }
 function frame(){
