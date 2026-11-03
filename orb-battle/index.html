@@ -95,6 +95,7 @@ canvas{display:block;margin:0 auto;touch-action:none}
 .bw,.rw{width:min(100%,560px);margin:calc(10px + env(safe-area-inset-top)) 8px 10px;background:#1e140e;border:2px solid #8a5a2a;border-radius:16px;padding:12px;box-sizing:border-box}
 .bh{display:flex;justify-content:space-between;align-items:center;font:900 18px system-ui,sans-serif;color:#ffe9b0}
 .bh button{background:none;border:0;color:#fff;font-size:22px}
+#bagAuto{font:900 13px system-ui,sans-serif!important;background:linear-gradient(#e8622a,#a8280e)!important;border:2px solid #ffd27a!important;border-radius:10px;padding:6px 12px;margin-right:10px;vertical-align:middle}
 .eqa{display:flex;justify-content:space-between;align-items:center;margin:10px 0;background:radial-gradient(circle at 50% 60%,#3a5a2a,#1e140e 70%);border-radius:12px;padding:8px 6px}
 .col{display:flex;flex-direction:column;gap:8px}
 .eqs{display:flex;flex-direction:column;align-items:center}.eqs label{font-size:10.5px;color:#c8b8a0;margin-top:2px}
@@ -147,7 +148,7 @@ canvas{display:block;margin:0 auto;touch-action:none}
   <div id="osList"></div>
 </div></div>
 <div id="bag"><div class="bw">
-  <div class="bh">🎒 가방 <button id="bagClose">✕</button></div>
+  <div class="bh">🎒 가방 <span><button id="bagAuto">자동 장착</button><button id="bagClose">✕</button></span></div>
   <div class="eqa"><div class="col" id="eqL"></div><div class="hero"><img id="bagHero"></div><div class="col" id="eqR"></div></div>
   <div id="bstats"></div>
   <div id="invCnt" class="ic"></div>
@@ -364,9 +365,12 @@ function placeBomb(r,c){
     floatText(x,y-cell,`💥 ${list.length-1}개 폭발!`,24,'#ffd24a',1,-50);
     later(list.length*.025+.25,()=>{chain=[];collapse();
       // 종류별로 스킬 발동 (폭탄 = 행동 1회)
-      attacksLeft--;let t=0;
-      Object.keys(cnt).map(Number).sort((a,b2)=>cnt[b2]-cnt[a]).forEach(tp=>{const n=cnt[tp];
-        later(t,()=>cast(tp,n,true));t+=.6+Math.min(n,30)*.07+(n>=7?.9:0)+odCount(n)*.6;});
+      attacksLeft--;
+      const types=Object.keys(cnt).map(Number).sort((a,b2)=>cnt[b2]-cnt[a]);
+      const support=types.filter(tp=>TYPES[tp].kind!=='melee'),melee=types.filter(tp=>TYPES[tp].kind==='melee');
+      support.forEach((tp,i)=>later(i*.35,()=>cast(tp,cnt[tp],true))); // 방패·치유는 제자리에서 먼저
+      const runMelee=i=>{if(i>=melee.length)return;const d=cast(melee[i],cnt[melee[i]],true,{noDash:i>0,noReturn:i<melee.length-1});later(d+.05,()=>runMelee(i+1));};
+      later(support.length?support.length*.35+.35:0,()=>runMelee(0)); // 한 번 돌진해서 공격 스킬을 연달아 사용
     });
   });
 }
@@ -630,7 +634,7 @@ function moveHero(to,dur,type){hero.tw={from:hero.off,to,t:0,dur};hero.ghostCol=
 function liftHero(to,dur){hero.lw={from:hero.lift,to,t:0,dur};}
 const dashTo=()=>(monX-monW*.38)-(heroX+heroW*.25);
 const shieldFor=n=>Math.round(15*n*(1+(n-2)*.15)*hero.max/BASE_HP);
-function cast(type,n,noTurn){
+function cast(type,n,noTurn,opt={}){
   const T=TYPES[type],tier=tierOf(n),total=Math.round(dmgFor(n)*atkMul());
   stats.count++;stats.sum+=n;stats.best=Math.max(stats.best,n);if(!noTurn)attacksLeft--;
   heroCharge=0;
@@ -638,13 +642,13 @@ function cast(type,n,noTurn){
   showBanner(`${T.name} ${n}연쇄`,tier>=4?(od>1?`오버드라이브 ×${od}!!!`:'오버드라이브!!!'):TIER_NAME[tier],T.glow,tier);
   if(tier===4){doFlash(.3,T.glow);noise(.5,.3,2000);}
   curElem=T.elem||null;
-  if(T.kind==='shield'){shieldSkill(n,tier,T);return;}
-  if(type===3){healSkill(n,tier);revertHeal();return;}
+  if(T.kind==='shield'){shieldSkill(n,tier,T);return .5;}
+  if(type===3){healSkill(n,tier);revertHeal();return .5;}
   floatText(W/2,battleTop+120,`총 ${total} 데미지`,15,'#fff3c0',0,-20);
   const fire=T.elem==='burn',el=T.elem,hits=Math.min(n,30),gap=tier>=4?Math.max(.035,.055-(n-10)*.001):.075,fin=tier>=3;
   const share=total*(fin?.5:1)/hits;
-  moveHero(dashTo(),.13,type);noise(.15,.15,1500);
-  const t0=.15;
+  if(!opt.noDash){moveHero(dashTo(),.13,type);noise(.15,.15,1500);}
+  const t0=opt.noDash?.05:.15;
   for(let i=0;i<hits;i++)later(t0+i*gap,()=>{
     hero.swing=.1;hero.off+=rand(-5,5);
     const K=Math.max(.45,monH()/130),p=monPoint(),r=(26+tier*12+i*2)*K,th=(5+tier*2.5)*K;
@@ -694,7 +698,8 @@ function cast(type,n,noTurn){
     }
     tEnd+=.15+od*step+.2;
   }
-  later(tEnd+.12,()=>moveHero(0,.22,type));
+  if(!opt.noReturn)later(tEnd+.12,()=>moveHero(0,.22,type));
+  return tEnd;
 }
 function shieldPath(s){ctx.beginPath();ctx.moveTo(0,-s);ctx.lineTo(s*.8,-s*.68);ctx.lineTo(s*.78,s*.1);ctx.quadraticCurveTo(s*.55,s*.72,0,s);ctx.quadraticCurveTo(-s*.55,s*.72,-s*.78,s*.1);ctx.lineTo(-s*.8,-s*.68);ctx.closePath();}
 function shieldSkill(n,tier,T=SKILLS.shield){
@@ -975,6 +980,12 @@ function openDetail(it,equipped){
   }
 }
 document.getElementById('bBag').onclick=()=>{ensureAudio();renderBag();document.getElementById('bag').classList.add('on');};
+document.getElementById('bagAuto').onclick=()=>{ // 부위마다 전투력이 가장 높은 장비 장착
+  const all=[...save.bag,...save.eq.filter(Boolean)],before=charCP();
+  for(let sl=0;sl<6;sl++){let best=null;for(const it of all)if(it.slot===sl&&(!best||itemCP(it)>itemCP(best)))best=it;save.eq[sl]=best;}
+  save.bag=all.filter(it=>!save.eq.includes(it));writeSave();renderBag();
+  const d=charCP()-before;blip(880,.15,'triangle',.1,1320);
+  const e=document.getElementById('bstats');e.insertAdjacentHTML('afterbegin',`<div class="st" style="color:${d>0?'#7dff9a':'#c8b8a0'}">${d>0?`자동 장착 완료! 전투력 +${fmt(d)}`:'이미 가장 강한 장비를 장착 중이에요'}</div>`);};
 document.getElementById('bagClose').onclick=()=>{document.getElementById('bag').classList.remove('on');document.getElementById('detail').classList.remove('on');renderLobby();};
 document.getElementById('bGo').onclick=()=>{ensureAudio();blip(330,.2,'sawtooth',.08,660);transition(()=>{document.getElementById('stageSel').classList.add('on');renderStageSel();
   const nx=document.querySelector('.node.next');const el=document.getElementById('stageSel');if(nx)el.scrollTop=Math.max(0,nx.offsetTop-el.clientHeight/2+80);else el.scrollTop=0;});};
