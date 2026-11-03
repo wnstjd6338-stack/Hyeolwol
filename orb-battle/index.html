@@ -26,7 +26,9 @@ canvas{display:block;margin:0 auto;touch-action:none}
 #skBtn.ready{border-color:#ffd96a;animation:spg 1s ease-in-out infinite}
 #skPop{position:absolute;right:0;bottom:70px;white-space:nowrap;background:#ffd24a;color:#3a1a08;font:900 12px system-ui,sans-serif;padding:5px 9px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.5);display:none;animation:popB .8s ease-in-out infinite}
 #skPop::after{content:'';position:absolute;right:24px;bottom:-6px;border:6px solid transparent;border-top-color:#ffd24a;border-bottom:0}
-#skPop.on{display:block}@keyframes popB{50%{transform:translateY(-4px)}}
+#skPop.on{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+#skPop .pi{display:flex;align-items:center;gap:4px}#skPop em{font-style:normal;font-size:14px}#skPop img{width:16px;height:16px;image-rendering:pixelated}
+.ski.off{opacity:.45;filter:grayscale(.7)}@keyframes popB{50%{transform:translateY(-4px)}}
 #skPanel{position:absolute;right:0;bottom:70px;width:236px;background:rgba(28,18,12,.95);border:2px solid #c8904a;border-radius:14px;padding:8px;display:none;box-shadow:0 6px 16px rgba(0,0,0,.6)}
 #skPanel.on{display:block}
 .skh{font:900 13px system-ui,sans-serif;color:#ffe9b0;margin:0 2px 6px}
@@ -289,7 +291,13 @@ function updateSp(){const b=document.getElementById('spBtn');b.style.setProperty
   const ul=document.getElementById('ulBtn');ul.style.setProperty('--p',ulGauge/UL_MAX*100);ul.classList.toggle('ready',ulGauge>=UL_MAX);
   document.getElementById('ulCnt').textContent=ulGauge>=UL_MAX?'준비!':(UL_MAX-ulGauge);
   const any=(bmGauge>=BOMB_MAX&&!bombArm)||(slGauge>=SL_MAX&&sealT<0)||ulGauge>=UL_MAX,open=document.getElementById('skPanel').classList.contains('on');
-  document.getElementById('skBtn').classList.toggle('ready',any);document.getElementById('skPop').classList.toggle('on',any&&!open);}
+  document.getElementById('skBtn').classList.toggle('ready',any);document.getElementById('skPop').classList.toggle('on',any&&!open);
+  // 말풍선에 사용 가능한 스킬 아이콘·이름 표시, 폴더 안 준비 안 된 스킬은 흐리게
+  const rd=[['spBtn','🔄','구슬 변환',spGauge>=SP_MAX],['bmBtn','💣','폭탄',bmGauge>=BOMB_MAX&&!bombArm],['slBtn','🚫','넌 나가있어',slGauge>=SL_MAX&&sealT<0],['ulBtn',null,'혼신의 일격',ulGauge>=UL_MAX]];
+  const key=rd.map(r=>r[3]?1:0).join('');
+  if(key!==updateSp.k){updateSp.k=key;const ul=document.getElementById('ulImg').src;
+    document.getElementById('skPop').innerHTML=rd.filter(r=>r[3]).map(r=>`<span class="pi">${r[1]?`<em>${r[1]}</em>`:`<img src="${ul}">`}${r[2]}</span>`).join('');}
+  rd.forEach(r=>document.getElementById(r[0]).parentElement.classList.toggle('off',!r[3]));}
 function makeOrbSprites(){}
 function mkStrip(src,n,fw,fh){const im=new Image(),o={im,n,fw,fh};im.onload=()=>{o.white=silhouette(im,'#fff');o.red=silhouette(im,'#ff3030');o.ice=silhouette(im,'#8fe8ff');};im.src=src;return o;}
 function drawStrip(o,f,x,y,w,h,layer){const src=layer?o[layer]:o.im;if(!src||!o.im.complete||!o.im.naturalWidth)return;f=((f%o.n)+o.n)%o.n;ctx.drawImage(src,f*o.fw,0,o.fw,o.fh,x,y,w,h);}
