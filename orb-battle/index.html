@@ -227,7 +227,7 @@ const FIRE={c1:'#ffd060',c2:'#c0161c',glow:'#ff5a1a',hot:'#fff4c0'};
 const TIER_NAME=['','','강화!','폭주!!','MAX 오버드라이브!!!'];
 let numTypes=3;
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
-const SP_MAX=20, SP_COUNT=7, ATK_EVERY=3, PR_MAX=40, BOSS_EVERY=10, BOMB_MAX=80, UL_MAX=1000, SL_MAX=500;
+const SP_MAX=20, SP_COUNT=7, ATK_EVERY=3, PR_MAX=40, BOSS_EVERY=10, BOMB_MAX=80, UL_MAX=500, SL_MAX=250;
 let ulGauge=0,slGauge=0,sealT=-1,sealLeft=0,sealEnd=false;
 let bmGauge=0,bombArm=false;
 let prGauge=0;const priest={cast:0};
@@ -1248,7 +1248,7 @@ function drawBoard(){
   }
   ctx.restore();
   if(bombArm){ctx.strokeStyle=`rgba(255,180,80,${.5+.4*Math.sin(time*8)})`;ctx.lineWidth=3;ctx.strokeRect(bx-pad+2,by+1,bw+pad*2-4,bh+pad-4);}
-  if(sealT>=0){const T=TYPES[sealT],tx=bx-pad+4,ty=top-pad-10,txt=`🚫 ${T.name} 봉인 · 남은 ${sealLeft}회`;ctx.font='900 12px system-ui,sans-serif';const w=ctx.measureText(txt).width+24;
+  if(sealT>=0){const T=TYPES[sealT],ty=top-pad-10,txt=`🚫 ${T.name} 봉인 · 남은 ${sealLeft}회`;ctx.font='900 12px system-ui,sans-serif';const w=ctx.measureText(txt).width+24,tx=W/2-(w+22)/2; // 가운데 배치 (왼쪽 사제 버튼과 겹치지 않게)
     ctx.fillStyle='rgba(90,10,30,.9)';ctx.beginPath();ctx.roundRect?ctx.roundRect(tx,ty-12,w,22,11):ctx.rect(tx,ty-12,w,22);ctx.fill();ctx.strokeStyle='#ff7a9a';ctx.lineWidth=1.5;ctx.stroke();
     const im=orbImg[sealT];if(im&&im.complete){ctx.globalAlpha=.9;ctx.drawImage(im,tx+w-2,ty-12,22,22);ctx.globalAlpha=1;}
     ctx.textAlign='left';ctx.fillStyle='#ffe0e8';ctx.fillText(txt,tx+10,ty+4);}
