@@ -709,7 +709,7 @@ function collapse(){
     for(const k of keep){k.o.off+=(k.r-r)*cell;grid[r][c]=k.o;r--;}
     const removed=ROWS-keep.length;
     if(removed>0){pOff[c]=(pOff[c]||0)-removed*cell;pVy[c]=0;} // 미리보기 줄도 같은 만큼 내려옴
-    while(r>=0){const o=newOrb();o.t=takeNext(c);o.off=-removed*cell-cell*.6;grid[r][c]=o;r--;} // 미리보기 줄 맨 아래부터 내려옴
+    while(r>=0){const o=newOrb();o.t=takeNext(c);o.off=-removed*cell;grid[r][c]=o;r--;} // 미리보기 줄 맨 아래부터 내려옴
   }
 }
 
@@ -1082,18 +1082,17 @@ function drawBanner(){
   ctx.restore();ctx.globalAlpha=1;
 }
 function drawBoard(){
-  // frame
-  const pad=7;
+  // 판 6줄: 위 2줄 = 다음에 내려올 구슬(반투명, 터지지 않음), 아래 4줄 = 실제 구슬판
+  const pad=7,top=by-cell*2;
   ctx.fillStyle='rgba(30,20,12,.82)';ctx.strokeStyle='#6a4a2a';ctx.lineWidth=3;
-  ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,by-pad,bw+pad*2,bh+pad*2,12):ctx.rect(bx-pad,by-pad,bw+pad*2,bh+pad*2);ctx.fill();ctx.stroke();
-  // 다음에 내려올 구슬 미리보기 2줄 (반투명)
-  {const ph=cell*2,py=by-pad-ph-4;ctx.fillStyle='rgba(20,12,8,.45)';ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,py,bw+pad*2,ph+2,10):ctx.rect(bx-pad,py,bw+pad*2,ph+2);ctx.fill();
-   const S2=cell*1.4*.6;ctx.save();ctx.beginPath();ctx.rect(bx-pad,py,bw+pad*2,ph+2);ctx.clip();
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(bx-pad,top-pad,bw+pad*2,bh+cell*2+pad*2,12):ctx.rect(bx-pad,top-pad,bw+pad*2,bh+cell*2+pad*2);ctx.fill();ctx.stroke();
+  ctx.save();ctx.beginPath();ctx.rect(bx-pad,top-pad,bw+pad*2,bh+cell*2+pad*2);ctx.clip();
+  for(let r=-2;r<0;r++)for(let c=0;c<COLS;c++)if(((r+c)%2+2)%2===0){ctx.fillStyle='rgba(255,255,255,.025)';ctx.fillRect(bx+c*cell,by+r*cell,cell,cell);}
+  {const S2=cell*1.4*.92*.68;
    for(let c=0;c<COLS;c++){const q=nextQ[c];if(!q)continue;const off=pOff[c]||0,extra=Math.ceil(-off/cell);
      for(let k=0;k<2+extra;k++){const t=q[k];if(t==null||!orbImg[t]||!orbImg[t].complete)continue;
-       const x=ocx(c),y=py+ph-cell*(k+.5)+1+off;ctx.globalAlpha=k?.28:.48;ctx.drawImage(orbImg[t],x-S2/2,y-S2/2,S2,S2);}}
-   ctx.restore();ctx.globalAlpha=1;}
-  ctx.save();ctx.beginPath();ctx.rect(bx-pad,by-pad,bw+pad*2,bh+pad*2);ctx.clip();
+       const x=ocx(c),y=by-cell*(k+.5)+off;ctx.globalAlpha=k?.3:.5;ctx.drawImage(orbImg[t],x-S2/2,y-S2/2,S2,S2);}}
+   ctx.globalAlpha=1;}
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if((r+c)%2===0){ctx.fillStyle='rgba(255,255,255,.025)';ctx.fillRect(bx+c*cell,by+r*cell,cell,cell);}}
   const sel=new Set(chain.map(k=>k.r*COLS+k.c)),hint=hintT>0?new Set(hintPath.map(k=>k.r*COLS+k.c)):null;
   const S=cell*1.4;
