@@ -586,21 +586,19 @@ function spin(){
   noise(.2,.12,3000);blip(300,.15,'square',.05,600);
 }
 function reelStop(R){R.done=true;for(let r=0;r<ROWS;r++){grid[r][R.c]=R.res[r];if(R.res[r]){R.res[r].off=-cell*.25;R.res[r].vy=0;}}blip(500+R.c*90,.08,'triangle',.1);addShake(1.5);}
-function evaluate(){
-  const found=[],cells=new Set();
+function evaluate(){ // 돌림판의 모든 구슬 사용 + 줄이 맞으면 보너스
+  const found=[],cells=new Set(),cnt={};let total=0;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(!o)continue;cnt[o.t]=(cnt[o.t]||0)+1;total++;o.wig=.3;if(o.t===HEART)o.used=true;}
   for(const L of LINES){const o0=grid[L[0]][0];if(!o0)continue;let k=1;while(k<COLS&&grid[L[k]][k]&&grid[L[k]][k].t===o0.t)k++;
-    if(k>=3){found.push({L,k,t:o0.t});for(let c=0;c<k;c++)cells.add(L[c]*COLS+c);}}
-  attacksLeft--;
-  if(!found.length){floatText(W/2,by-20,'꽝!',26,'#c8b8a0',1,-30);blip(160,.25,'sawtooth',.06,90);state='settle';updateStat();return;}
-  wins++;winLines=found;winT=2.2;const cnt={};
-  for(const f of found)cnt[f.t]=(cnt[f.t]||0)+PAY[f.k];
-  cells.forEach(i=>{const o=grid[(i/COLS)|0][i%COLS];if(o){o.wig=.4;if(o.t===HEART)o.used=true;}});
-  gainGauge(cells.size);
-  const best=Math.max(...found.map(f=>f.k)),big=found.length>=2||best>=5;
-  floatText(W/2,by-24,found.length>1?`${found.length}줄 당첨!`:`${best}개 일치!`,big?30:24,'#ffe14a',1,-40);
-  doFlash(big?.3:.15,'#ffe14a');blip(660,.15,'triangle',.12,990);later(.12,()=>blip(990,.2,'triangle',.12,1320));if(big)later(.25,()=>blip(1320,.3,'triangle',.12,1760));
-  cells.forEach(i=>{const x=ocx(i%COLS),y=ocy((i/COLS)|0),o=grid[(i/COLS)|0][i%COLS];if(o)burst(x,y,10,140,[TYPES[o.t].hot,TYPES[o.t].c1],3,1);});
-  state='settle';updateStat();later(.35,()=>runCasts(cnt));
+    if(k>=3){found.push({L,k,t:o0.t});cnt[o0.t]+=PAY[k];for(let c=0;c<k;c++)cells.add(L[c]*COLS+c);}}
+  attacksLeft--;if(found.length)wins++;winLines=found;winT=found.length?2.2:0;
+  gainGauge(total);
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const o=grid[r][c];if(o)burst(ocx(c),ocy(r),cells.has(r*COLS+c)?12:5,cells.has(r*COLS+c)?160:90,[TYPES[o.t].hot,TYPES[o.t].c1],cells.has(r*COLS+c)?3:2,1);}
+  if(found.length){const best=Math.max(...found.map(f=>f.k)),big=found.length>=2||best>=5;
+    floatText(W/2,by-24,found.length>1?`${found.length}줄 보너스!`:`${best}개 일치 보너스!`,big?28:22,'#ffe14a',1,-40);
+    doFlash(big?.3:.15,'#ffe14a');blip(660,.15,'triangle',.12,990);later(.12,()=>blip(990,.2,'triangle',.12,1320));if(big)later(.25,()=>blip(1320,.3,'triangle',.12,1760));}
+  else blip(520,.12,'triangle',.08,700);
+  state='settle';updateStat();later(.3,()=>runCasts(cnt));
 }
 function doSpecial(t){
   if(state!=='idle'||spGauge<SP_MAX)return;
